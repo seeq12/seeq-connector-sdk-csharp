@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="markdown-github.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: sans-serif;
+            margin-left: 10em;
+            margin-right: 10em;
+        }
+        code, pre {
+            font-family: monospace;
+        }
+        h1 code,
+        h2 code,
+        h3 code,
+        h4 code,
+        h5 code,
+        h6 code {
+            font-size: inherit;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Overview</h1>
+<p>Welcome to the Seeq Connector SDK!</p>
+<p>This SDK is intended for developers that wish to write a Seeq datasource connector that can be loaded by a Seeq agent
+and facilitate access to data in Seeq.</p>
+<p>Seeq connectors can be written in Java or C#. Java development can occur on Windows, OSX or Ubuntu operating systems. C#
+development requires Windows.</p>
+<p>It is recommended that you initially develop with a "private" version of Seeq Server that is unrelated to your
+production or official testing systems. You should install this private version directly on your development machine to
+minimize the amount of initial setup and troubleshooting.</p>
+<p>Install the version of Seeq Server that matches the version of the Connector SDK that you are using.</p>
+<p>If you need a license file for this purpose, contact <a href="mailto:support@seeq.com">support@seeq.com</a>.</p>
+<h1>Java Development</h1>
+<h2>The Build Environment</h2>
+<p>The Java version of the SDK is located in the <code>java</code> directory and is built with Gradle. We recommend that you
+familiarize yourself with the <a href="https://docs.gradle.org/current/userguide
+/tutorial_using_tasks.html">basics of Gradle</a> before proceeding.</p>
+<h2>Verifying your Environment</h2>
+<p>Before doing anything else, we recommend that you build the connector template and ensure that it is fully working with
+your private system.</p>
+<p>From the <code>java</code> directory, execute the <code>build</code> command. This command will download dependencies from the web, so make
+sure you have a good internet connection. If it fails for some (non-obvious) reason, email the output (including the
+error message) to <a href="mailto:support@seeq.com">support@seeq.com</a>.</p>
+<p>Make sure your private Seeq Server is running on this machine.</p>
+<p>IntelliJ IDEA is the recommended Integrated Development Environment (IDE) to use for developing and debugging your
+connector. You can use the free IntelliJ IDEA Community Edition.</p>
+<p>Previous versions of the Seeq Connector SDK recommended and utilized Eclipse and the Maven build system. This version
+uses the Gradle build system and support for Gradle in Eclipse is not strong enough to recommend as an IDE for your
+connector.</p>
+<p>Import the project into IntelliJ IDEA by taking the following steps:</p>
+<ol>
+<li>At the IntelliJ launch screen, select <em>Open or import</em>. If you're already in an IntelliJ project, select <em>File</em> &gt; <em>
+   Open</em>.</li>
+<li>Browse to the extracted <em>seeq-connector-sdk/java</em> folder.</li>
+<li>Click OK.</li>
+</ol>
+<p>On the left-hand side of the screen, you will see a <em>Project</em> tab and there will be a bolded <em>java [seeq-connector-sdk]</em>
+folder at the top level. There should be a small light-blue square in the bottom-right of the folder icon, which
+indicates that it was recognized as a Gradle project.</p>
+<p>The <em>Build</em> tab at the bottom should eventually print <code>BUILD SUCCESSFUL</code> to indicate that the Gradle project was built
+correctly.</p>
+<p>If you encounter Gradle build errors, verify that Gradle is using the correct JVM. In your IntelliJ Settings, go to
+<em>Build, Execution, Deployment &gt; Build Tools &gt; Gradle</em> and select <em>Add JDK</em> in the dropdown menu for <em>Gradle JVM</em>. In the
+popup for setting the JDK home directory, select the <code>java/jdk/files</code> directory.</p>
+<p>Take the following steps to verify your debugging setup:</p>
+<ol>
+<li>Open the <code>src/main/java/com/seeq/link/sdk/debugging/Main.java</code> file in the <code>seeq-link-sdk-debugging-agent</code> project.</li>
+<li>If you have configured Seeq to use a different location for the data folder than the default, update the snippet
+   starting on line 26 with the proper path. <strong>This step is required to ensure that your agent can find the SSL keys to
+   communicate with Seeq Server.</strong></li>
+<li>Set a breakpoint on the first line of the <code>main()</code> function.</li>
+<li>On the right-hand edge of IntelliJ there is a <em>Gradle</em> tab. Click on that tab to open the Gradle tool window, then
+   right-click on
+   <em>seeq-connector-sdk &gt; seeq-link-sdk-debugging-agent &gt; Tasks &gt; application &gt; run</em> and select <em>Debug</em>.</li>
+<li>You should hit the breakpoint you set. <strong>This verifies that your IDE built your project correctly and can connect its
+   debugger to it.</strong></li>
+<li>With execution paused at the breakpoint, open the <code>src/main/java/com/mycompany/seeq/link/connector/MyConnector.java</code> file in the
+   <code>mycompany-seeq-link-connector-myconnector</code> and put a breakpoint on the first line of the <code>initialize()</code> function.</li>
+<li>Resume execution (<em>Run &gt; Debugging Actions &gt; Resume Program</em>). You should hit the next breakpoint. <strong>This verifies
+   that the debugging agent can load the template connector correctly.</strong></li>
+<li>Resume execution.</li>
+<li>Bring up Seeq Workbench and click on the connections section at the top of the screen. You should
+   see <code>My Connector Type: My First Connection</code> in the list of connections, with 5000 items indexed.</li>
+<li>In Seeq Workbench's <em>Data</em> tab, search for <code>simulated</code>.</li>
+<li>A list of simulated signals should appear in the results. Click on any of the results.</li>
+<li>The signal should be added to the <em>Details</em> pane and a repeating waveform should be shown in the trend. <strong>This
+    verifies that the template connector is able to index its signals and respond to data queries.</strong></li>
+</ol>
+<p>Now you're ready to start development!</p>
+<h2>Developing your Connector</h2>
+<p>You will probably want to adjust the name and group of your connector. You can do so by using rename refactorings on the
+classes and folders in your IDE. You'll also have to adjust ALL the <code>settings.gradle.kts</code> and <code>build.gradle.kts</code>
+files accordingly, including the one in the <code>seeq-link-sdk-debugging-agent</code> folder. After renaming, you will need to
+click the <em>Reload All Gradle Projects</em> button within the Gradle tool window.</p>
+<p>Connectors are discovered at runtime using Java's <code>ServiceLoader</code> mechanism. You'll find your connector registered under
+<code>src/main/resources/META-INF/services/com.seeq.link.sdk.interfaces.ConnectorV2</code>. Make sure this file contains the
+correct class name. If you use rename refactoring in your IDE, it should update this file automatically.</p>
+<p>You can add additional dependencies in the <code>build.gradle.kts</code> file in your connector's folder.</p>
+<p>Once you are ready to start developing, just open the <code>MyConnector.java</code> and <code>MyConnection.java</code> files in your IDE and
+start reading through the heavily-annotated source code. The template connector uses a small class called
+<code>DatasourceSimulator</code>. You'll know you've removed all of the template-specific code when you can delete this file from
+the project and still build without errors.</p>
+<p>Any log messages you create using the <code>log()</code> method on <code>ConnectorServiceV2</code> and <code>DatasourceConnectionServiceV2</code> will go
+to the debug console and to the <code>java/seeq-link-sdk-debugging-agent/build/log/jvm-debugging-agent.log</code> file.</p>
+<h2>Deploying your Connector</h2>
+<p>When you are ready to deploy your connector to a production environment, execute the <code>build</code> command. A zip file will be
+created in the <code>build/distributions</code> folder of your connector.</p>
+<p>Copy this zip file to the Seeq Server you wish to deploy it to. Shut down the server and extract the contents of the zip
+file into the <code>plugins/connectors</code> folder within Seeq's <code>data</code> folder. (The data folder is usually
+<code>C:\ProgramData\Seeq\data</code> on Windows and <code>~/.seeq/data</code> on Ubuntu and OSX.) You should end up with one new folder in
+<code>plugins/connectors</code>. For example, if you kept the default name for the connector, you would have a
+<code>plugins/connectors/mycompany-seeq-link-connector-myconnector</code> folder with a jar file inside.</p>
+<p>Re-start Seeq Server and your connector should appear in the list of connections just as it had in your development
+environment.</p>
+<p>Once deployed, log messages you create using the <code>log()</code> method on <code>ConnectorServiceV2</code>
+and <code>DatasourceConnectionServiceV2</code>
+will go to <code>log/jvm-link/jvm-link.log</code> file in the Seeq data folder.</p>
+<h1>C# Development</h1>
+<h2>The Build Environment</h2>
+<p>The C# version of the SDK depends upon Microsoft Visual Studio for building and debugging. This SDK is tested with
+Microsoft Visual Studio 2015.</p>
+<p>The C# SDK also depends on .NET version 4.8. When upgrading .NET, you may need to restart your machine for the new
+version to take effect.</p>
+<p>To begin using the SDK:</p>
+<ol>
+<li>Launch the Windows Command Prompt.</li>
+<li>Change directory to the <code>csharp</code> directory within this SDK.</li>
+<li>At the prompt, execute the <em>environment script</em>: Type <code>environment</code>.</li>
+</ol>
+<p>Throughout this document, we will refer to the <em>build environment</em>, which is simply a command prompt or terminal window
+where you've executed the environment script as described.</p>
+<h2>Verifying your Environment</h2>
+<p>Before doing anything else, we recommend that you build the connector template and ensure that it is fully working with
+your private system.</p>
+<p>From your build environment, execute the <code>build</code> command. If it fails for some (non-obvious) reason, email the output
+(including the error message) to <a href="mailto:support@seeq.com">support@seeq.com</a>.</p>
+<p>Make sure your private Seeq Server is running on this machine.</p>
+<p>From your build environment, execute the <code>ide</code> command. This command will launch Microsoft Visual Studio (VS), which you
+will use for development and debugging.</p>
+<p>Take the following steps to confirm a properly configured development environment:</p>
+<ol>
+<li>Once VS is finished loading, right click on the <code>Seeq.Link.SDK.Debugging.Agent</code> project in <em>Solution Explorer</em> and
+   select <em>Set as Startup Project</em>.</li>
+<li>In the solution configuration dropdown, select 'Debug'. <strong>This step is required to ensure the necessary files are
+   built for debugging.</strong></li>
+<li>Select <em>Build</em> &gt; <em>Build Solution</em> from the main menu.</li>
+<li>Wait for building to finish.</li>
+<li>Confirm that no compile errors occurred.</li>
+<li>Open the <code>EntryPoint.cs</code> file in the <code>Seeq.Link.SDK.Debugging.Agent</code> project.</li>
+<li>If you have configured Seeq to use a different location for the data folder than the default, update the snippet on
+   line 26 with the proper path. <strong>This step is required to ensure that your agent can find the SSL keys to communicate
+   with Seeq Server.</strong></li>
+<li>Set a breakpoint (<em>Debug</em> &gt; <em>Toggle Breakpoint</em>) on the first line of the <code>Main()</code> function.</li>
+<li>Select <em>Debug</em> &gt; <em>Start Debugging</em> to launch the debugger.</li>
+<li>You should hit the breakpoint you set. <strong>This verifies that VS built your project correctly and can launch it in its
+    debugger.</strong></li>
+<li>With execution paused at the breakpoint, open the <code>MyConnector.cs</code> file in the
+    <code>MyCompany.Seeq.Link.Connector.MyConnector</code> and put a breakpoint on the first line of the <code>Initialize()</code> function.
+    Because the connector is loaded dynamically, this breakpoint may appear broken until it is actually hit.</li>
+<li>Click <em>Debug</em> &gt; <em>Continue</em>. You should hit the next breakpoint. <strong>This verifies that the debugging agent can load
+    the template connector correctly.</strong></li>
+<li>Click <em>Debug</em> &gt; <em>Delete All Breakpoints</em> and then <em>Debug</em> &gt; <em>Continue</em>.</li>
+<li>Bring up Seeq Workbench and click on the connections section at the top of the screen. You should
+    see <code>My Connector Type: My First Connection</code> in the list of connections, with 5000 items indexed.</li>
+<li>In Seeq Workbench's <em>Data</em> tab, search for <code>simulated</code>.</li>
+<li>A list of simulated signals should appear in the results. Click on any of the results.</li>
+<li>The signal should be added to the <em>Details</em> pane and a repeating waveform should be shown in the trend. <strong>This
+    verifies that the template connector is able to index its signals and respond to data queries.</strong></li>
+</ol>
+<p>Now you're ready to start development!</p>
+<p>Troubleshooting hint: Within the connector project in the SDK folder, there should be a <em>bin/Debug</em> folder containing
+a <code>.pdb</code> file and a <code>.dll</code> file as a result of building the solution. If these files are not present, it will not be
+possible to debug the connector.</p>
+<h2>Developing your Connector</h2>
+<p>We recommend that you just modify the template connector directly. This shields you from having to recreate all of the
+configuration that is required to correctly build and debug a new project. Visual Studio has excellent
+renaming/refactoring features that make it easy. For example, you can click on any item in VS's <em>Solution Explorer</em>
+and press <em>F2</em> to change it to something appropriate for your company and this particular connector.</p>
+<p>Once you are ready to start developing, just open the <code>MyConnector.cs</code> and <code>MyConnection.cs</code> files in VS and start
+reading through the heavily-annotated source code. The template connector uses a small class called
+<code>DatasourceSimulator</code>. You'll know you've removed all of the template-specific code when you can delete this file from
+the project and still build without errors.</p>
+<p>Any log messages you create using the <code>Log</code> property on <code>ConnectorServiceV2</code> and <code>DatasourceConnectionServiceV2</code> will go
+to the console window and to the <code>csharp/Seeq.Link.SDK.Debugging.Agent/bin/Debug/log/net-debugging-agent.log</code> file.</p>
+<h2>Deploying your Connector</h2>
+<p>When you are ready to deploy your connector to a production environment, execute the <code>package</code> command. A zip file will
+be created in the <code>csharp/packages</code> folder.</p>
+<p>Copy this zip file to the Seeq Server you wish to deploy it to. Shut down the server and extract the contents of the zip
+file into the <code>plugins/connectors</code> folder within Seeq's <code>data</code> folder. (The data folder is usually
+<code>C:\ProgramData\Seeq\data</code>.) You should end up with one new folder in <code>plugins/connectors</code>. For example, if you kept the
+default name for the connector, you would have a
+<code>plugins/connectors/MyCompany.Seeq.Link.Connector.MyConnector</code> folder with DLLs inside.</p>
+<p>Re-start Seeq Server and your connector should appear in the list of connections just as it had in your development
+environment.</p>
+<p>Once deployed, log messages you create using the <code>Log</code> property on <code>ConnectorServiceV2</code> and
+<code>DatasourceConnectionServiceV2</code> will go to <code>log\net-link.log</code> file in the Seeq data folder.</p>
+<h2>CPU Architecture</h2>
+<p>If you use the template connector project, your connector DLL will be compiled using the <code>Any CPU</code> architecture, which
+means it can be loaded by a 64-bit or 32-bit .NET Agent. If you have a dependency on an architecture-specific library
+(most often that means the library is <code>x86</code>) you may have to change the <em>platform</em> of your connector DLL to be <code>x86</code>
+(or <code>x64</code> in rare cases). If you do that, then your connector can only be loaded by a 32-bit .NET Agent, which means it
+will have to be a <em>Remote Agent</em>. Contact Seeq Support for more information.</p>
+</div>
+</body>
+</html>
+    

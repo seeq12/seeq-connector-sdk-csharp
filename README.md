@@ -1,1 +1,0 @@
-# seeq-connector-sdk-csharp

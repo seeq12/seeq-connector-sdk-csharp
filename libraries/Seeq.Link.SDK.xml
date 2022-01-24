@@ -1,0 +1,3236 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Seeq.Link.SDK</name>
+    </assembly>
+    <members>
+        <member name="T:Seeq.Link.SDK.ClassFactory">
+            <summary>
+            Instantiates various interface implementations. Used to facilitate mocking.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.ConfigObject">
+            <summary>
+            This is a necessary base class for all configuration objects. It provides a necessary mechanism
+            to load/save "versioning" information in the config object's serialized (JSON) representation.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.ConfigObjectWrapper">
+             <summary>
+             Provides the ConfigObject and its metadata (needed by ConfigService to decide what configuration to use)
+             </summary>
+            
+        </member>
+        <member name="M:Seeq.Link.SDK.ConfigObjectWrapper.PersistentAndNewerThan(Seeq.Link.SDK.ConfigObjectWrapper)">
+            <summary>
+            Returns true if this ConfigObjectWrapper is not a default configuration and it is newer than the
+            ConfigObjectWrapper sent as parameter.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Configurable`1">
+            <summary>
+            Facilitates a consistent implementation of configuration aspects of a connector or agent.
+            </summary>
+            <typeparam name="TConfig">The class for the top-level configuration object.</typeparam>
+        </member>
+        <member name="M:Seeq.Link.SDK.Configurable`1.Initialize(Seeq.Link.SDK.Interfaces.IConfigService,Seeq.Link.SDK.ConfigObject[])">
+            <summary>
+            Initializes the object with information necessary to load/save configuration objects.
+            </summary>
+            <param name="configService">The config service, as it was passed in by a higher-level coordinator.</param>
+            <param name="supportedConfigObjects">
+            An array of ConfigObject instances that represent the possible object types that can be successfully
+            retrieved from the store. If the persisted object type does not match anything in the list, then the
+            first item in the array is passed back (being effectively a means to have a 'default' config).
+            </param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Configurable`1.SaveConfig">
+            <summary>
+            Saves the current in-memory configuration to the configuration store via the ConfigService.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.BaseConnection">
+             <summary>
+             Facilitates a consistent approach external connection establishment and monitoring. External connections
+             can be connector datasources or the Seeq Server.
+            
+             Once connected, a monitoring thread will periodically call the abstract monitor() function that must be
+             implemented in derived classes.
+            
+             If the monitor function() discovers a dead connection and sets the state to Disconnected, the monitoring
+             thread will attempt reconnection at intervals that exponentially increase (to avoid flooding the log).
+            
+             See <see cref="T:Seeq.Link.SDK.Interfaces.IConnection"/> for more documentation on the interface.
+             </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.BaseConnection.LastException">
+            <summary>
+            The last exception that has occurred on the connection.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.BaseConnection.ConnectionId">
+            <summary>
+            The connection string used to connect to the server.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseConnection.SetState(Seeq.Link.SDK.Interfaces.ConnectionState,System.String)">
+            <summary>
+            Set the current state of the connection. If the new state is Disconnected and automaticallyReconnect is true, an
+            attempt will be made to reconnect within the ReconnectDelay.
+            </summary>
+            <param name="newState">The new state for the connection.</param>
+            <param name="message">A message that indicates the status of the connection.</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseConnection.ConnectionMonitor">
+             <summary>
+             This function runs on a worker thread and facilitates monitoring of a connection for vitality.
+             It calls the monitor() function periodically and if the connection becomes disconnected, this
+             thread will call connect() periodically to try to reestablish a connection.
+            
+             The thread will be shutdown when Disable() is called.
+             </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.BaseConnection.MonitorPeriod">
+            <summary>
+            Time between testing of the connection vitality. Default is 5 seconds.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseConnection.Enable">
+            <summary>
+            Enable connections to the server and attempt to make a connection. This calls the connect method in the derived class.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseConnection.Disable">
+            <summary>
+            Disable connections to the server. This calls the disconnect method in the derived class.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseConnection.Connect">
+            <summary>
+            Connect to the server (implemented by derived classes).
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseConnection.Monitor">
+            <summary>
+            A connector-specific test to ensure the connection is alive (implemented by derived classes).
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseConnection.Disconnect">
+            <summary>
+            Disconnect from the server (implemented by derived classes).
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.BaseConnector`1">
+             <summary>
+             Facilitates a consistent approach to connector implementation, including initialization and
+             message routing.
+            
+             See the <see cref="T:Seeq.Link.SDK.Interfaces.IConnector"/> interface for more documentation.
+             </summary>
+             <typeparam name="TConfig">The class for the top-level configuration object.</typeparam>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseConnector`1.InitializeConnection(Seeq.Link.SDK.Interfaces.IDatasourceConnection)">
+            <summary>
+            Called by a derived class when a new connection object is created. This should be called
+            regardless of whether the connection was actually established.
+            </summary>
+            <param name="connection">The connection to be added to the internal list of connections.</param>
+        </member>
+        <member name="T:Seeq.Link.SDK.BaseDatasourceConnection`1">
+            <summary>
+            Base class to handle connections to remote data sources.
+            </summary>
+            <typeparam name="TConnector">The class of the connector that hosts these connections.</typeparam>
+        </member>
+        <member name="T:Seeq.Link.SDK.BaseDatasourceConnection`1.DatasourceAndCreationInfo">
+            <summary>
+            A pair of info about a datasource and a boolean indicating whether it was just created or was preexisting.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseDatasourceConnection`1.GetOrCreateDatasource(System.Boolean)">
+             <summary>
+             Get information about a datasource with the specified identifier. If the identifier matches an existing
+             datasource, its information will be returned, otherwise a new datasource will be created and returned.
+            
+             If multiple datasources are found, or a single datasource cannot be created or retrieved, returns null.
+             </summary>
+             <param name="storedInSeeq">
+             Whether this datasource's data will be stored in Seeq (true) or a remote datasource (false). If set to
+             true, the datasource will also get default "Signal Location" and "Condition Location" properties,
+             which determine where in Seeq those items are stored. These can be changed after datasource creation.
+             </param>
+             <returns>Information about the datasource, and whether it was newly created</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseDatasourceConnection`1.GetOrCreateDatasource(System.Boolean,System.Boolean)">
+             <summary>
+             Get information about a datasource with the specified identifier. If the identifier matches an existing
+             datasource, its information will be returned, otherwise a new datasource will be created and returned.
+            
+             If multiple datasources are found, or a single datasource cannot be created or retrieved, returns null.
+             </summary>
+             <param name="storedInSeeq">
+             Whether this datasource's data will be stored in Seeq (true) or a remote datasource (false). If set to
+             true, the datasource will also get default "Signal Location" and "Condition Location" properties,
+             which determine where in Seeq those items are stored. These can be changed after datasource creation.
+             </param>
+             <param name="enableCache">
+             Whether this datasource's signal will be cached in Seeq.
+             </param>
+             <returns>Information about the datasource and whether it was newly created</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseDatasourceConnection`1.GetOrCreateDatasource(System.Boolean,System.Boolean,System.Collections.Generic.List{Seeq.Sdk.Model.ScalarPropertyV1})">
+             <summary>
+             Get information about a datasource with the specified identifier. If the identifier matches an existing
+             datasource, its information will be returned, otherwise a new datasource will be created and returned.
+            
+             If multiple datasources are found, or a single datasource cannot be created or retrieved, returns null.
+             </summary>
+             <param name="storedInSeeq">
+             Whether this datasource's data will be stored in Seeq (true) or a remote datasource (false). If set to
+             true, the datasource will also get default "Signal Location" and "Condition Location" properties,
+             which determine where in Seeq those items are stored. These can be changed after datasource creation.
+             </param>
+             <param name="enableCache">Whether this datasource's sample series will be cached in Seeq.</param>
+             <param name="additionalProperties">
+             Additional properties that should be set on the datasource.The 'normal' datasource properties cannot be
+             set with this parameter, only 'custom' properties.
+             </param>
+             <returns>Information about the datasource, and whether it was newly created</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseDatasourceConnection`1.UpdateExistingDatasource(Seeq.Sdk.Model.DatasourceOutputV1,System.Boolean,System.Collections.Generic.List{Seeq.Sdk.Model.ScalarPropertyV1})">
+            <summary>
+            Updates an existing datasource in Seeq by changing its additional properties and storedInSeeq flag
+            </summary>
+            <param name="datasource">the datasource to update</param>
+            <param name="storedInSeeq">
+            Whether this datasource's data will be stored in Seeq (true) or a remote datasource (false). If set to
+            true, the datasource will also get default "Signal Location" and "Condition Location" properties,
+            which determine where in Seeq those items are stored. These can be changed after datasource creation.
+            </param>
+            <param name="additionalProperties">
+            Additional properties that should be set on the datasource. The 'normal' datasource properties cannot be
+            set with this parameter, only 'custom' properties.
+            </param>
+            <returns>
+            the datasource object retrieved from seeq after update or the same datasource object received as
+            parameter if no update was necessary
+            </returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseDatasourceConnection`1.BuildErrorMessage(System.Exception,com.seeq.link.messages.connector.signal.SignalRequestMessage)">
+            <summary>
+            Given data-request-specific information, build an ErrorInfo message.
+            </summary>
+            <param name="e">The exception.</param>
+            <param name="request">The signal request.</param>
+            <returns> An ErrorInfo message.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseDatasourceConnection`1.BuildErrorMessage(System.Exception,com.seeq.link.messages.connector.condition.ConditionRequestMessage)">
+            <summary>
+            Given data-request-specific information, build an ErrorInfo message.
+            </summary>
+            <param name="e">The exception.</param>
+            <param name="request">The condition request.</param>
+            <returns> An ErrorInfo message.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseDatasourceConnection`1.BuildErrorMessage(System.Exception,System.Int64,com.seeq.link.messages.connector.extcalc.ExternalCalculationRequestMessage)">
+            <summary>
+            Given data-request-specific information, build an ErrorInfo message.
+            </summary>
+            <param name="e">The exception.</param>
+            <param name="requestId">The request ID that caused this error.</param>
+            <param name="request">The external calculation request.</param>
+            <returns> An ErrorInfo message.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseDatasourceConnection`1.BuildDataRequestErrorMessage(System.Exception,System.String,System.String,System.Int64,System.Int64)">
+            <summary>
+            Given data-request-specific information, build an ErrorInfo message.
+            </summary>
+            <param name="e">The exception.</param>
+            <param name="requestType">The type of request the error pertains to, e.g. 'signal' or 'condition'.</param>
+            <param name="dataId">The dataId requested.</param>
+            <param name="start">The request start.</param>
+            <param name="end">The request end.</param>
+            <returns> An ErrorInfo message.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseDatasourceConnection`1.BuildErrorMessage(com.seeq.link.messages.ErrorCode,System.Exception,System.String)">
+            <summary>
+            Given an error code, an optional exception, and an additional error message, build an ErrorInfo message.
+            </summary>
+            <param name="errorCode">An error code indicating the general class of the error.</param>
+            <param name="e">The exception.</param>
+            <param name="message">A message to add to the error message.</param>
+            <returns> An ErrorInfo message.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseDatasourceConnection`1.SetSyncStatus(Seeq.Link.SDK.Interfaces.SyncStatus)">
+             <summary>
+             Save the sync status statistics to be sent to Appserver via the agent status API.
+             </summary>
+             <param name="syncStatus">The current sync status for this datasource.</param>
+            
+             <exception cref="T:System.Threading.ThreadInterruptedException">Thrown if indexing is being interrupted, often due to a configuration change</exception>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseDatasourceConnection`1.SendSyncCompleteInfo(System.String,System.String)">
+             <summary>
+             Send "sync complete" information to Appserver.
+             </summary>
+             <param name="datasourceItemId">The datasource item ID representing this connection.</param>
+             <param name="datasourceVersionCheck">Datasource version check string to use for change detection.</param>
+            
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseDatasourceConnection`1.sendSyncToken(System.String,System.String)">
+             <summary>
+             Inform Appserver of the sync token for a sync about to take place. Used to track progress.
+             </summary>
+             <param name="datasourceItemId">The datasource item ID representing this connection.</param>
+             <param name="syncToken">Datasource version check string to use for change detection.</param>
+            
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseDatasourceConnection`1.BatchSync(System.Collections.Generic.IEnumerator{Seeq.Sdk.Model.SignalWithIdInputV1},System.String,System.Collections.Generic.IEnumerator{Seeq.Sdk.Model.AssetInputV1},System.Collections.Generic.IEnumerator{Seeq.Sdk.Model.AssetTreeSingleInputV1},System.Collections.Generic.List{Seeq.Sdk.Model.AssetInputV1},System.Collections.Generic.IEnumerator{Seeq.Sdk.Model.UserGroupWithIdInputV1},System.String,System.Collections.Generic.List{Seeq.Link.SDK.Services.PropertyTransformer.Spec},System.Collections.Generic.List{Seeq.Link.SDK.Services.PropertyTransformer.Spec},System.Boolean)">
+             <summary>
+             Performs a metadata sync in a consistent way for any datasource, using iterators to draw the items
+             from the source system. Using this function is the preferred route to take when writing a connector.
+             Benefits include:
+            
+             - Automatic batch sizing and throttling
+            
+             - Avoids holding large lists / data structures in memory
+            
+             </summary>
+             <param name="signalInputs">An iterator that produces sample series</param>
+             <param name="hostID">The host identifier for the assets</param>
+             <param name="assetInputs">An iterator that produces assets</param>
+             <param name="relationshipInputs">An iterator that produces relationships</param>
+             <param name="rootAssetInputs">A list of root assets (representing the HDA databases themselves)</param>
+             <param name="userGroupInputs">An iterator that produces user groups</param>
+             <param name="newDatasourceVersionCheck">The new datasource version check to use (on success)</param>
+             <param name="sampleSeriesTransforms">A list of transforms to perform on sample series</param>
+             <param name="userGroupsTransforms">A list of transforms to perform on user groups</param>
+             <param name="disableAssetTreeIndexUpdateDuringSync">
+             False if asset tree search index should be kept up to date during the sync, true if it should not.
+             Setting this to true speeds up FULL relationship syncs considerably, but will require rebuilding the
+             asset tree search index after the sync completes. Requesting a datasource cleanup after the sync completes
+             will automatically trigger a rebuild of the asset tree search index, if it is needed.
+             </param>
+             <returns>The new datasource version check</returns>
+             <exception cref="T:System.Threading.ThreadInterruptedException">Thrown if the sync'ing is interrupted from another thread</exception>
+             <exception cref="T:Seeq.Sdk.Client.ApiException">Thrown if an unhandled Seeq API exception is thrown</exception>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseDatasourceConnection`1.BatchSyncSampleSeries(System.Collections.Generic.IEnumerator{Seeq.Sdk.Model.SignalWithIdInputV1},System.String,System.Collections.Generic.List{Seeq.Link.SDK.Services.PropertyTransformer.Spec})">
+            <summary>
+            Divides changed series metadata into batches and writes those batches to the REST API, creating or updating those
+            signals.
+            </summary>
+            <param name="signalInputs">The {@link SignalWithIdInputV1} objects to write to the REST API</param>
+            <param name="newDatasourceVersionCheck">The optional new version check for this datasource, to be applied if sync is successful</param>
+            <param name="signalTransforms">A list of transforms to perform on sample series</param>
+            <returns>The new datasource version check</returns>
+            <exception cref="T:System.Threading.ThreadInterruptedException">Thrown if the sync'ing is interrupted from another thread</exception>
+            <exception cref="T:Seeq.Sdk.Client.ApiException">Thrown if an unhandled Seeq API exception is thrown</exception>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseDatasourceConnection`1.CancelRequest(System.String)">
+             <summary>
+             Cancel a running request. We use this to prevent a previous long-running clean-up request from overlapping with a
+             subsequent metadata sync.
+            
+             Note: this shouldn't be necessary during normal operation. This is to guard from inconsistent data if an agent is
+             restarted while the clean-up process continues to run on Appserver.
+             </summary>
+             <param name="requestId">The unique identifier that was provided when creating the request</param>
+             <exception cref="T:Seeq.Sdk.Client.ApiException">Thrown if request cannot be canceled</exception>
+        </member>
+        <member name="M:Seeq.Link.SDK.BaseDatasourceConnection`1.CleanUpStaleItems(System.String,System.String,System.Collections.Generic.List{System.String},System.String,System.String,System.String,System.String,System.String)">
+             <summary>
+             Call the Seeq Appserver to clean up (archive) any stale items in this datasource.
+             </summary>
+             <param name="datasourceItemId">The datasource item ID to clean up stale items on</param>
+             <param name="syncToken">The sync token that specifies which items to preserve</param>
+             <param name="itemTypesFilter">The list of item types on which cleanup will be done.
+             When no filter is specified, all types of items will be included in the cleanup process.</param>
+             <param name="datasourceItemDataIdRegexFilter">The datasource item DataId Regex filter.
+             When set, only items having DataId matching the RegEx will be included in the cleanup process.</param>
+             <param name="datasourceItemDataIdExcludeRegexFilter">The datasource item DataId exclude Regex filter.
+             When set, the items having DataID matching the RegEx will be excluded from cleanup process.</param>
+             <param name="datasourceItemNameRegexFilter">The datasource item name Regex filter. When set, only
+             items having the name matching the RegEx will be included in the cleanup process.</param>
+             <param name="datasourceItemNameExcludeRegexFilter">The datasource item name exclude Regex filter.
+             When set, the items having the name matching the RegEx will be excluded from cleanup process.</param>
+             <param name="requestId">A requestID to use for cancellation purposes</param>
+            
+             <exception cref="T:System.Threading.ThreadInterruptedException">Thrown if the sync'ing is interrupted from another thread</exception>
+             <exception cref="T:Seeq.Sdk.Client.ApiException">Thrown if an unhandled Seeq API exception is thrown</exception>
+        </member>
+        <member name="T:Seeq.Link.SDK.DatasourceConnectionV2Host">
+            <summary>
+            Hosts an <see cref="T:Seeq.Link.SDK.Interfaces.IDatasourceConnectionV2"/> connection and acts as a bridge to the older <see cref="T:Seeq.Link.SDK.Interfaces.IDatasourceConnection"/>
+            interface via the <see cref="T:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2"/> interface.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.DatasourceConnectionV2Host.getDatasourceAndCreationInfo">
+            <summary>
+            Returns a DatasourceAndCreationInfo object for the current datasource.
+            </summary>
+            <returns>A DatasourceAndCreationInfo object for the current datasource</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.DatasourceConnectionV2Host.ensureDatasourceExists">
+            <summary>
+            If a local copy hasn't been cached, gets or creates this connection's datasource.
+            </summary>
+            <returns>True if the datasource was newly created, false if it already existed</returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.ConnectorV2Host">
+            <summary>
+            Hosts an IConnectorV2-based connector and acts as a bridge to the older IConnector
+            interface via the IConnectorServiceV2 interface.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Export.ExportConnectionConfigV1">
+            <summary>
+            Used by any connection that supports export of Seeq calculated data to the datasource.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.ExportConnectionConfigV1.GetDirectiveRefreshFrequency">
+            <summary>
+            Returns a TimeSpan representing the DirectiveRefreshFrequency time interval.
+            </summary>
+            <exception cref="T:System.FormatException">If the DirectiveRefreshFrequency could not be parsed as a time interval</exception>
+            <returns>A TimeSpan representing the DirectiveRefreshFrequency time interval</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.ExportConnectionConfigV1.IsCreationApproved(System.String)">
+            <summary>
+            True if AutoCreate is true and approval is either granted or not required.
+            </summary>
+            <param name="name">Name of the exported signal</param>
+            <returns>true if creation is approved</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.ExportConnectionConfigV1.IsUpdateApproved(System.String)">
+            <summary>
+            True if AutoUpdate is true and approval is either granted or not required.
+            </summary>
+            <param name="name">Name of the exported signal</param>
+            <returns>true if update is approved</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.ExportConnectionConfigV1.AddNewOrChangedToConfig(System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Adds a signal to the NewOrChanged section of the configuration, if it doesn't already exist.
+            </summary>
+            <param name="name">Name of the exported signal</param>
+            <param name="properties">The properties for the exported signal</param>
+            <returns>true if there were any actual changes to the config, false if everything remained identical</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.ExportConnectionConfigV1.RemoveNewOrChangedFromConfig(System.String)">
+            <summary>
+            Removes a signal from the NewOrChanged section of the configuration, if it exists.
+            </summary>
+            <param name="name">Name of the exported signal</param>
+            <returns>true if the signal existed and was removed, otherwise false</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.ExportConnectionConfigV1.RemoveNewOrChangedFromConfigIfNotPresent(System.Collections.Generic.HashSet{System.String})">
+            <summary>
+            Removes any signals present in the config if they are not part of the supplied set.
+            </summary>
+            <param name="names">A set of names to keep</param>
+            <returns>true if any signal existed and was removed, otherwise false</returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Export.ExportDirective">
+            <summary>
+            Specifies the parameters for the exporting an item, being able to serialize to/de-serialize from
+            a human readable string of the form [EXPORT TO "connection" AS "name"]
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.ExportDirective.GetLatencyOrDefault(System.TimeSpan)">
+            <summary>
+            Returns the latency, which is how often the item is exported. It is specified in the
+            EVERY "5min" part of the directive.
+            </summary>
+            <param name="defaultLatency">A TimeSpan that provides the latency to use if not configured
+            in the ExportDirective</param>
+            <returns>A TimeSpan representing the specified latency, or the provided default</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.ExportDirective.GetBackfillDateOrDefault">
+            <summary>
+            Returns the backfill date, which is the date to which data is written when the CLEAN
+            clause is supplied or data is being written for the first time.
+            </summary>
+            <returns>
+            A TimeInstant representing the backfill date, or the default of "5 hours before now".
+            </returns>
+        </member>
+        <member name="P:Seeq.Link.SDK.Export.ExportDirective.Syntax">
+            <summary>
+            Returns a string describing the syntax of the export directive.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.ExportDirective.Parse(System.String,System.TimeSpan)">
+            <summary>
+            Parses a (serialized) string representation of the export directive and returns a
+            populated ExportDirective object.
+            </summary>
+            <param name="input">An export directive in string form. See Syntax property for format.</param>
+            <param name="minimumLatency">Minimum latency from export configuration</param>
+            <returns>A populated Export Directive.</returns>
+            <exception cref="T:System.ArgumentException">When the string could not be parsed as an export directive.</exception>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.ExportDirective.GetExtendedDescriptor(System.String,Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2)">
+            <summary>
+            Returns a helpful "descriptor" that can be optionally written to the target datasource
+            that refers to the name and workbook within Seeq of the exported item. This is useful
+            for admins to be able to track down an item and potentially rename it or adjust its
+            directive in other ways.
+            </summary>
+            <param name="itemID">The Seeq ID of the item</param>
+            <param name="connectionService">The IDatasourceConnectionServiceV2 for the connection</param>
+            <returns>Descriptor to write to target datasource</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.ExportDirective.ToString">
+            <summary>
+            Serializes the export directive to its string representation.
+            </summary>
+            <returns>Export directive as a string</returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Export.ExportDirectives">
+            <summary>
+            Provides a Read function to enumerate all export directives on items in Seeq, and
+            a Write function to overwrite the export directive for a particular item.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.ExportDirectives.Read(System.String,Seeq.Sdk.Api.IItemsApi,System.TimeSpan)">
+            <summary>
+            Reads all export directives for all items. The "Everyone" group must be given
+            read access to the items in order for them to be discovered, since by default
+            they will not be accessible to the Agent API Key user.
+            </summary>
+            <param name="connectionName">
+            The name of the connection for which to filter the export directives
+            </param>
+            <param name="itemsApi">The ItemsApi to use to retrieve the directives.</param>
+            <param name="minimumLatency">Minimum latency from export configuration</param>
+            <returns>
+            An IEnumerable iterator of ExportDirectives. Note that this is lazy iterator,
+            and the ItemsApi won't be called until the first item is accessed.
+            </returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Export.ExportJob">
+            <summary>
+            An internal data structure that captures the state around a particular
+            export job. There is a one-to-one mapping between jobs and signals to
+            be exported. A job lives until the data is written to the datasource,
+            then a new job is spawned according to the latency on the directive.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.ExportJob.#ctor(Seeq.Link.SDK.Export.ExportDirective)">
+            <summary>
+            Creates an export job for the supplied directive.
+            </summary>
+            <param name="directive">The export directive for this job</param>
+        </member>
+        <member name="P:Seeq.Link.SDK.Export.ExportJob.Directive">
+            <summary>
+            The export directive for this job.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Export.ExportJob.Task">
+            <summary>
+            The asynchronous Task associated with doing this job.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Export.ExportJob.CancellationTokenSource">
+            <summary>
+            The cancellation token for this job. This will be used if the
+            ExportOrchestrator is destroyed and there are outstanding jobs.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Export.ExportJob.Tardiness">
+            <summary>
+            The tardiness of a job, which is the amount of time between when a
+            job should have run (according to the export directive latency) and
+            when it actually did.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Export.ExportJob.WriteCount">
+            <summary>
+            The number of samples/capsules written to the datasource by the job.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Export.ExportJob.WriteDuration">
+            <summary>
+            The timen taken to write the samples/capsules (see WriteCount) to
+            the datasource. Does not include the time taken to read the data
+            from Seeq.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Export.ExportOrchestrator">
+            <summary>
+            Facilitates all aspects of exporting data to the datasource.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.ExportOrchestrator.#ctor(System.String,Seeq.Link.SDK.Export.IExportSamples,Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2,Seeq.Link.SDK.Export.ExportConnectionConfigV1,System.Int32)">
+            <summary>
+            Instantiates a new ExportOrchestrator. Does not initialize it -- call Initialize() after construction.
+            </summary>
+            <param name="name">The name of the exporter, usually just Datasource Name</param>
+            <param name="exportSamplesInterface">The <see cref="T:Seeq.Link.SDK.Export.IExportSamples"/> interface as implemented by the connection</param>
+            <param name="connectionService">The <see cref="T:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2"/> for the connection</param>
+            <param name="config">The <see cref="T:Seeq.Link.SDK.Export.ExportConnectionConfigV1"/> configuration for the export activity</param>
+            <param name="putSamplesPageSize">The number of samples to supply to the datasource per write call</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.ExportOrchestrator.Initialize">
+            <summary>
+            Kicks off the main exporting loop that performs the exporting.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.ExportOrchestrator.Destroy">
+            <summary>
+            Cancels all jobs and shuts down the main exporting loop.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Export.ExportStatus">
+            <summary>
+            Represents the status of the export, which is serialized to properties for the item
+            in Seeq (for example, "Export - Status" and "Export - Message").
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Export.ExportStatus.Status">
+            <summary>
+            Either SUCCESS or FAILED based on whether the last attempt to export was successful.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Export.ExportStatus.Message">
+            <summary>
+            A helpful message, especially for a failure, for the user to understand the status of
+            export activity.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Export.ExportStatus.Cursor">
+            <summary>
+            The timestamp of the latest sample exported to the datasource.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Export.ExportStatus.Last_Write_Time">
+            <summary>
+            The wall-clock time of the most recent export (successful or not).
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Export.ExportStatus.Toll">
+            <summary>
+            A measure of how "expensive" the export operation is from the standpoint of retrieving
+            the data and performing the calculation in Seeq. The units of this toll are "seconds per
+            day", meaning that it takes so many seconds to do the calculation per day of time range.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.ExportStatus.Read(Seeq.Sdk.Api.IItemsApi,System.String)">
+            <summary>
+            Reads the export status from an item's properties, if they exist.
+            </summary>
+            <param name="itemsApi">The ItemsApi interface to use to communicate with Seeq Server</param>
+            <param name="itemID">The ID of the item from which to read</param>
+            <returns></returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.ExportStatus.Write(Seeq.Sdk.Api.IItemsApi,System.String)">
+            <summary>
+            Writes the export status to an item's properties.
+            </summary>
+            <param name="itemsApi">The ItemsApi interface to use to communicate with Seeq Server</param>
+            <param name="itemID">The ID of the item from which to read</param>
+        </member>
+        <member name="T:Seeq.Link.SDK.Export.ExportTaskScheduler">
+            <summary>
+            Wraps System.Threading.Tasks.Schedulers.QueuedTaskScheduled from ParallelExtensionExtras
+            to have three named queues (fast, normal, slow).
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Export.IExportSamples">
+             <summary>
+             This interface defines the functions that must be implemented by the class that facilitates
+             exporting of signal data from Seeq to the datasource.
+             </summary>
+             <remarks>
+             If your connector can write signal data to the datasource, you can implement this interface
+             and then call <see cref="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.InitializeExport(Seeq.Link.SDK.Export.IExportSamples,Seeq.Link.SDK.Export.ExportConnectionConfigV1)"/>
+             passing in the connection and an <see cref="T:Seeq.Link.SDK.Export.ExportConnectionConfigV1"/> object, which is usually
+             found on the connection's configuration object as the "Export" property.
+            
+             The connector should honor all of the configuration on <see cref="T:Seeq.Link.SDK.Export.ExportConnectionConfigV1"/>
+             including AutoCreate, AutoUpdate, and RequireApproval. Use the
+             <see cref="M:Seeq.Link.SDK.Export.ExportConnectionConfigV1.AddNewOrChangedToConfig(System.String,System.Collections.Generic.Dictionary{System.String,System.Object})"/>,
+             <see cref="M:Seeq.Link.SDK.Export.ExportConnectionConfigV1.IsCreationApproved(System.String)"/>,
+             <see cref="M:Seeq.Link.SDK.Export.ExportConnectionConfigV1.IsUpdateApproved(System.String)"/>, and
+             <see cref="M:Seeq.Link.SDK.Export.ExportConnectionConfigV1.RemoveNewOrChangedFromConfig(System.String)"/> functions
+             appropriately.
+             </remarks>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.IExportSamples.PutSamples(Seeq.Link.SDK.Export.PutSamplesParameters)">
+            <summary>
+            Called by the datasource connection host when a signal should be written to. The
+            <see cref="T:Seeq.Link.SDK.Export.PutSamplesParameters"/> object contains all of the necessary information for
+            both the signal metadata and the time series data as well. The connector is expected
+            to create the signal if it doesn't exist (and it has been authorized in the Export
+            config) and write the samples.
+            </summary>
+            <param name="parameters">
+            The parameters for the signal and its data. See <see cref="T:Seeq.Link.SDK.Export.PutSamplesParameters"/> for
+            more information.
+            </param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.IExportSamples.GetLatestAllowedWriteTime(System.String)">
+            <summary>
+            Some historians, like certain versions of OSIsoft PI, don't like it if you try to
+            write data past a certain time. As an example, for OSIsoft PI, this function should
+            return PIServer.ServerTime.
+            </summary>
+            <param name="signalName">The name of the signal for which a write operation is pending</param>
+            <returns>The latest time for which signal data can be written.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Export.IExportSamples.NotifyAddedOrChanged">
+            <summary>
+            Called by the datasource connection host when a signal definition has been added or changed.
+            Typically, the connector will handle this by calling SaveConfig() and then may choose
+            to perform an incremental index so that Seeq Server picks up the changes from the
+            historian.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Export.PutSamplesParameters">
+            <summary>
+            A rough complement of <see cref="T:Seeq.Link.SDK.Interfaces.GetSamplesParameters"/>, this class supplies the
+            arguments for the <see cref="M:Seeq.Link.SDK.Export.IExportSamples.PutSamples(Seeq.Link.SDK.Export.PutSamplesParameters)"/> method.
+            A class is used here so that the arguments can change slightly without breaking
+            compatibility.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Export.PutSamplesParameters.Name">
+            <summary>
+            The name of the destination signal/tag/point
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Export.PutSamplesParameters.ID">
+            <summary>
+            The Seeq ID of the calculated item being exported
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Export.PutSamplesParameters.UOM">
+            <summary>
+            The units of measure of the calculated item
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Export.PutSamplesParameters.Step">
+            <summary>
+            true if the calculated item is step interpolated, otherwise false
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Export.PutSamplesParameters.StartTime">
+            <summary>
+            The left (earliest) time boundary for the write operation. Note that this is not
+            necessarily the left-most sample's time -- rather this is the "left-hand" side of
+            the time range covered by the write operation. This is important for responding to
+            the CLEAN clause, as you must know how far back to erase data.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Export.PutSamplesParameters.EndTime">
+            <summary>
+            The right (latest) time boundary for the write operation. Note that this is not
+            necessarily the right-most sample's time -- rather this is the "right-hand" side of
+            the time range covered by the write operation.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Export.PutSamplesParameters.Samples">
+            <summary>
+            An enumeration of the samples to write.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.AuthParameters">
+            <summary>
+            The parameters used in the authorization request
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.AuthResult">
+            <summary>
+            The authentication result as communicated back by the connector
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.ExternalCalcScriptInputMode">
+            <summary>Enumeration of possible computation input modes</summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.ExternalCalcScriptInputMode.KEYWISE">
+            <summary>Indicates that the script expects samples for a single key for each computation</summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.ExternalCalcScriptInputMode.WINDOW">
+            <summary>Indicates that the script expects a window of samples for each computation</summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.GetCapsulesParameters.DataId">
+            <summary>
+            A connector-defined String that identifies the condition to retrieve data for.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.GetCapsulesParameters.StartTime">
+            <summary>
+            The start time for the requested data. Return capsules that start at or after this time.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.GetCapsulesParameters.EndTime">
+            <summary>
+            The end time for the requested data. Return capsules that start at or before this time.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.GetCapsulesParameters.CapsuleLimit">
+            <summary>
+            The maximum capsules that can be returned as part of this request. Note that the connection need not
+            enforce this limit, as no more capsules than the limit will be read from the stream that is
+            returned from this method. This limit is provided for informational purposes to enable optimization
+            where possible.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.GetCapsulesParameters.MaximumDuration">
+            <summary>
+            The maximum duration of capsules in the series in nanoseconds.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.GetCapsulesParameters.IsLastCertainKeyRequested">
+            <summary>
+            If true, you can specify a time instant to SetLastCertainKey to indicate to Seeq that any conditions that end after a
+            time instant are uncertain. If false, you cannot make such a method call (and should not try to calculate a time)
+            because Seeq will not use the value.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.GetCapsulesParameters.SetLastCertainKey(Seeq.Link.SDK.Utilities.TimeInstant)">
+             <summary>
+             If IsLastCertainKeyRequested is true, you can (and should) invoke this method to indicate to Seeq that any capsules
+             that start after a time instant are uncertain. If IsLastCertainKeyRequested is true, this method must be invoked at
+             least once or all capsules returned will appear uncertain in Seeq.
+            
+             If all capsules are certain and new capsules always start after existing capsules, a good value for the the last
+             certain key is the start of the most recent capsule in the condition. (If new capsules start at or after
+             existing capsules, then decrement the key (one nanosecond earlier). In general, new capsules should always start
+             after the last certain key.)
+            
+             If some capsules are uncertain, but new capsules come in by order of their starts, a good value for the last
+             certain key is the start of the earliest uncertain capsule, decremented (i.e. one nanosecond earlier).
+            
+             If new capsules are not added in order of their start, it is recommended to use a last certain key far enough
+             in the past that no new capsules will start before that key. This requires more knowledge of the capsules'
+             meaning and should be a last resort, as it will lead to the condition and derived data appearing less certain
+             in Seeq.
+            
+             You can invoke this method anytime after GetCapsules() is entered, and you may invoke it multiple times. If you do,
+             the last invocation takes precedence. If you supply null for the key, it will clear any key set by a previous call.
+             </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.GetSamplesParameters.DataId">
+            <summary>
+            A connector-defined string that identifies the signal to retrieve data for.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.GetSamplesParameters.StartTime">
+            <summary>
+            The start time for the requested data.
+            Note: This function must return "boundary values" as well, which are the nearest values immediately
+            outside the requested interval. If your datasource does not return such "boundary values" efficiently,
+            use the <see cref="P:Seeq.Link.SDK.Interfaces.GetSamplesParameters.ExpandedStartTime"/> field for your datasource query.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.GetSamplesParameters.ExpandedStartTime">
+            <summary>
+            The start time for the requested data minus the "maximum interpolation" for the signal. This value
+            represents the earliest possible time that a sample may be relevant for a given request. This is
+            useful when the datasource does not have a facility for efficiently returning a sample that is
+            "on or before" the start time. You can just use the ExpandedStartTime/ExpandedEndTime fields instead
+            and return all the samples within the expanded range. Seeq Server will ignore the values it doesn't
+            need.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.GetSamplesParameters.EndTime">
+            <summary>
+            The end time for the requested data.
+            Note: This function must return "boundary values" as well, which are the nearest values immediately outside the
+            requested interval.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.GetSamplesParameters.ExpandedEndTime">
+            <summary>
+            The end time for the requested data plus the "maximum interpolation" for the signal. This value
+            represents the latest possible time that a sample may be relevant for a given request. This is
+            useful when the datasource does not have a facility for efficiently returning a sample that is
+            "on or after" the end time. You can just use the ExpandedStartTime/ExpandedEndTime fields instead
+            and return all the samples within the expanded range. Seeq Server will ignore the values it doesn't
+            need.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.GetSamplesParameters.SampleLimit">
+            <summary>
+            The maximum samples that can be returned as part of this request. Note that the connection need not enforce this limit,
+            as no more samples than the limit will be read from the sample stream that is returned from this method. This limit
+            is provided for informational purposes to enable optimization where possible.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.GetSamplesParameters.IsLastCertainKeyRequested">
+            <summary>
+            If true, you can specify a time instant to SetLastCertainKey to indicate to Seeq that any samples after a time instant
+            are uncertain. If false, you cannot make such a method call (and should not try to calculate a time) because Seeq will
+            not use the value.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.GetSamplesParameters.MaxInterpolation">
+            <summary>
+            Return the maximum interpolation for the requested signal in nanoseconds.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.GetSamplesParameters.SetLastCertainKey(Seeq.Link.SDK.Utilities.TimeInstant)">
+             <summary>
+             If IsLastCertainKeyRequested is true, you can invoke this method to indicate to Seeq that any samples after a time
+             instant are uncertain. There does not need to be a sample present at the key specified; for instance, if a historian
+             guarantees that all data is recorded within three hours, and the most recent sample is two weeks ago, this value may
+             be (now - three hours). Any samples after this key will be treated as uncertain by Seeq, and any samples before or
+             at the key will be assumed to be certain.
+            
+             If this method is not invoked, Seeq will assume that all samples returned are certain, and that no new
+             samples will change or appear at or before the latest sample key seen. This inference carries no performance
+             penalty, so for a datasource where no historical changes are expected, not invoking this method is a
+             reasonable default.
+            
+             If you supply null for the key, it will clear any key set by a previous call.
+            
+             You can invoke this method anytime after GetSamples() is entered, and you may invoke it multiple times. If you do,
+             the last invocation takes precedence.
+             </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IAuthDatasourceConnection">
+            <summary>
+            Implemented by connections that offers auth services
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IAuthDatasourceConnection.AuthRequest(Seeq.Link.SDK.Interfaces.AuthParameters)">
+            <summary>
+            Makes an auth request to the external system and gives back to Seeq the authentication result
+            </summary>
+            <param name="authParameters">the authentication parameters</param>
+            <returns>the authentication result as given by the external authentication system</returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IConcurrentRequestsHandler">
+            <summary>
+            Interface for concurrent requests handler used to limit the maximum requests which can run in parallel.
+            Depending on usage, we could limit the number of concurrent requests per connection or per connector.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConcurrentRequestsHandler.RunWhenPermitted(System.Action,Seeq.Link.SDK.Utilities.ThreadCollection,System.Int64,System.Int64,System.Threading.ManualResetEvent)">
+            <summary>
+            Ensures that only a specific number of requests will be executed in parallel.
+            </summary>
+            <param name="request">Concurrent task to be executed</param>
+            <param name="threadCollection">Thread collection used to spawn a new thread for the request</param>
+            <param name="timeoutMillis">Amount of time to wait for request completion</param>
+            <param name="requestId">Request identifier</param>
+            <param name="requestThreadStartedEvent">Manual reset event which will be set after the thread of the request is started.
+            The thread may be waiting for permission to run its job, but we are sure the thread is started when the event is set.</param>
+            <returns>the thread of the executed request</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConcurrentRequestsHandler.GetMaxConcurrentRequests">
+            <returns>the maximum number of concurrent requests.When this limit is exceeded, any call of
+            "RunWhenPermitted" will block the execution of the request until an execution slot is available.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConcurrentRequestsHandler.GetRegisteredRequestsCount">
+            <returns>the number of registered requests. May be different than the number of requests currently executed</returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IConcurrentRequestsHandlerProvider">
+            <summary>
+             Provides a IConcurrentRequestsHandler which is used to limit the number of concurrent requests.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConcurrentRequestsHandlerProvider.GetConcurrentRequestsHandler">
+            <returns>the ConcurrentRequestsHandler</returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.INonSchedulableIndexingConnection">
+            <summary>
+            This interface is used as a marker to express that for an Indexing Connection indexing cannot be scheduled or
+            requested from UI.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IRemoteConfigChangeListener">
+            <summary>
+            Interface definition for a callback to be invoked when an agent/connector configuration under watch is changed.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IRemoteConfigObjectProvider">
+            <summary>
+            Used to retrieve/persist remote configuration.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IRemoteConfigObjectProvider.Initialize(Seeq.Link.SDK.Interfaces.ISeeqApiProvider,System.String)">
+            <summary>
+            Initializes the provider with a seeq api provider to persist config objects to.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IRemoteConfigObjectProvider.RegisterChangeCallback(System.String,System.Action{System.String})">
+            <summary>
+            Registers a callback for when the configuration has changed.
+            </summary>
+            <param name="name">Name of the configuration object you're interested in.</param>
+            <param name="callback">Callback function that takes the name as its only parameter.</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IRemoteConfigObjectProvider.UnregisterChangeCallback(System.String)">
+            <summary>
+            Unregisters a callback previously registered.
+            </summary>
+            <param name="name">Name of the configuration object you're interested in.</param>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.ExternalCalcSignalDataType">
+            <summary>Enumeration of possible signals data types</summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.ExternalCalcSignalDataType.NUMERIC">
+            <summary>Indicates that values of signal samples are numeric</summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.ExternalCalcSignalDataType.STRING">
+            <summary>Indicates that values of signal samples are of type string</summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IAgentService">
+            <summary>
+            This is the connector's "catch all" interface for interacting with the agent, and includes
+            facilities for communicating with the Seeq Server (via the Agent).
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IAgentService.IsSeeqServerConnected">
+            <summary>
+            Returns true if a full connection to Seeq Server has been established.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IAgentService.ConfigService">
+            <summary>
+            The service used to load/save configuration and retrieve global arguments.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IAgentService.ApiProvider">
+            <summary>
+            Provides instances of API objects.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IAgentService.IndexingApiProvider">
+            <summary>
+            Provides instances of API objects that are used during indexing.
+            Indexing Api Provider has a different retryTimeout than the default Api Provider. Retry timeout of
+            Indexing Api Provider can be configured in the Agent configuration
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IAgentService.DisplayName">
+            <summary>
+            The display name of the Agent.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IAgentService.DataFolder">
+            <summary>
+            The path of the data folder for configuration, logs, and Seeq data
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IAgentService.RemoteAgent">
+            <summary>
+            True if the agent is remote, false if it is local to the Seeq Server
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IAgentService.SeeqServerURL">
+            <summary>
+            External URL of the Seeq Server to which this agent is connected. Note that this URL is the "external" URL
+            that is accessed by users. It should not be used to programmatically create connections to the Seeq Server
+            because the agent may not be able to resolve the external hostname. Use the ApiProvider members of this
+            interface to obtain Seeq SDK interfaces configured with the correct "private" URL(if applicable).
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IAgentService.CreateBatchSizeHelper">
+            <summary>
+            Instantiates a new BatchSizeHelper object with default values.
+            </summary>
+            <remarks>
+            This exists for mocking purposes.
+            </remarks>
+            <returns>New BatchSizeHelper object.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IAgentService.CreateBatchSizeHelper(System.Int32,System.TimeSpan)">
+            <summary>
+            Instantiates a new BatchSizeHelper object.
+            </summary>
+            <remarks>
+            This exists for mocking purposes.
+            </remarks>
+            <param name="initialSize">The initial value for the recommended batch size.</param>
+            <param name="maximumDuration">The maximum duration for processing that the caller wants a single batch to take.</param>
+            <returns>New BatchSizeHelper object.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IAgentService.SendMessage(Seeq.Link.SDK.Interfaces.IDatasourceConnection,com.seeq.link.messages.agent.DataDocument)">
+            <summary>
+            As part of the <see cref="T:Seeq.Link.SDK.Interfaces.IAgentService"/> interface, this function allows Connections to send data to Seeq Server
+            by wrapping DataDocuments in an AgentMessage.
+            </summary>
+            <param name="datasourceConnection">The connection that is sending the message.</param>
+            <param name="dataDocument">The data of the message to be sent.</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IAgentService.SendAgentInfoToServer">
+            <summary>
+            Update the Seeq Server with status information. This happens automatically on a regular basis and should only
+            be called when it's desirable for the Seeq Server to get the update immediately.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IAgentService.RequestRestart">
+            <summary>
+            Requests a restart of the Agent. This should be used only as a last resort for bugs in the
+            third-party datasource libraries that cannot otherwise be handled by more surgical reset logic
+            that is connection-specific. Since this command will restart the Agent itself, all existing
+            requests across all connectors hosted by the Agent will be unceremoniously aborted and all
+            connections dropped, with a short outage as the Agent is restarted by the Seeq "Supervisor"
+            process.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IAgentService.RequestIndex(Seeq.Link.SDK.Interfaces.IDatasourceConnection)">
+            <summary>
+            Requests a FULL re-indexing of the given Connection.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IAgentService.RequestIndex(Seeq.Link.SDK.Interfaces.IDatasourceConnection,Seeq.Link.SDK.Interfaces.SyncMode)">
+            <summary>
+            Requests a re-indexing of the given Connection.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IAgentService.MarkConnectionsAsReinitialized(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Marks the connections as reinitialized when sending the agent status
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IAgentService.ExportTaskScheduler">
+            <summary>
+            The TaskScheduler object that is used for all export jobs. This is shared at the agent level
+            so that export jobs across all connectors and connections are routed through a single
+            scheduler and the admin has complete control over how much load this agent puts on the Seeq
+            Server due to export activity.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IConfigObjectProvider">
+            <summary>
+            Provides methods to load and save configuration objects. This interface is implemented by a particular
+            type of datastore. For example, one may be a file-based object provider and one may be an AppServer-based
+            object provider.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConfigObjectProvider.LoadConfigObject(System.String,Seeq.Link.SDK.ConfigObject[])">
+            <summary>
+            Loads a configuration object from the config data store  and retrieves its metadata. This function requires an
+            array of config objects to use as a means of discovering what object type is encoded in the store.
+            </summary>
+            <param name="name">The name of configuration store, which will normally be the connector name.</param>
+            <param name="supportedConfigObjects">
+            An array of ConfigObject instances that represent the possible object types that can be successfully
+            retrieved from the store. If the persisted object type does not match anything in the list, then the
+            first item in the array is passed back (being effectively a means to have a 'default' config).
+            </param>
+            <returns>The configuration object, which must be cast to a ConfigObject-derived class wrapped into a
+            ConfigObjectWrapper together with its metadata.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConfigObjectProvider.SaveConfigObject(System.String,System.Object)">
+            <summary>
+            Saves a configuration object to the config data store.
+            The config object's type will be encoded in 'Version' field in the data store.
+            </summary>
+            <param name="name">The name of configuration store, which will normally be the connector name.</param>
+            <param name="configObject">The configuration object to serialize to the store.</param>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IConfigService">
+             <summary>
+             Provides methods to load and save configuration objects. The location of the data store is abstracted from the caller
+             at this level: Behind the scenes, the ConfigService may be retrieving configuration from AppServer and/or from
+             the local file system using <see cref="T:Seeq.Link.SDK.Interfaces.IConfigObjectProvider"/>. But that is not exposed to the agents/connectors.
+            
+             This is the interface that agents/connectors will use to retrieve configuration data.
+             </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConfigService.Initialize(Seeq.Link.SDK.Interfaces.IFileConfigObjectProvider,Seeq.Link.SDK.Interfaces.IRemoteConfigObjectProvider)">
+            <summary>
+            Initializes the service with its IFileConfigObjectProvider (used to retrieve configuration from disk)
+            and its IRemoteConfigObjectProvider (used to retrieve the remote configuration).
+            </summary>
+            <param name="fileConfigObjectProvider">Interface used to retrieve configuration from disk.</param>
+            <param name="remoteConfigObjectProvider">Interface used to retrieve remote configuration.</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConfigService.LoadConfigObject(System.String,Seeq.Link.SDK.ConfigObject[])">
+            <summary>
+            Loads a configuration object from the config data store. This function requires an array of config
+            objects to use as a means of discovering what object type is encoded in the store.
+            </summary>
+            <param name="name">The name of configuration store, which will normally be the connector name.</param>
+            <param name="supportedConfigObjects">
+            An array of ConfigObject instances that represent the possible object types that can be successfully
+            retrieved from the store. If the persisted object type does not match anything in the list, then the
+            first item in the array is passed back (being effectively a means to have a 'default' config).
+            </param>
+            <returns>The configuration object, which must be cast to a ConfigObject-derived class.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConfigService.SaveConfigObject(System.String,System.Object)">
+            <summary>
+            Saves a configuration object to the config data store.
+            The config object's type will be encoded in 'Version' field in the data store.
+            </summary>
+            <param name="name">The name of configuration store, which will normally be the connector name.</param>
+            <param name="configObject">The configuration object to serialize to the store.</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConfigService.GetGlobalArgument(System.String)">
+            <summary>
+            Retrieves an argument that was passed in on the process's command line. These can be used
+            to override saved configuration data, usually for testing purposes.
+            </summary>
+            <param name="argumentName">Name of the command line argument to retrieve.</param>
+            <returns>Value of the command line argument.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConfigService.RegisterChangeCallback(System.String,System.Action{System.String})">
+            <summary>
+            Registers a callback for when the configuration has changed.
+            </summary>
+            <param name="name">Name of the configuration object you're interested in.</param>
+            <param name="callback">Callback function that takes the name as its only parameter.</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConfigService.UnregisterChangeCallback(System.String)">
+            <summary>
+            Unregisters a callback previously registered.
+            </summary>
+            <param name="name">Name of the configuration object you're interested in.</param>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.ConnectionStateChangedHandler">
+            <summary>
+            Delegate for handling connection state changed events.
+            </summary>
+            <param name="sender">The connection object whose state is changing.</param>
+            <param name="state">The new state of the connection.</param>
+            <param name="message">A summary of the connection status, including any connection failure reason..</param>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.ConnectionState">
+            <summary>
+            The set of possible connection states to an external entity.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.ConnectionState.DISABLED">
+            <summary>
+            The connector will not attempt to contact the external entity.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.ConnectionState.CONNECTING">
+            <summary>
+            The connector has attempted to connect with the external entity,
+            but has not yet been successful.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.ConnectionState.CONNECTED">
+            <summary>
+            The connector has successfully connected to the external entity.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.ConnectionState.DISCONNECTED">
+            <summary>
+            The connector has attempted to connect or has previously successfully
+            connected to the external entity, but is now disconnected. Re-connection
+            will be attempted after the delay specified in BaseReconnectDelay.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IConnection">
+            <summary>
+            Provides methods for establishing, monitoring and disabling connections to external systems.
+            The external system may be a connector datasource (and therefore an <see cref="T:Seeq.Link.SDK.Interfaces.IDatasourceConnection"/>)
+            or the Seeq Server (ISeeqConnection).
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConnection.Initialize">
+            <summary>
+            Initializes a connection, attempting to connect if enabled.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConnection.Destroy">
+            <summary>
+            Disconnects from external systems and kills the monitoring thread.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IConnection.ConnectionMessage">
+            <summary>
+            A summary of the connection status, including any connection failure reason.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IConnection.MinReconnectDelay">
+            <summary>
+            Time to wait before reconnecting. Default is 5 seconds. There is an "exponential backoff" algorithm at
+            play that will increase the reconnect delay as repeated attempts fail. That's why this is the minimum delay.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IConnection.MaxReconnectDelay">
+            <summary>
+            Maximum time to delay a reconnect attempt. Default is 5 minutes. There is an "exponential backoff" algorithm at
+            play that will increase the reconnect delay as repeated attempts fail.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IConnection.State">
+            <summary>
+            The current state of the connection.
+            </summary>
+        </member>
+        <member name="E:Seeq.Link.SDK.Interfaces.IConnection.StateChanged">
+            <summary>
+            Event for state changes of the connection.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConnection.Enable">
+            <summary>
+            Enable connection and call the connect() method. The connection will pass through a Connecting state first.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConnection.Disable">
+            <summary>
+            Disable connections to the server. This calls the disconnect method in the derived class.
+            Reconnections will not occur if/until a Connect() call is made.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IConnection.MonitorPeriod">
+            <summary>
+            Time between testing of the connection vitality. Default should be 5 seconds.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.InterpolationMethod">
+            <summary>
+            The interpolation method to be used for a particular signal.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.InterpolationMethod.Linear">
+            <summary>
+            Linear-interpolated signals have a slope connecting each sample.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.InterpolationMethod.Step">
+            <summary>
+            Step-interpolated signals are constant from one sample until the next.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2">
+            <summary>
+            Provides services to the class that manages a connection to an external system.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.AgentService">
+            <summary>
+            Retrieves the agent service that can be used to access the REST API directly, among other things.
+            </summary>
+            <returns>The agent service.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.Enable">
+            <summary>
+            Enables a connection, which causes a connect and monitor thread to be created.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.Disable">
+            <summary>
+            Disables a connection, which disconnects and shuts down the monitoring thread.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.IsLicensed(System.String)">
+            <summary>
+            Checks the Seeq License for the required feature, logs the result, and returns true if
+            the license includes the feature.
+            </summary>
+            <param name="featureName"></param>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.ConnectionState">
+            <summary>
+            Current state of the connection to the external datasource..
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.ConnectionStatusMessage">
+            <summary>
+            Current status message obtained from the external datasource.
+            It is set by the connect/monitor/disconnect functions.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.IndexingState">
+            <summary>
+            Returns the current state of indexing activity, or null if the connector does not support indexing.
+            </summary>
+            <returns>the current state of indexing activity</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.SetTransforms(System.Collections.Generic.List{Seeq.Link.SDK.Services.PropertyTransformer.Spec})">
+            <summary>
+            Sets a list of transforms to apply to all indexed signals.
+            </summary>
+            <param name="transforms">
+            The list of transforms to apply to the signals.
+            </param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.InitializeExport(Seeq.Link.SDK.Export.IExportSamples,Seeq.Link.SDK.Export.ExportConnectionConfigV1)">
+            <summary>
+            If the connector supports exporting from Seeq to the datasource, this method must be called
+            during each connection's Initialize() method.
+            </summary>
+            <param name="exportInterface">
+            The IExportSamples interface used to put samples in the external datasource.
+            </param>
+            <param name="exportConfig">
+            The configuration that dictates how exporting takes place and what signals need to
+            be created in the external system to receive the exported data.
+            </param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.PutSignal(Seeq.Sdk.Model.SignalWithIdInputV1)">
+            <summary>
+            Creates a new signal in the Seeq database or overwrites an existing item with the same
+            DataId/DatasourceId/DatasourceClass if it already exists.
+            </summary>
+            <param name="signalDefinition">An object describing the properties of the signal</param>
+            <returns>
+            The list of items created in Seeq during this call. The return value will be null if the items are being
+            queued into a batch.
+            </returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.FlushSignals">
+            <summary>
+            Writes the signal buffer to the Seeq application server. This function should be called
+            if it is important that the signals exist in the Seeq database before any other activity
+            takes place.
+            </summary>
+            <returns>
+            The list of items created in Seeq during this call.
+            </returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.PutUserGroup(Seeq.Sdk.Model.UserGroupWithIdInputV1)">
+            <summary>
+            Creates a new user group in Seeq database or overwrites an existing user group with the same
+            DataId/DatasourceId/DatasourceClass if it already exists.
+            </summary>
+            <param name="userGroupDefinition">
+            An Object describing the properties of the user group
+            </param>
+            <returns>
+            The list of items created in Seeq during this call. The return value will be null if the items are
+            being queued into a batch.
+            </returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.FlushUserGroups">
+            <summary>
+            Writes the user group buffer to the Seeq application server. This function should be called if it is important
+            that the signals exist in the Seeq database before any other activity takes place.
+            </summary>
+            <returns>
+            The list of items created in Seeq during this call.
+            </returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.PutCondition(Seeq.Sdk.Model.ConditionInputV1)">
+            <summary>
+            Creates a new condition in the Seeq database or overwrites an existing item with the same
+            DataId/DatasourceId/DatasourceClass if it already exists.
+            </summary>
+            <param name="conditionDefinition">
+            An Object describing the properties of the condition.
+            </param>
+            <returns>
+            The list of items created in Seeq during this call. The return value will be null if the items are being
+            queued into a batch.
+            </returns>
+            <exception cref="T:Seeq.Sdk.Client.ApiException">
+            If there is an error communicating with Seeq server, or Seeq server returns an error code during
+            communication.
+            </exception>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.FlushConditions">
+            <summary>
+            Writes the condition buffer to the Seeq application server. This function should be called if it is important
+            that the conditions exist in the Seeq database before any other activity takes place.
+            </summary>
+            <returns>
+            The list of items created in Seeq during this call.
+            </returns>
+            <exception cref="T:Seeq.Sdk.Client.ApiException">
+            If there is an error communicating with Seeq server, or Seeq server returns an error code during
+            communication.
+            </exception>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.PutScalar(Seeq.Sdk.Model.ScalarInputV1)">
+            <summary>
+            Creates a new scalar in the Seeq database or overwrites an existing item with the same
+            DataId/DatasourceId/DatasourceClass if it already exists.
+            Scalar values should be set in the Formula field of ScalarInputV1, in a format that can be parsed by the
+            Seeq Formula language. Units should be set in the UnitOfMeasure field as they will be parsed more
+            permissively and applied to the Formula if they can be parsed to a Seeq standard unit. Unrecognized units in
+            this field will result in a  unitless Scalar, but unrecognized units in the Formula will lead to rejection
+            of the Scalar.
+            </summary>
+            <param name="scalarDefinition">
+            An Object describing the properties of the scalar.
+            </param>
+            <returns>
+            The list of items created in Seeq during this call. The return value will be null if the items are being
+            queued into a batch.
+            </returns>
+            <exception cref="T:Seeq.Sdk.Client.ApiException">
+            If there is an error communicating with Seeq server, or Seeq server returns an error code during
+            communication.
+            </exception>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.FlushScalars">
+            <summary>
+            Writes the scalar buffer to the Seeq application server. This function should be called if it is important
+            that the scalars exist in the Seeq database before any other activity takes place.
+            </summary>
+            <returns>
+            The list of items created in Seeq during this call.
+            </returns>
+            <exception cref="T:Seeq.Sdk.Client.ApiException">
+            If there is an error communicating with Seeq server, or Seeq server returns an error code during
+            communication.
+            </exception>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.PutAsset(Seeq.Sdk.Model.AssetInputV1)">
+            <summary>
+            Creates a new asset in the Seeq database.
+            </summary>
+            <param name="assetDefinition">
+            An Object describing the properties of the asset.
+            </param>
+            <returns>
+            The list of items created in Seeq during this call. The return value will be null if the items are being
+            queued into a batch.
+            </returns>
+            <exception cref="T:Seeq.Sdk.Client.ApiException">
+            If there is an error communicating with Seeq server, or Seeq server returns an error code during
+            communication.
+            </exception>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.FlushAssets">
+            <summary>
+            Writes the asset buffer to the Seeq application server. This function should be called if it is important that
+            the assets exist in the Seeq database before any other activity takes place.
+            </summary>
+            <returns>The list of items created in Seeq during this call.
+            </returns>
+            <exception cref="T:Seeq.Sdk.Client.ApiException">
+            If there is an error communicating with Seeq server, or Seeq server returns an error code during
+            communication.
+            </exception>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.PutRootAsset(Seeq.Sdk.Model.AssetInputV1)">
+            <summary>
+            Creates a new asset in the Seeq database at the root of the asset tree.
+            </summary>
+            <param name="assetDefinition">
+            An Object describing the properties of the root asset.
+            </param>
+            <returns>
+            The list of items created in Seeq during this call. The return value will be null if the items are being
+            queued into a batch.
+            </returns>
+            <exception cref="T:Seeq.Sdk.Client.ApiException">
+            If there is an error communicating with Seeq server, or Seeq server returns an error code during
+            communication.
+            </exception>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.FlushRootAssets">
+            <summary>
+            Writes the root asset buffer to the Seeq application server. This function should be called if it is important
+            that the root assets exist in the Seeq database before any other activity takes place.
+            </summary>
+            <returns>
+            The list of items created in Seeq during this call.
+            </returns>
+            <exception cref="T:Seeq.Sdk.Client.ApiException">
+            If there is an error communicating with Seeq server, or Seeq server returns an error code during
+            communication.
+            </exception>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.PutRelationship(Seeq.Sdk.Model.AssetTreeSingleInputV1)">
+            <summary>
+            Establishes a relationship in the Seeq database.
+            </summary>
+            <param name="relationshipDefinition">
+            The relationship to create.
+            </param>
+            <returns>
+            The list of items created in Seeq during this call. The return value will be null if the items are being
+            queued into a batch.
+            </returns>
+            <exception cref="T:Seeq.Sdk.Client.ApiException">
+            If there is an error communicating with Seeq server, or Seeq server returns an error code during
+            communication.
+            </exception>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.FlushRelationships">
+            <summary>
+            Writes the buffer of relationships to the Seeq application server. This function should be called if it is
+            important that the relationships exist in the Seeq database before any other activity takes place.
+            </summary>
+            <returns>The list of items created in Seeq during this call.
+            </returns>
+            <exception cref="T:Seeq.Sdk.Client.ApiException">
+            If there is an error communicating with Seeq server, or Seeq server returns an error code during
+            communication.
+            </exception>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.Datasource">
+            <summary>
+            Get information about the Seeq datasource this connection services.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.LastIncrementalIndexState">
+            <summary>
+            Retrieve the current IncrementalIndexState string for this datasource. The string's format is dictated by the
+            connector and is used to facilitate incremental indexing. Usually this string will be a date, and the index()
+            function will query the datasource for "additions/changes/deletions of tags since this date". You can then
+            trigger incremental indexing operations in your monitor() function and only process tags that have changed.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.PutIncrementalIndexState(System.String)">
+            <summary>
+            Specify a new IncrementalIndexState so that it can be retrieved and used for incremental indexing on the
+            next call to index().
+            </summary>
+            <param name="incrementalIndexState">Connector-specific string used for incremental indexing</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.SkipArchiving">
+            <summary>
+            If called from the <see cref="M:Seeq.Link.SDK.Interfaces.IIndexingDatasourceConnection.Index(Seeq.Link.SDK.Interfaces.SyncMode)"/> method, archiving will be skipped
+            after indexing has finished. The default is that any items not present during a <see cref="F:Seeq.Link.SDK.Interfaces.SyncMode.Full"/> sync
+            will be archived in Seeq; this skips that step.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.StoreDatasourceProperties(System.Boolean,System.Collections.Generic.List{Seeq.Sdk.Model.ScalarPropertyV1})">
+            <summary>
+            Store the specified additional properties and storedInSeeq flag on the datasource.
+            </summary>
+            <param name="storedInSeeq">Whether this datasource's data will be stored in Seeq (true) or a remote datasource
+            (false).</param>
+            <param name="additionalProperties">
+            Additional properties that should be set on the datasource. The 'normal' datasource properties cannot be
+            set with this parameter, only 'custom' properties.</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.DeleteDatasourceProperties(System.Collections.Generic.List{System.String})">
+            <summary>
+            Deletes the specified properties from the datasource
+            </summary>
+            <param name="additionalPropertiesToDelete">
+            The names of the properties to delete. The 'normal' datasource properties cannot be
+            deleted with this method, only 'custom' properties.</param>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.Log">
+            <summary>
+            Prints diagnostic messages to the Seeq agent log file (and the console).
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.SetDatasourceItemTypeCleanupFilter(System.Collections.Generic.List{System.String})">
+            <summary>
+            Sets the datasource item type cleanup filter.
+            By default, the filter is set to null (meaning no filter is applied, all items are considered in cleaning up
+            of stale items)
+            </summary>
+            <param name="itemTypeCleanupFilter">List of item types to be considered in datasource cleanup process</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.SetDatasourceItemDataIdRegexFilter(System.String)">
+            <summary>
+            Sets the datasource item DataId Regex filter. When set, only items having the DataId matching the RegEx will
+            be included the cleanup process.
+            By default, the filter is set to null (meaning that all items are considered in cleaning up of stale items).
+            </summary>
+            <param name="regex">the Regex to apply</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.SetDatasourceItemDataIdExcludeRegexFilter(System.String)">
+            <summary>
+            Sets the datasource item DataId exclude Regex filter. When set, the items having the DataID matching the RegEx
+            will be excluded from cleanup process.
+            By default, the filter is set to null (meaning that all items are considered in cleaning up of stale items).
+            </summary>
+            <param name="regex">the Regex to apply</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.SetDatasourceItemNameRegexFilter(System.String)">
+            <summary>
+            Sets the datasource item name Regex filter. When set, only items having the name matching the RegEx will
+            be included in the cleanup process.
+            By default, the filter is set to null (meaning that all items are considered in cleaning up of stale items).
+            </summary>
+            <param name="regex">the Regex to apply</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2.SetDatasourceItemNameExcludeRegexFilter(System.String)">
+            <summary>
+            Sets the datasource item name exclude Regex filter. When set, the items having the name matching the RegEx will
+            be excluded from cleanup process.
+            By default, the filter is set to null (meaning that all items are considered in cleaning up of stale items).
+            </summary>
+            <param name="regex">the Regex to apply</param>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IConditionPullDatasourceConnection">
+             <summary>
+             Implemented by connections that query their datasources for capsules (within conditions) on-demand when Seeq
+             requires data.
+             </summary>
+             <remarks>
+             Threading considerations:
+            
+             All methods may be called from different threads concurrently.
+             </remarks>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConditionPullDatasourceConnection.GetCapsules(Seeq.Link.SDK.Interfaces.GetCapsulesParameters)">
+             <summary>
+             Queries the external system for the capsules in a condition.
+            
+             Note that if this method is implemented, it must invoke <see cref="M:Seeq.Link.SDK.Interfaces.GetCapsulesParameters.SetLastCertainKey(Seeq.Link.SDK.Utilities.TimeInstant)"/>
+             if <see cref="P:Seeq.Link.SDK.Interfaces.GetCapsulesParameters.IsLastCertainKeyRequested"/> is true; otherwise all capsules returned will appear
+             uncertain in Seeq.
+             </summary>
+             <param name="parameters">
+             A <see cref="T:Seeq.Link.SDK.Interfaces.GetCapsulesParameters"/> object containing the parameters of the request. Consult the documentation for each
+             field on that object for further information.
+             </param>
+             <returns>
+             An iterator used to retrieve the capsules. An enumerable allows the author to avaid loading all capsules
+             into memory, if the underlying datasource allows it.
+             </returns>
+             <exception cref="T:System.Exception">
+             All exceptions will get caught and the text of the exception will be set as the user visible status.
+             </exception>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IExternalCalculationDatasourceConnection">
+            <summary>
+            Implemented by connections that offers external calculation services
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IExternalCalculationDatasourceConnection.GetCalculatedResults(System.String,System.Collections.Generic.IEnumerable{System.Collections.Generic.List{Seeq.Link.SDK.Utilities.Sample}},Seeq.Link.SDK.Interfaces.ExternalCalcSignalDataType[],System.Int32,System.Int32,System.Nullable{System.Int64})">
+            <summary>Delegates calculation to the external script and obtain the result back from it.</summary>
+            <param name="script">Name of the script</param>
+            <param name="alignedSignalsStream">
+            A stream of aligned samples given to the script for computing the result. Note: this parameter uses
+            the same structure as AlignedIterator.
+            </param>
+            <param name="signalDataTypes">Data type for value of samples of each signal provided in the input</param>
+            <param name="numberOfSignals">Number of signals the input stream contains</param>
+            <param name="numberOfSamplesPerSignal">Number of samples per signal</param>
+            <param name="windowSize">Number of sample in a window, null means the calculation does not use a window</param>
+            <returns>
+            A stream used to retrieve the samples. A stream is used so the connection author can avoid loading
+            all samples into memory, if the underlying datasource interface allows it.
+            </returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IExternalCalculationDatasourceConnection.ValidateRequest(com.seeq.link.messages.connector.extcalc.ExternalCalculationRequestMessage)">
+            <summary>
+            Validates the calculation request, checking that all optional parameter is set according to the script input mode
+            </summary>
+            <param name="request">request to validate</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IExternalCalculationDatasourceConnection.NeedsValidation">
+            <summary>
+            In case a script has been changed we need to check again if the script breaks the contract. Contract break
+            detection is done only one time.
+            </summary>
+            <returns>true if the script needs to be rechecked for breaking the established contract</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IExternalCalculationDatasourceConnection.CreateValidator">
+            <summary>Returns a new instance of a validator that is used to validate the script.</summary>
+            <returns>a new validator</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IExternalCalculationDatasourceConnection.MarkAsValid">
+            <summary>
+            Marks (into the connection) the script as breaking no contract. Once marked the detection is suppressed until
+            <see cref="M:Seeq.Link.SDK.Interfaces.IExternalCalculationDatasourceConnection.NeedsValidation"/> returns again true.
+            This should be reset to true when the script is changed.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IExternalCalculationDatasourceConnection.GetValidationLock">
+            <returns>
+            A lock which is used to ensure that the same script is not validated more than once even if
+            more requests are triggered at the same time
+            </returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IExternalCalculationValidator">
+            <summary>
+             This interface defines the functions that must be implemented by the class that checks if a script is respecting
+             the established contract.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IExternalCalculationValidator.SetAlignedSignalsStreamComplete(System.Collections.Generic.IEnumerable{System.Collections.Generic.List{Seeq.Link.SDK.Utilities.Sample}})">
+            <summary>
+            Sets the stream of list of aligned samples into the detector.
+            The list of samples is complete and one can take any number of them to be used in validation.
+            For speed considerations it is recommended to only take few(e.g. 100)
+            </summary>
+            <param name="alignedSignalsStreamComplete">complete stream of aligned list of samples</param>
+            <returns>the instance of the detector</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IExternalCalculationValidator.SetSignalFragmentScriptCaller(System.Func{System.Int32,System.Collections.Generic.IEnumerable{System.Collections.Generic.List{Seeq.Link.SDK.Utilities.Sample}},System.Collections.Generic.IEnumerable{Seeq.Link.SDK.Utilities.Sample}})">
+            <summary>
+            During validation the detector will need to call the script for a subset of the samples provided in the
+            complete stream
+            </summary>
+            <param name="signalFragmentScriptCaller">
+            function providing the possibility to call the script for a subset of samples</param>
+            <returns>the instance of the detector</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IExternalCalculationValidator.SetScriptName(System.String)">
+            <summary>
+            Set the name of the script into the detector. Script name may be used by the detector in error reporting.
+            </summary>
+            <param name="scriptName">name of the script</param>
+            <returns>the instance of detector</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IExternalCalculationValidator.SetWindowSize(System.Nullable{System.Int64})">
+            <summary>
+            Set the window size for windowed calculations
+            </summary>
+            <param name="windowSize">windowSize for windowed calculations, otherwise null</param>
+            <returns>the instance of detector</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IExternalCalculationValidator.GetMinimumNumberOfSamples">
+            <summary>
+            Return the minimum number of samples required for validation
+            </summary>
+            <returns>minimum number of samples required for validation</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IExternalCalculationValidator.DoValidate">
+            <summary>Does the validation that checks if the script is correctly made. In case the contract break is detected, a
+            RuntimeException is thrown.In case no problem is detected in the script, a subsequent call to
+            isContractRespected should return true.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IExternalCalculationValidator.IsValid">
+            <summary>
+            Gets the value of valid flag.
+            </summary>
+            <returns>return true if the script is valid</returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.ISignalPullDatasourceConnection">
+             <summary>
+             Implemented by connections that query their datasources for samples (within signals) on-demand when Seeq requires data.
+             </summary>
+             <remarks>
+             Threading considerations:
+            
+             All methods may be called from different threads concurrently.
+             </remarks>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.ISignalPullDatasourceConnection.GetSamples(Seeq.Link.SDK.Interfaces.GetSamplesParameters)">
+            <summary>
+            Queries the external system for signal data.
+            </summary>
+            <param name="parameters">
+            A <see cref="T:Seeq.Link.SDK.Interfaces.GetSamplesParameters"/> object containing the parameters of the request. Consult the documentation for each
+            field on that object for further information.
+            </param>
+            <returns>
+            An iterator used to retrieve the samples. An enumerable allows the author to avaid loading all samples
+            into memory, if the underlying datasource allows it.
+            </returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IPullDatasourceConnection">
+            <summary>
+            Implemented by connections that query their datasources on-demand when Seeq requires data.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IPullDatasourceConnection.MaxConcurrentRequests">
+            <summary>
+            The maximum number of sample/capsule requests that will be processed simultaneously. This value will usually
+            come from the connector's configuration file. Return null if you do not wish to impose a limit.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IPullDatasourceConnection.MaxResultsPerRequest">
+            <summary>
+            The maximum number of sample/capsule results that can be returned by a request. This value will usually
+            come from the connector's configuration file. Return null if you do not wish to impose a limit.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IDatasourceConnectionV2">
+             <summary>
+             This interface defines the functions that must be implemented by the class that facilitates a
+             connection to an external system.
+             </summary>
+             <remarks>
+             Threading considerations:
+            
+             Initialize() and Destroy() are called by the connector host on its own thread.
+            
+             Connect(), Monitor() and Disconnect() are all called from a (different) single thread.
+            
+             All other interface methods may be called from multiple threads simultaneously.
+             </remarks>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IDatasourceConnectionV2.DatasourceClass">
+             <summary>
+             A unique identifier for the datasource. This is usually a GUID generated for the configuration file.
+             </summary>
+            
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IDatasourceConnectionV2.DatasourceName">
+            <summary>
+            The name of the datasource as it is intended to appear in Seeq.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IDatasourceConnectionV2.DatasourceId">
+            <summary>
+            The unique identifier of the datasource. This is typically a GUID, and must
+            not change once established.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionV2.Initialize(Seeq.Link.SDK.Interfaces.IDatasourceConnectionServiceV2)">
+            <summary>
+            Initializes a connection, attempting to connect if enabled.
+            </summary>
+            <param name="connectionService">
+            Provides all required services for accomplishing tasks like indexing and responding to requests.
+            </param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionV2.Destroy">
+            <summary>
+            Disconnects from external systems and kills the monitoring thread.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionV2.Connect">
+            <summary>
+            Attempts a connection to the external system.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionV2.Monitor">
+            <summary>
+            Examines the state of the connection to determine if it has become disconnected.
+            </summary>
+            <returns>true if the connection is live, false if it has become disconnected. A return of false will cause the <see cref="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionV2.Disconnect"/> method to be invoked</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionV2.Disconnect">
+            <summary>
+            Disconnects from the external system.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnectionV2.SaveConfig">
+            <summary>
+            Called by an Agent when the agent has changed the connection's configuration (usually due to the indexing
+            schedule being updated).
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IIndexingDatasourceConnection">
+             <summary>
+             This interface defines the functions that must be implemented by the class that facilitates a
+             connection to an external system that is indexed periodically.
+             </summary>
+             <remarks>
+             Threading considerations:
+            
+             Index() is called on its own thread. Index() calls are always on the same thread and therefore sequential.
+             </remarks>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IIndexingDatasourceConnection.Configuration">
+            <summary>
+            The connector's configuration, which should extend <see cref="T:Seeq.Link.SDK.IndexingDatasourceConnectionConfig"/>. This is
+            used for access to required config fields like <see cref="T:Seeq.Link.SDK.IndexingSchedule"/>.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IIndexingDatasourceConnection.Index(Seeq.Link.SDK.Interfaces.SyncMode)">
+            <summary>
+            Queries appropriate items from the external system and makes index entries for them in Seeq.
+            </summary>
+            <param name="syncMode">
+              Indicates whether to perform a full or incremental sync.
+            </param>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IConnector">
+            <summary>
+            A connector handles configuration and creation of connections.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IConnector.Name">
+            <summary>
+            The name of the connector, as determined by the connector. This string may
+            contain a unique identifier for the external database that is being connected to.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConnector.Initialize(Seeq.Link.SDK.Interfaces.IAgentService)">
+            <summary>
+            Initializes a connector with the agent service interface it will use to communicate
+            to Seeq Server. The implementation of this function can choose to automatically establish
+            connections based on a global registry (like the PI "Known Servers Table").
+            </summary>
+            <param name="agentService">The agent that is hosting this connector.</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConnector.Destroy">
+            <summary>
+            Performs cleanup of a connector as necessary, removing all connections and releasing all resources.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IConnector.Connections">
+            <summary>
+            Get all the connections that this connector has made.
+            </summary>
+            <returns>A list of connections.</returns>
+        </member>
+        <member name="E:Seeq.Link.SDK.Interfaces.IConnector.ConnectionStateChanged">
+            <summary>
+            Event for state changes of the connector's connection(s).
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConnector.ProcessMessage(System.String,com.seeq.link.messages.agent.DataDocument)">
+            <summary>
+            Called by an Agent when a data document is received from Seeq Server. It is the connector's
+            responsibility to determine whether to handle the document.
+            </summary>
+            <param name="destinationConnectorInstanceId">
+            A connector-specific identifier used to route the message within the connector.
+            </param>
+            <param name="document">The message payload.</param>
+            <returns>true if the message was processed by the connector, false if it was ignored</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConnector.SaveConfig">
+            <summary>
+            Called by a connection when it wants its configuration saved.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IConnectorServiceV2">
+            <summary>
+            Provides services to the class that manages connections to external systems.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConnectorServiceV2.LoadConfig(Seeq.Link.SDK.ConfigObject[])">
+            <summary>
+            Reads the configuration object from disk from the expected location (configuration/link within the data folder).
+            </summary>
+            <param name="supportedObjects">
+            An array of object types to try loading. If the config file is not present, or none of the class types could
+            successfully serialize the JSON, then the first item in the array is returned. This serves as mechanism for
+            providing the "default" config object class.
+            </param>
+            <returns>The serialized config object, or the first item in <paramref name="supportedObjects"/></returns>
+            <exception cref="T:System.IO.IOException">Thrown if there is a problem reading the configuration file</exception>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConnectorServiceV2.SaveConfig(Seeq.Link.SDK.ConfigObject)">
+            <summary>
+            Writes the configuration object to disk in the expected location (configuration/link within the data folder).
+            </summary>
+            <param name="configObject">The configuration object to write</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConnectorServiceV2.AddConnection(Seeq.Link.SDK.Interfaces.IDatasourceConnectionV2)">
+            <summary>
+            Must be used when connections are established to external systems.
+            Note: This function is used even if connections are disabled.
+            </summary>
+            <param name="connection">The connection being established.</param>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IConnectorServiceV2.AgentService">
+            <summary>
+            Retrieves the agent service that can be used to access the REST API directly, among other things.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IConnectorServiceV2.Log">
+            <summary>
+            Prints diagnostic messages to the Seeq agent log file (and the console).
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IConnectorV2">
+            <summary>
+            This interface defines the functions that must be implemented by the class that manages
+            connections to external systems.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IConnectorV2.Name">
+            <summary>
+            The name of the connector, as determined by the connector. This name will be used
+            for the configuration file name.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConnectorV2.Initialize(Seeq.Link.SDK.Interfaces.IConnectorServiceV2)">
+            <summary>
+            Called by the host to initialize a connector with the connector service interface it will use to
+            accomplish tasks like adding connections. The implementation of this function can choose to automatically
+            define and/or establish connections based on a global registry (like the PI "Known Servers Table").
+            </summary>
+            <param name="connectorService">The services provided to facilitate common connector functionality.</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IConnectorV2.Destroy">
+            <summary>
+            Called by the host to destroy a connector. The connector should use the opportunity to clean up or
+            and close any resources it is holding open, and shut down any threads it may have spawned. All
+            Connections will have already been destroyed by the time this is called.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IDatasourceConnection">
+            <summary>
+            This interface is a specialization of a general connection. The Seeq Server connection
+            (exposed via ISeeqConnection) is a general connection, while a datasource connection is only
+            implemented by connections made from connectors. Datasource connections have extra information
+            like ConnectionID and DatasourceID.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IDatasourceConnection.ConnectionId">
+            <summary>
+            The id of the connection.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IDatasourceConnection.DatasourceName">
+            <summary>
+            A human readable name for the data source this connection is to.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IDatasourceConnection.DatasourceId">
+            <summary>
+            The unique identifier of the data source this connection is to.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IDatasourceConnection.DatasourceClass">
+            <summary>
+            The human readable name of the type of data source this connection is to.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IDatasourceConnection.Services">
+            <summary>
+            The type(s) of data that this connection provides.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnection.ProcessMessage(com.seeq.link.messages.agent.DataDocument)">
+            <summary>
+            Handles messages intended for this connector.
+            </summary>
+            <param name="data"></param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnection.SpawnMetadataSync(Seeq.Link.SDK.Interfaces.SyncMode,System.Action{Seeq.Link.SDK.Interfaces.SyncResult})">
+            <summary>
+            Spawn a thread and runs metadataSync() on it. This ensures the sync happens asynchronously and that
+            there is only one sync at a time, per connection.
+            </summary>
+            <param name="syncMode">Indicates whether to perform a full or incremental sync</param>
+            <param name="callback">Callback that takes a <see cref="T:Seeq.Link.SDK.Interfaces.SyncResult"/> to indicate success/failure</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnection.MetadataSync(Seeq.Link.SDK.Interfaces.SyncMode)">
+            <summary>
+            Sync metadata with the appserver.
+            </summary>
+            <param name="syncMode">Indicates whether to perform a full or incremental sync</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnection.IsPullDatasourceConnection">
+            <summary>
+            Indicates whether pull requests are supported
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnection.IsIndexingDatasourceConnection">
+            <summary>
+            Indicates whether metadata sync is supported
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnection.IsIndexingScheduleSupported">
+            <summary>
+            Indicates whether metadata sync can be triggered from outside the connector (from scheduler, or requested on
+            demand from the UI)
+            </summary>
+            <returns>True, if metadata sync can be triggered from outside the connector, false otherwise</returns>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IDatasourceConnection.IndexingSchedule">
+            <summary>
+            The indexing schedule for this connection, including the time and period of delay.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IDatasourceConnection.IndexingState">
+            <summary>
+            The current state of indexing, including item counts and sync status.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.IDatasourceConnection.CurrentIndexingRequestSyncMode">
+            <summary>
+            The current indexing requests's sync mode
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IDatasourceConnection.SaveConfig">
+            <summary>
+            Called by an Agent when the agent has changed the connection's configuration (usually due to the indexing
+            schedule being updated.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IFileChangeListener.OnFileModify(System.String)">
+            <summary>
+            Called when the file is modified or created. While WatchService can emit an ENTRY_CREATE event it is always
+            paired with a ENTRY_MODIFY event and so an onFileCreate method is not provided in order to reduce duplicate
+            messages.
+            </summary>
+            <param name="filePath">The file path.</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IFileChangeListener.OnFileDelete(System.String)">
+            <summary>
+            Called when the file is deleted.
+            </summary>
+            <param name="filePath">The file path.</param>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.IFileConfigObjectProvider">
+            <summary>
+            Used to persist config objects to/from disk.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IFileConfigObjectProvider.Initialize(System.String)">
+            <summary>
+            Initializes the provider with a data path to persist config objects to.
+            </summary>
+            <param name="dataPath">The data path to persist config objects to.</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IFileConfigObjectProvider.RegisterChangeCallback(System.String,System.Action{System.String})">
+            <summary>
+            Registers a callback for when the configuration has changed.
+            </summary>
+            <param name="name">Name of the configuration object you're interested in.</param>
+            <param name="callback">Callback function that takes the name as its only parameter.</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.IFileConfigObjectProvider.UnregisterChangeCallback(System.String)">
+            <summary>
+            Unregisters a callback previously registered.
+            </summary>
+            <param name="name">Name of the configuration object you're interested in.</param>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.SyncMode">
+            <summary>
+            Enumeration of possible index modes.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.SyncMode.None">
+            <summary>
+            Indicates that no sync is being requested
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.SyncMode.Full">
+            <summary>
+            A Full sync updates all items and deletes any items that no longer exist
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.SyncMode.Incremental">
+            <summary>
+            An Incremental sync updates only items that have changed and that still exist. Incremental syncs are faster, so
+            they can be performed more frequently without using too many resources on the Seeq server and source system.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.ISeeqApiProvider">
+             <summary>
+             Provides methods to construct Seeq API objects.
+            
+             NOTE:
+            
+             Each API interface is exposed separately so that they can be mocked. Because of the structure of
+             the swagger-codegen output, we can't just mock the ApiClient and be done with it.
+             </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Interfaces.ISeeqApiProvider.ApiClient">
+            <summary>
+            Get an ApiClient instance for lower-level control of requests to the Seeq API.
+            </summary>
+            <returns>An ApiClient instance for lower-level control of requests to the Seeq API.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.ISeeqApiProvider.SetReadTimeout(System.TimeSpan)">
+            <summary>
+            Sets a new read timeout for the HTTP client used by a SeeqApiProvider.
+            The default read timeout is 30min.
+            </summary>
+            <param name="readTimeout">Read timeout to set</param>
+            <returns></returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.ISeeqApiProvider.SetRetryTimeout(System.TimeSpan)">
+            <summary>
+            Sets a new retry timeout for a SeeqApiProvider
+            </summary>
+            <param name="retryTimeout">Retry timeout</param>
+            <returns></returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.ISeeqApiProvider.CreateSignalsApi">
+            <summary>
+            A SignalsApi interface to the Seeq Server.
+            </summary>
+            <returns>A SignalsApi interface to the Seeq Server.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.ISeeqApiProvider.CreateConditionsApi">
+            <summary>
+            A ConditionsApi interface to the Seeq Server.
+            </summary>
+            <returns>A ConditionsApi interface to the Seeq Server.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.ISeeqApiProvider.CreateDatasourcesApi">
+            <summary>
+            A DatasourcesApi interface to the Seeq Server.
+            </summary>
+            <returns>A DatasourcesApi interface to the Seeq Server.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.ISeeqApiProvider.CreateItemsApi">
+            <summary>
+            A ItemsApi interface to the Seeq Server.
+            </summary>
+            <returns>A ItemsApi interface to the Seeq Server.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.ISeeqApiProvider.CreateAssetsApi">
+            <summary>
+            An AssetsApi interface to the Seeq Server.
+            </summary>
+            <returns>An AssetsApi interface to the Seeq Server.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.ISeeqApiProvider.CreateTreesApi">
+            <summary>
+            A TreesApi interface to the Seeq Server.
+            </summary>
+            <returns>A TreesApi interface to the Seeq Server.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.ISeeqApiProvider.CreateSystemApi">
+            <summary>
+            A SystemApi interface to the Seeq Server.
+            </summary>
+            <returns>A SystemApi interface to the Seeq Server.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.ISeeqApiProvider.CreateAgentsApi">
+            <summary>
+            An AgentsApi interface to the Seeq Server.
+            </summary>
+            <returns>An AgentsApi interface to the Seeq Server.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.ISeeqApiProvider.CreateAuthApi">
+            <summary>
+            An AuthApi interface to the Seeq Server.
+            </summary>
+            <returns>An AuthApi interface to the Seeq Server.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.ISeeqApiProvider.CreateRequestsApi">
+            <summary>
+            A RequestsApi interface to the Seeq Server.
+            </summary>
+            <returns>A RequestsApi interface to the Seeq Server.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.ISeeqApiProvider.CreateScalarsApi">
+            <summary>
+            A ScalarsApi interface to the Seeq Server.
+            </summary>
+            <returns>A ScalarsApi interface to the Seeq Server.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.ISeeqApiProvider.CreateUserGroupsApi">
+            <summary>
+            A UserGroupsApi interface to the Seeq Server.
+            </summary>
+            <returns>A UserGroupsApi interface to the Seeq Server.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.ISeeqApiProvider.CreateUsersApi">
+            <summary>
+            A UsersApi interface to the Seeq Server.
+            </summary>
+            <returns>A UsersApi interface to the Seeq Server.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.ISeeqApiProvider.CreateFormulasApi">
+            <summary>
+            A FormulasApi interface to the Seeq Server.
+            </summary>
+            <returns>A FormulasApi interface to the Seeq Server.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Interfaces.ISeeqApiProvider.Logout">
+            <summary>
+            Logs the current client out.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.SyncResult.Success">
+            <summary>
+            Indexing operation completed and was successful.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.SyncResult.Failed">
+            <summary>
+            Indexing operation failed.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.SyncResult.Interrupted">
+            <summary>
+            Indexing operation was interrupted, usually due to a configuration change or server shutdown.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Interfaces.SyncStatus">
+            <summary>
+            Captures the state of sync'ing (aka indexing).
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.SyncStatus.SYNC_UNKNOWN">
+            <summary>
+            Connection has started up but there has been no sync yet.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.SyncStatus.SYNC_INITIALIZING">
+            <summary>
+            Scheduler has kicked off a sync but the connection hasn't done anything yet
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.SyncStatus.SYNC_IN_PROGRESS">
+            <summary>
+            Connection is actively sync'ing.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.SyncStatus.SYNC_ARCHIVING_DELETED_ITEMS">
+            <summary>
+            Connection has sync'd (in <see cref="F:Seeq.Link.SDK.Interfaces.SyncMode.Full"/> mode) and is now archiving deleted items.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.SyncStatus.SYNC_COMPLETE">
+            <summary>
+            Connection has finished sync'ing
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.SyncStatus.SYNC_SUCCESS">
+            <summary>
+            Sync was a success and the next sync has been scheduled.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Interfaces.SyncStatus.SYNC_FAILED">
+            <summary>
+            Sync was a failure and the next sync has been scheduled
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.IndexingSchedule">
+             <summary>
+             Captures the intended schedule for a connection's indexing activity. Next specifies the next scheduled
+             indexing time, with timezone information. Frequency indicates how frequent indexing should occur. This class
+             honors timezone peculiarities, so that a frequency of 1d is ensured to be at the same time of day regardless of
+             daylight savings time and whatnot. OnStartupAndConfigChange indicates whether indexing will occur when the
+             agent starts and when the connection's configuration changes.
+            
+             All scheduling captured by this class is for <see cref="F:Seeq.Link.SDK.Interfaces.SyncMode.Full"/> indexing. Connections are responsible for
+             triggering <see cref="F:Seeq.Link.SDK.Interfaces.SyncMode.Incremental"/>  indexing activity according to their own requirements. (The Stress Test
+             Connector is an example of how a connection might do it.) Connections will call RequestNow(SyncMode) when
+             they want to trigger an index themselves.
+             </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.IndexingSchedule.Next">
+            <summary>
+            Returns the time of the next scheduled indexing activity as a fully-qualified ISO 8601 string with time zone info.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.IndexingSchedule.ShouldIndex(System.String)">
+            <summary>
+            Called by the agent to determine if this connection should index. An index may be triggered due to scheduling, startup/config change, or as a result of a request from the connection.
+            </summary>
+            <param name="connectionName">The name of this connection. Used solely for logging purposes.</param>
+            <returns>The <see cref="T:Seeq.Link.SDK.Interfaces.SyncMode"/> desired. This will always be <see cref="F:Seeq.Link.SDK.Interfaces.SyncMode.Full"/> unless the connection has requested an <see cref="F:Seeq.Link.SDK.Interfaces.SyncMode.Incremental"/>.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.IndexingSchedule.RequestNow(Seeq.Link.SDK.Interfaces.SyncMode)">
+            <summary>
+            Called by a connection to request an index right now. This is the method by which an <see cref="F:Seeq.Link.SDK.Interfaces.SyncMode.Incremental"/> index can happen
+            </summary>
+            <param name="syncMode">The indexing mode requested</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.IndexingSchedule.MarkIndexingFinished">
+            <summary>
+            Called by the agent when indexing has finished.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Services.ConfigService">
+            <summary>
+            See <see cref="T:Seeq.Link.SDK.Interfaces.IConfigService"/> for documentation.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Services.FileConfigObjectProvider">
+            <summary>
+            See <see cref="T:Seeq.Link.SDK.Interfaces.IFileConfigObjectProvider"/> for documentation.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Services.JsonConfigObjectMapper.ToConfigObjectWrapper(System.String,Seeq.Link.SDK.ConfigObject[],System.String,System.Nullable{System.Int64})">
+            <summary>
+            Converts a json into a ConfigObject and wraps it into a ConfigObjectWrapper. The wrapper
+            provides additional information about the configuration(like last modified date).
+            This function requires an array of config objects to use as a means of discovering what Object type is encoded
+            in the store.
+            </summary>
+            <param name="jsonString">The json to convert</param>
+            <param name="defaultConfigObjects">
+            An array of ConfigObject instances that represent the possible Object types that can be successfully
+            retrieved from the store. If the persisted Object type does not match anything in the list, then the
+            first item in the array is passed back (being effectively a means to have a 'default' config).
+            </param>
+            <param name="parseErrorMessage">Error message logged if json parsing fails</param>
+            <param name="lastModified">A nullable long that will be set in the resultingConfigObjectWrapper</param>
+            <returns></returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Services.JsonConfigObjectMapper.ToJson(System.Object)">
+            <summary>
+            Converts a configObject into a json
+            </summary>
+            <param name="configObject">Converts a configObject into a json</param>
+            <returns>Converts a configObject into a json</returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Services.NoOpFileConfigObjectProvider">
+            <summary>
+            FileConfigObjectProvider implementation that does not store the configuration anywhere.
+            When the configuration is loaded, the default config object is returned and the returned lastModified time is null.
+            See <see cref="T:Seeq.Link.SDK.Interfaces.IFileConfigObjectProvider"/> for documentation.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Services.Transformable`1">
+            <summary>
+            A common interface to wrap API input objects that can be modified by <see cref="T:Seeq.Link.SDK.Services.PropertyTransformer"/>.
+            </summary>
+            <typeparam name="T">The type of the input object to be transformed.</typeparam>
+        </member>
+        <member name="M:Seeq.Link.SDK.Services.Transformable`1.GetProperty(System.String)">
+            <summary>
+            Returns the value for the given property.
+            </summary>
+            <param name="propertyName">The property to get.</param>
+            <returns>The value, as a string, boolean, int or double.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Services.Transformable`1.SetProperty(System.String,System.Object,System.String)">
+            <summary>
+            Sets the value for the given property.
+            </summary>
+            <param name="propertyName">The property to set.</param>
+            <param name="propertyValue">The value to set. Many properties are restricted to certain value types (e.g. 'Name' will almost always have to be a string).</param>
+            <param name="unitOfMeasure">The unit of measure to set on the property. Optional, and may be ignored for certain properties.</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Services.Transformable`1.Copy">
+            <summary>
+            Return a copy of this Transformable object.
+            </summary>
+            <returns>A copy of this object.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Services.Transformable`1.GetInputObject">
+            <summary>
+            Get the underlying API input object that backs this Transformable.
+            </summary>
+            <returns>A Seeq API input object.</returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.AgentHelper">
+            <summary>
+            Agent utilities
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Utilities.AgentHelper.AgentIdentification">
+            <summary>
+            Provides the agent identification string. This string allows appserver to uniquely identify any agent.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Utilities.Capsule.Property.Name">
+            <summary>
+            The name of the capsule property.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Utilities.Capsule.Property.Value">
+            <summary>
+            The value of the capsule property. Will be parsed as a timestamp, numeric or boolean value unless the unit
+            is 'string'.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.SDK.Utilities.Capsule.Property.Unit">
+            <summary>
+            The unit of the capsule property. Should be 'string' if the property is a string, or leave null for unitless.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.CheckResult">
+            <summary>
+             Object that may be used by a Datasource client for sending the monitor results to the connection class.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.CheckResult.#ctor(System.Boolean,System.String)">
+            <summary>
+            Creates a CheckResult object.
+            When success parameter is true the failMessage is discarded.
+            When success parameter is false the failMessage is stored in the object.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.CheckResult.BuildFailure(System.String)">
+            <summary>
+            Builds a failure CheckResponse object with a failMessage.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.CheckResult.BuildSuccess">
+            <summary>
+            Builds a success CheckResponse object having no failMessage.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.Checksum">
+            <summary>
+            Provides a method of computing a checksum for both in-memory objects and files. Implements convenient toString() and
+            equals() methods for conversion to a hex representation and for comparison.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Utilities.Checksum.Hash">
+            <summary>
+            A hash byte array representing the checksum
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.Checksum.#ctor(System.String)">
+            <summary>
+            Computes a checksum for an object by reading from a file.
+            </summary>
+            <param name="fileName">the file to create a checksum for</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.Checksum.#ctor(System.Byte[])">
+            <summary>
+            Computes a checksum by hashing a byte array
+            </summary>
+            <param name="bytes">the bytes to create a checksum for</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.Checksum.#ctor">
+            <summary>
+            Intended to be used in conjunction with <see cref="M:Seeq.Link.SDK.Utilities.Checksum.AddFile(System.String)"/> to checksum a set of files.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.Checksum.AddFile(System.String)">
+            <summary>
+            Add a file to the checksum computation. Useful for computing the checksum of a set of files.
+            </summary>
+            <param name="fileName">The file to add to the checksum</param>
+            <returns>This object to allow fluent style programming.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.Checksum.AddFiles(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Add files to the checksum computation
+            </summary>
+            <param name="files">The files to add to the checksum</param>
+            <returns>This object to allow fluent style programming.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.Checksum.addByteArray(System.Byte[])">
+            <summary>
+            Add a byte array to the checksum computation.
+            </summary>
+            <param name="bytes">The output stream to add to the checksum</param>
+            <returns>This object to allow fluent style programming.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.Checksum.Equals(Seeq.Link.SDK.Utilities.Checksum)">
+            <summary>
+            Compares two checksum objects for equality
+            </summary>
+            <param name="other">the other object for comparison</param>
+            <returns>true if the checksums are equal</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.Checksum.ToString">
+            <summary>
+            Returns a hexadecimal string representing the checksum
+            </summary>
+            <returns>A hexadecimal string representing the checksum</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.Checksum.GetHashCode">
+            <summary>
+            Gets the hashcode for the checksum
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.Checksum.Equals(System.Object)">
+            <summary>
+            Compares two checksum objects for equality
+            </summary>
+            <param name="obj">the other object for comparison</param>
+            <returns>true if the checksums are equal</returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.DefaultConcurrentRequestsHandler">
+             <summary>
+             There are two main use-cases for concurrent requests
+             1. Limit the number of concurrent requests per connection
+             In this case each connection will have its own instance of this class.
+            
+             2. Limit the number of concurrent requests per connector
+             In this case the connector will create an instance of this class and share it between its connections. This is
+             useful for connectors like Python ExtCalc where each script corresponds to a connection, and therefore, for
+             optimal CPU usage we should have the possibility to set maxConcurrentRequests per connector. Basically in this
+             case we limit the number of parallel Python processes.
+             </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.DefaultConcurrentRequestsHandler.RegisterRequest">
+            <summary>
+            Register a new request. Non-blocking method which register the request and immediately returns
+            <returns>the number of registered requests. May be lower than the number of requests running in parallel</returns>
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.DefaultConcurrentRequestsHandler.AcquireProcessingPermit(System.Threading.ManualResetEvent)">
+            <summary>
+            Allocate a processing permit. This method is blocking the execution until a permit can be achieved
+            </summary>
+            <param name="beforeAcquireEvent">An event which is set right before trying to acquire the semaphore.
+            This is used internally by runWhenPermitted</param>
+            <returns>ThreadInterruptedException if the current thread is interrupted</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.DefaultConcurrentRequestsHandler.ReleaseProcessingPermit">
+            <summary>
+            Release a processing permit. Non-blocking method which releases the permit and immediately returns
+            <returns>the number of remaining registered requests</returns>
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.DurationHelper.ParseConfigString(System.String,System.String,System.String)">
+            <summary>
+            Parse a configuration string (e.g. "30 min", "1 y") into a duration object.
+            If the provided duration string is not correct it defaults to the duration given in defaultDurationString
+            </summary>
+            <param name="durationString">string to parse</param>
+            <param name="defaultDurationString">default value to use if the parsing fails</param>
+            <param name="variableName">name of the variable (for logging)</param>
+            <returns>the duration as object and as configuration string</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.ExceptionHelper.ToExceptionMessage(System.Exception)">
+            <summary>
+            Transforms an exception object into a String that may be displayed to the user.
+            </summary>
+            <param name="exception">The exception object</param>
+            <returns>The exception message</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.FormulaHelper.EscapeStringAsFormula(System.String)">
+            <summary>
+            Convert a plain string into a formula that represents a string scalar.
+            </summary>
+            <param name="input">A plain string.</param>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.IEnumerableExtensions">
+            <summary>
+            This class provides extensions to IEnumerable interface
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.IEnumerableExtensions.ToHashSet``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>
+            Converts an IEnumerable into a HashSet eliminating the duplicates
+            </summary>
+            <typeparam name="T">The type of elements in the IEnumerable</typeparam>
+            <param name="source">the input IEnumerable</param>
+            <param name="comparer">the equality comparer or null to use the default System.Collections.Generic.EqualityComparer</param>
+            <returns></returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.SecretsHelper">
+            <summary>
+            Utility for accessing secret configuration fields from external files.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.SecretsHelper.ResolveSecret(System.String)">
+            <summary>
+            Gets the secret from the secretInputString. The input may contain a reference to a secret file in
+            the form SECRETS_FILE:/path/to/the/secrets/file.
+            The file may be also relative to the agent data_dir.
+            </summary>
+            <param name="secretInputString">the input as it comes from the configuration file (can be null)</param>
+            <returns>
+                null if the input is null
+                the input if it doesn't start with the prefix "SECRETS_FILE:"
+                the string from file if the input has syntax "SECRETS_FILE:/path/to/the/credentials/file"
+            </returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.SecretsHelper.SetBasePath(System.String)">
+            <summary>
+            Sets the base path for relative secret file resolution (e.g. SECRETS_FILE:relative/path).
+            This should be only called by DefaultAgent during initialization.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.SeeqPermission">
+            <summary>
+            Represents a seeq permission
+            ToSeeqString has to match the implementation in seeq
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.SeeqPermission.IsEmpty">
+            <summary>
+            Check if the permission object has anything set into it
+            </summary>
+            <returns>true if the permission object is completely empty</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.SeeqPermission.ToSeeqString">
+            <summary>
+            Builds a permission string in a format understood by Seeq
+            </summary>
+            <returns>the seeq permission string represented by this object</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.SeeqSDKHelper.FormatApiException(Seeq.Sdk.Client.ApiException)">
+            <summary>
+            Returns a string representation of the ApiException suitable for printing/logging.
+            </summary>
+            <param name="e">the ApiException to format</param>
+            <returns>a loggable message string</returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.SingleConsumerExecutor`2">
+            <summary>
+            A wrapper class for a single thread that dispatches messages from a queue to a provided <see cref="T:System.Action"/>.
+            The thread blocks if the queue is empty.
+            </summary>
+            <typeparam name="Message">The type of message to queue</typeparam>
+            <typeparam name="Result">The type of action results, for communicating back to producers</typeparam>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.SingleConsumerExecutor`2.#ctor(System.Action{`0,System.Threading.Tasks.TaskCompletionSource{`1}})">
+            <summary>
+            Creates a SingleConsumerExecutor with the specified consumer <see cref="T:System.Action"/>.
+            </summary>
+            <param name="consumer">
+               An <see cref="T:System.Action"/> to which messages are dispatched.  Receives the <code>Message</code> as its
+               first parameter and a <see cref="T:System.Threading.Tasks.TaskCompletionSource`1"/> as its second parameter to enable
+               communication back to producers.
+            </param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.SingleConsumerExecutor`2.#ctor(System.String,System.Action{`0,System.Threading.Tasks.TaskCompletionSource{`1}})">
+            <summary>
+            Creates a SingleConsumerExecutor with the specified consumer <see cref="T:System.Action"/> and thread name.
+            </summary>
+            <param name="consumer">
+               An <see cref="T:System.Action"/> to which messages are dispatched.  Receives the <code>Message</code> as its
+               first parameter and a <see cref="T:System.Threading.Tasks.TaskCompletionSource`1"/> as its second parameter to enable
+               communication back to producers.
+            </param>
+            <param name="threadName">The name of the consumer thread</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.SingleConsumerExecutor`2.Start">
+            <summary>
+            Initializes the queue and starts the consumer thread.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.SingleConsumerExecutor`2.Stop">
+            <summary>
+            Stops the consumer thread and cleans up resources.
+            </summary>
+            <returns>A <see cref="T:System.Collections.Generic.List`1"/> of unconsumed <typeparamref name="Message"/>s</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.SingleConsumerExecutor`2.Enqueue(`0)">
+            <summary>
+            Enqueue a <typeparamref name="Message"/> to be consumed
+            </summary>
+            <param name="message">The <typeparamref name="Message"/></param>
+            <exception cref="T:System.InvalidOperationException">If the executor is not yet started</exception>
+            <returns>
+                The <see cref="T:System.Threading.Tasks.Task`1"/> that is passed to the consumer <see cref="T:System.Action"/>.  Producers can use
+                this to wait on the results of a computation.
+            </returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.ExpectTo">
+            <summary>
+            Collection of methods related to expectations on conditions
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.ExpectTo.Eventually(System.Func{System.Boolean})">
+            <summary>
+            Loops until eventually the passed condition is true. It gives false if the condition is not true in Constants.GENERAL_TIMEOUT time
+            </summary>
+            <param name="test">condition to evaluate</param>
+            <returns>true if the condition passed in the timeframe given by the Constants.GENERAL_TIMEOUT</returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.FileChangeRelativizer">
+             <summary>
+             Relativize the FileChange events and send them to the delegate as relative paths.
+            
+             This class is receiving invocation from FileWatcher and gets from it absolute file paths.
+             It converts the file paths to relative file path(relative to basePath) and sends the resulting paths to the delegate.
+             </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.FileChangeRelativizer.#ctor(System.String,Seeq.Link.SDK.Interfaces.IFileChangeListener)">
+            <summary>
+            Constructs the class responsible to relativize the paths.
+            </summary>
+            <param name="basePath">the base directory the file is relativized to</param>
+            <param name="delegateListener">the delegate FileChangeListener that</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.FileChangeRelativizer.GetRelativePath(System.String,System.String)">
+            <summary>
+            Converts an absolute file path to a relative path (relative to a given folder)
+            </summary>
+            <param name="filespec">the file</param>
+            <param name="folder">the folder</param>
+            <returns>relative path</returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.NodaTimeExtensions">
+            <summary>
+            These extension methods help reduce some of the verbosity of working with NodaTime and make it more
+            syntactically equivalent to the java.time library. Unlike the java.time library, NodaTime prefers
+            some verbosity instead of magic behavior.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.NodaTimeExtensions.AddLeniently(NodaTime.ZonedDateTime,NodaTime.Period)">
+            <summary>
+            Creates a new <see cref="T:NodaTime.ZonedDateTime"/> by adding the <see cref="T:NodaTime.Period"/> to the datetime. NodaTime
+            does not provide this functionality because there is ambiguity around timezones because their offset
+            from utc can change over time (daylight savings time for example). This method implements that by
+            finding a new <see cref="T:NodaTime.LocalDateTime"/> and then adding the timezone information back 'leniently'
+            ("ambiguous values map to the earlier of the alternatives, and 'skipped' values are shifted forward
+            by the duration of the 'gap'").
+            </summary>
+            <param name="zonedDateTime">The datetime which should be combined with the period</param>
+            <param name="period">The period of time to add to the datetime</param>
+            <returns></returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.NodaTimeExtensions.WithAlternative``1(NodaTime.Text.IPattern{``0},NodaTime.Text.IPattern{``0},System.Predicate{``0})">
+            <summary>
+            Creates a new pattern that can handle multiple different patterns. Useful if you want to omit part
+            of the format under some conditions (i.e., UTC timezone)
+            </summary>
+            <typeparam name="T">The pattern type</typeparam>
+            <param name="originalPattern">The pattern that will be tried first for parsing and will be used for
+            formatting if the predicate returns false or is not provided</param>
+            <param name="alternativePattern">The pattern that will be tried second for parsing and will be used
+            for formmating if the predicate returns true</param>
+            <param name="alternativeFormat">Specifies the condition when the alternative pattern will be used
+            for formatting instead of the original. If not provided, all formats will use the original pattern
+            </param>
+            <returns></returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.NodaTimeExtensions.GetSystemDefaultDateTimeZoneSafely">
+            <summary>
+            Gets the current timezone of the system or falls back to the using the utc timezone
+            </summary>
+            <returns>The current timezone or the UTC timezone</returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.ConnectorHelper">
+            <summary>
+            Utility for checking connection ID uniqueness.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.ConnectorHelper.IsIdUnique(System.String,System.String,System.String,log4net.ILog)">
+            <summary>
+            Check to make sure the ID for each connection is unique within that connector.
+            </summary>
+            <param name="connectionId">The ID of the connection be tested for uniqueness.</param>
+            <param name="connectionName">The name of the connection be tested for uniqueness.</param>
+            <param name="connectorName"> The host connector.</param>
+            <param name="log"> Error logging mechanism.</param>
+            <returns>true if the ID is unique.</returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.Preconditions">
+             <summary>
+              Static convenience methods that help a method or constructor check whether it was invoked
+              correctly(that is, whether its <i>preconditions</i> were met).
+            
+              If the precondition is not met, the Preconditions method throws an unchecked exception
+              of a specified type, which helps the method in which the exception was thrown communicate that
+              its caller has made a mistake.
+            
+              This is intended to be a replacement for com.google.common.base.Preconditions class from guava.
+             </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.Preconditions.CheckArgument(System.Boolean,System.String)">
+             <summary>
+             Ensures the truth of an expression involving one or more parameters to the calling method.
+            
+             It throws ArgumentException if expression is false
+             </summary>
+             <param name="expression">a boolean expression</param>
+             <param name="errorMessage">the exception message to use if the check fails</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.RequestCancellation.Check">
+             <summary>
+             Checks if this thread has been interrupted, and throws an <see cref="T:System.OperationCanceledException"/> if so.
+            
+             This is necessary anywhere we want to check for cancellation where no blocking methods are called. Methods such
+             as Thread.Sleep that throw an InterruptedException will check, but in other situations explicitly checking is necessary.
+             </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.ThreadCollection">
+            <summary>
+            A facility that manages a collection of background threads that need to be spawned and potentially all interrupted in
+            a controlled way.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.ThreadCollection.startMonitorIfNotRunning">
+            <summary>
+            Starts a new monitor thread for the thread collection if one isn't already running.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Utilities.ThreadCollection.ID">
+            <summary>
+            An identifier used in log output for this object.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.ThreadCollection.Spawn(System.Action)">
+            <summary>
+            Spawns a thread that executes the supplied callback.
+            </summary>
+            <param name="callback">The callback that represents the task to be performed</param>
+            <returns>the Thread object that was spawned</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.ThreadCollection.Spawn(System.Action,System.Threading.ThreadPriority)">
+            <summary>
+            Spawns a thread that executes the supplied callback.
+            </summary>
+            <param name="callback">The callback that represents the task to be performed</param>
+            <param name="priority">The desired thread priority</param>
+            <returns>the Thread object that was spawned</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.ThreadCollection.Spawn(System.Action,System.Int64,System.Int64)">
+            <summary>
+            Spawns a thread that executes the supplied callback.
+            </summary>
+            <param name="callback">The callback that represents the task to be performed</param>
+            <param name="timeoutMillis">How long the request remains valid. After timeoutMillis milliseconds, the
+            request should be interrupted, to free up resources for future requests.</param>
+            <param name="requestId">An identifier for the request which is >= 0 and unique to the connection.
+            This ID allows for subsequent cancellation messages to be associated with the same request.</param>
+            <returns>the Thread object that was spawned</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.ThreadCollection.Spawn(System.Action,System.Int64,System.Int64,System.Threading.ThreadPriority)">
+            <summary>
+            Spawns a thread that executes the supplied callback.
+            </summary>
+            <param name="callback">The callback that represents the task to be performed</param>
+            <param name="timeoutMillis">How long the request remains valid. After timeoutMillis milliseconds, the
+            request should be interrupted, to free up resources for future requests.</param>
+            <param name="requestId">An identifier for the request which is >= 0 and unique to the connection.
+            This ID allows for subsequent cancellation messages to be associated with the same request.</param>
+            <param name="priority">The desired thread priority</param>
+            <returns>the Thread object that was spawned</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.ThreadCollection.Interrupt(System.Int64)">
+             <summary>
+             Interrupt a request, given the identifier supplied when the request was created.
+            
+             Note: interrupting a request does not mean it will terminate immediately, or at all. It only means that the
+             interrupted flag will be set on the thread.Some connectors will watch for this flag and terminate the
+             request, but others may not.
+             </summary>
+             <param name="requestId">the identifier supplied when the request was created</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.ThreadCollection.ShutDownAll">
+            <summary>
+            Shuts down all threads being managed in this collection and does not return until they are verified to have died.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Utilities.ThreadCollection.Count">
+            <summary>
+            The count of all background threads being managed by this collection.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.BatchSizeHelper">
+            <summary>
+            Monitors the time it takes to process a batch (via the Start() and Stop() methods) and recommends a new
+            batch size based on preferences for MaximumDuration.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.BatchSizeHelper.#ctor(System.Int32,System.TimeSpan)">
+            <summary>
+            Creates a new BatchSizeHelper with specified constraints.
+            </summary>
+            <param name="initialSize">The initial value for the recommended batch size.</param>
+            <param name="maximumDuration">The maximum duration for processing that the caller wants a single batch to take.</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.BatchSizeHelper.#ctor(System.Int32,System.TimeSpan,Seeq.Link.SDK.Utilities.Stopwatch)">
+            <summary>
+            Creates a new BatchSizeHelper with specified constraints. This constructor is only used by tests.
+            </summary>
+            <param name="initialSize">The initial value for the recommended batch size.</param>
+            <param name="maximumDuration">The maximum duration for processing that the caller wants a single batch to take.</param>
+            <param name="stopwatch">The stopwatch class to be used to measure time elapsed. Used for testing.</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.BatchSizeHelper.Start">
+            <summary>
+            Called to signal that a batch has started processing.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.BatchSizeHelper.Stop">
+            <summary>
+            Called to signal that a batch has stopped processing. A new BatchSize will be calculated during this call.
+            This overload should be called if the actual number of items returned in a batch never varies until the
+            final call.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.BatchSizeHelper.Stop(System.Int32)">
+            <summary>
+            Called to signal that a batch has stopped processing. A new BatchSize will be calculated during this call.
+            This overload should be called if the actual number of items returned in a batch never varies throughout
+            the process.
+            </summary>
+            <param name="actualSize">The number of items in the batch, which may differ from the recommended size</param>
+        </member>
+        <member name="P:Seeq.Link.SDK.Utilities.BatchSizeHelper.BatchSize">
+            <summary>
+            The current recommended batch size given the history of time taken to process a batch.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Utilities.BatchSizeHelper.LastDuration">
+            <summary>
+            The amount of time the last batch took to process.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.SDK.Utilities.BatchSizeHelper.LastItemsPerSecond">
+            <summary>
+            The rate of items processed in the last batch.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.FileWatcher">
+            <summary>
+            Monitors a directory for changes to a specific file and notifies the listener of any changes to the file.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.FileWatcher.#ctor(System.String,System.String,Seeq.Link.SDK.Interfaces.IFileChangeListener,System.TimeSpan,System.TimeSpan)">
+            <summary>
+            Constructor for the file watcher. Note that {@link #start()} must be called to begin watching for
+            changes to the directory.
+            </summary>
+            <param name="directory">The directory to watch for changes. Created if it does not exist.</param>
+            <param name="file">The name of the file to watch for changes.</param>
+            <param name="listener">The listener that is invoked upon the file being changed.</param>
+            <param name="pollInterval">The rate at which the file system is polled for changes.</param>
+            <param name="debouncePeriod">The period to wait before notifying the listener.</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.FileWatcher.Start">
+            <summary>
+            Start the file watcher.
+            </summary>
+            <exception cref="T:System.IO.IOException">Thrown when the directory cannot be created or watched.</exception>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.FileWatcher.CreateChecksumOfFiles(System.Collections.Generic.IEnumerable{System.IO.FileInfo})">
+            <summary>
+            Creates Checksum for a stream of paths (relative to main directory)
+            </summary>
+            <param name="filesToWatch">the files</param>
+            <returns>the dictionary of file checksums</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.FileWatcher.Stop">
+            <summary>
+            Stop this file watcher.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.FileWatcher.IsRunning">
+            <summary>
+            Determines whether or not the watcher service is running.
+            </summary>
+            <returns>True if the watcher is running, false otherwise</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.FileWatcher.Run">
+            <summary>
+            Creates a watch service on the file and invokes the listeners when the watched file changes.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.FileWatcher.GetOldChecksum(System.String)">
+            <summary>
+            Get previous checksum of the given file or null if no checksum was calculated yet
+            </summary>
+            <param name="file">the file</param>
+            <returns>the previous checksum of file</returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.FileSystemGlob">
+            <summary>
+            Utility to perform a file search using Glob syntax via <see cref="M:Seeq.Link.SDK.Utilities.FileSystemGlob.Find(System.String,System.String)"/> static member. Refer to the following article for syntax:
+            <c>https://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob</c>
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.FileSystemGlob.Find(System.String,System.String)">
+            <summary>
+            Finds all files in the system that match the globPattern.If the globPattern is not rooted, then
+            rootForRelativePaths will be used to establish the search root.
+            </summary>
+            <param name="globPattern">the pattern to search for, which can include standard "glob" wildcards including * and **</param>
+            <param name="rootForRelativePaths">the root to use for relative paths</param>
+            <returns>a list of matching paths</returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.Stopwatch">
+            <summary>
+            Thin wrapper class around System.Diagnostics.Stopwatch to facilitate mocking.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.TimeInstant">
+            <summary>
+            Representation of a Seeq timestamp which is a count of nanoseconds elapsed since Unix Epoch
+            (January 1, 1970 UTC).
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.TimeInstant.#ctor(System.Int64)">
+            <summary>
+            Construct a new TimeInstant with the count of nanoseconds elapsed since Unix Epoch (January 1, 1970 UTC).
+            </summary>
+            <param name="timestamp">Number of nanoseconds elapsed since Unix Epoch (January 1, 1970 UTC).</param>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.TimeInstant.#ctor(System.DateTime)">
+            <summary>
+            Construct a new TimeInstant from a .Net DateTime.
+            </summary>
+            <param name="dateTime">The time that the TimeInstant is to represent.</param>
+        </member>
+        <member name="P:Seeq.Link.SDK.Utilities.TimeInstant.Timestamp">
+            <summary>
+            Represents a Seeq timestamp which is a count of nanoseconds elapsed since Unix Epoch
+            (January 1, 1970 UTC). Seeq timestamps are always in UTC.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.TimeInstant.getNanosecondsSinceUnixEpoch(System.DateTime)">
+            <summary>
+            Converts a .Net DateTime to a Seeq timestamp which is a count of nanoseconds
+            elapsed since Unix Epoch (January 1, 1970 UTC).
+            </summary>
+            <param name="dateTime">The .Net DateTime that the timestamp is to represent.</param>
+            <returns>Number of nanoseconds elapsed since Unix Epoch (January 1, 1970 UTC).</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.TimeInstant.ToDateTimeRoundDownTo100ns">
+            <summary>
+            Retrieves the TimeInstant as a .Net UTC DateTime.  Important:  C# only supports 100 ns resolution.
+            Therefore a timestamp with more resolution will be rounded down to the nearest 100 ns.
+            For example:<para />
+            5678 ns becomes a DateTime equivalent to 5600 ns<para />
+            5600 ns becomes a DateTime equivalent to 5600 ns
+            </summary>
+            <returns>The .Net UTC DateTime representation of the TimeInstant.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.TimeInstant.ToDateTimeRoundUpTo100ns">
+            <summary>
+            Retrieves the TimeInstant as a .Net UTC DateTime.  Important:  C# only supports 100 ns resolution.
+            Therefore a timestamp with more resolution will be rounded up to the nearest 100 ns.
+            For example:<para />
+            5678 ns becomes a DateTime equivalent to 5700 ns<para />
+            5600 ns becomes a DateTime equivalent to 5600 ns
+            </summary>
+            <returns>The .Net UTC DateTime representation of the TimeInstant.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.TimeInstant.TimestampToDateTimeRoundDownTo100ns(System.Int64)">
+            <summary>
+            Converts a Seeq timestamp to a .NET UTC DateTime. Seeq timestamps are
+            a count of nanoseconds elapsed since Unix Epoch (January 1, 1970 UTC).
+            Important:  C# only supports 100 ns resolution. Therefore a timestamp with more resolution
+            will be rounded down to the nearest 100 ns.  For example:<para />
+            5678 ns becomes a DateTime equivalent to 5600 ns<para />
+            5600 ns becomes a DateTime equivalent to 5600 ns
+            </summary>
+            <param name="timestamp">Number of nanoseconds elapsed since Unix Epoch (January 1, 1970 UTC).</param>
+            <returns>The UTC DateTime representation of the Seeq timestamp.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.TimeInstant.TimestampToDateTimeRoundUpTo100ns(System.Int64)">
+            <summary>
+            Converts a Seeq timestamp to a .NET UTC DateTime. Seeq timestamps are
+            a count of nanoseconds elapsed since Unix Epoch (January 1, 1970 UTC).
+            Important:  C# only supports 100 ns resolution. Therefore a timestamp with more resolution
+            will be rounded up to the nearest 100 ns.  For example:<para />
+            5678 ns becomes a DateTime equivalent to 5700 ns<para />
+            5600 ns becomes a DateTime equivalent to 5600 ns
+            </summary>
+            <param name="timestamp">Number of nanoseconds elapsed since Unix Epoch (January 1, 1970 UTC).</param>
+            <returns>The UTC DateTime representation of the Seeq timestamp.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.TimeInstant.DateTimeToTimestamp(System.DateTime)">
+            <summary>
+            Converts a .Net DateTime to a Seeq timestamp which is a count of nanoseconds
+            elapsed since Unix Epoch (January 1, 1970 UTC).
+            </summary>
+            <param name="dateTime">The .Net DateTime that the timestamp is to represent.</param>
+            <returns>The Seeq timestamp representation of the .Net DateTime.</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.TimeInstant.RoundUp(System.Int64)">
+            <summary>
+            Round up a TimeInstant to a multiple of nanoseconds.<para />
+            Example: TimeInstant = 1232 ns. TimeInstant.roundUp(100) = 1300 ns<para />
+            Example: TimeInstant = -1232 ns. TimeInstant.roundUp(100)= -1200 ns
+            </summary>
+            <param name="multiple_ns">The multiple of nanoseconds to round to such as 1, 10, 100, 1000 etc</param>
+            <returns> The rounded result</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.TimeInstant.RoundTimestampUp(System.Int64,System.Int64)">
+            <summary>
+            Round up a timestamp to a multiple of 1, 10, 100, etc.<para />
+            Example: roundTimestampUp( 1232,100) = 1300<para />
+            Example: roundTimestampUp(-1232,100) = -1200
+            </summary>
+            <param name="timestamp">The timestamp to round</param>
+            <param name="multiple">The multiple to round to such as 1, 10, 100, 1000 etc</param>
+            <returns>The rounded result</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.TimeInstant.RoundDown(System.Int64)">
+            <summary>
+            Round down a TimeInstant to a multiple of nanoseconds.<para />
+            Example: TimeInstant = 1232 ns. TimeInstant.roundDown(100) = 1200 ns<para />
+            Example: TimeInstant = -1232 ns. TimeInstant.roundDown(100)= -1300 ns
+            </summary>
+            <param name="multiple_ns">The multiple of nanoseconds to round to such as 1, 10, 100, 1000 etc</param>
+            <returns>The rounded result</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.TimeInstant.Decrement">
+            <summary>
+            Subtract a nanosecond from this time.
+            </summary>
+            <returns>The time exactly 1 nanosecond previous to the time represented by this instance</returns>
+            <exception cref="T:System.OverflowException">If this timestamp is already at the minimum representable time</exception>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.TimeInstant.Increment">
+            <summary>
+            Add a nanosecond to this time
+            </summary>
+            <returns>The time exactly 1 nanosecond after the time represented by this instance</returns>
+            <exception cref="T:System.OverflowException">If this timestamp is already at the maximum representable time</exception>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.TimeInstant.RoundTimestampDown(System.Int64,System.Int64)">
+            <summary>
+            Round down a timestamp to a multiple of 1, 10, 100, etc.<para />
+            Example: roundTimestampDown( 1232,100) = 1200<para />
+            Example: roundTimestampDown(-1232,100) = -1300
+            </summary>
+            <param name="timestamp">The timestamp to round</param>
+            <param name="multiple">The multiple to round to such as 1, 10, 100, 1000 etc</param>
+            <returns>The rounded result</returns>
+        </member>
+        <member name="M:Seeq.Link.SDK.Utilities.TimeInstant.ParseIso(System.String)">
+            <summary>
+            Parses a string in the ISO format "2021-02-14T15:23:54.384758575Z" into a TimeInterval. Note
+            that only this string format is supported. Sub-nanosecond precision will be ignored (floored).
+            </summary>
+            <param name="str">A string in ISO format "2021-02-14T15:23:54.384758575Z"</param>
+            <returns>The TimeInstant corresponding to the specified string.</returns>
+        </member>
+        <member name="T:Seeq.Link.SDK.Utilities.Sample">
+            <summary>
+            Represents a sample data point from a signal, with a key (time) and value (number or string).
+            </summary>
+        </member>
+    </members>
+</doc>

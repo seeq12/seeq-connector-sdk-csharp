@@ -1,0 +1,487 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Seeq.Link.Agent</name>
+    </assembly>
+    <members>
+        <member name="T:Seeq.Link.Agent.Agent">
+            <summary>
+            The Agent performs the following duties:
+            <ul>
+            <li>Establish a WebSocket connection to the Seeq Server(the 'linkURL') via the passed-in SeeqConnection Object</li>
+            <li>Load and initialize connectors via the passed-in ConnectorLoader Object</li>
+            <li>Supply global services to the connectors via the <see cref="T:Seeq.Link.SDK.Interfaces.IAgentService"/> interface, which also provides access to the Seeq
+            Server REST API</li>
+            </ul>
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.Agent.HeartbeatPeriod">
+            <summary>
+            Dictates how often the Agent sends a "heart-beat" to Seeq Server to announce that it is still alive.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.Agent.ConnectorLoader">
+            <summary>
+            The ConnectorLoader interface to be used to find and load connector assemblies.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.Agent.SeeqServerName">
+            <summary>
+            The name of the Seeq Server, as announced via an incoming message
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.Agent.Agent.agentHelper">
+            <summary>
+            The helper used to build the agent identity string
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.Agent.Agent.remoteConfigChangeListener">
+            <summary>
+            Listener to be informed when agent/connector config has changed on the appserver
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.Agent.Agent.configService">
+            <summary>
+            Provides methods to load and save configuration objects
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.Agent.DisplayName">
+            <summary>
+            The display name of the Agent
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.Agent.DataFolder">
+            <summary>
+            The path of the data folder for configuration, logs, and Seeq data
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.Agent.RemoteAgent">
+            <summary>
+            Whether this agent is a remote agent
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.Agent.Agent.seeqWsConnection">
+            <summary>
+            The SeeqWsConnection interface to be used to establish bi-directional communication with Seeq Server.
+            </summary>
+        </member>
+        <member name="F:Seeq.Link.Agent.Agent.seeqHttpConnection">
+            <summary>
+            The SeeqHttpConnection interface to be used to communicate with the Seeq Server using the API.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.Agent.ApiProvider">
+            <summary>
+            Provides methods to construct Seeq API objects.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.Agent.IndexingApiProvider">
+            <summary>
+            Provides API provider instance that should be used during indexing.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.Agent.Connectors">
+            <summary>
+            The set of connectors that have been loaded. Disabled connectors will be in this list, even though they have not been initialized.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.Agent.Name">
+            <summary>
+            The name of the Agent, which is used in various communications and as the name of configuration file.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.Agent.Agent.getSimpleVersion">
+            <summary>
+            Our C# version contains the commit hash, but we don't want to return that to the UI. (The Java Agent doesn't include it.)
+            </summary>
+            <returns>A simple version, i.e. 0.44.00-BETA.</returns>
+        </member>
+        <member name="M:Seeq.Link.Agent.Agent.handleConnectionInitiatedIndexRequest(Seeq.Link.SDK.Interfaces.IDatasourceConnection,Seeq.Link.SDK.Interfaces.SyncMode)">
+            <summary>
+            Handle on-demand indexing requested by the connection itself
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.Agent.Agent.VerifyAppserverConnectionStatus">
+            <summary>
+            Verifies the connections to appserver to make sure we're still connected and able to POST agent status.
+            If we've been disconnected or unable to POST agent status for too long, a restart of the agent will be
+            requested to attempt to re-establish connections to appserver.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.Agent.Agent.resetWatchdog(Seeq.Link.Agent.Watchdog.WatchdogTimer)">
+            <summary>
+            Resets the watchdog timer if the watchdog is initialised.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.Agent.Agent.IsEngageFinalized">
+            <summary>
+            Used by tests to know when engage is finished
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.Agent.Interfaces.ILoginAuthManager">
+            
+             Manages logging into Seeq's REST API and retrieving an authentication token.
+            
+        </member>
+        <member name="E:Seeq.Link.Agent.Interfaces.ILoginAuthManager.AgentKeyModified">
+            
+             An event that is triggered when the agent key file is modified or deleted.
+            
+        </member>
+        <member name="P:Seeq.Link.Agent.Interfaces.ILoginAuthManager.AuthToken">
+            
+             Returns an authentication token for Seeq's API, or null if it is not available.
+            
+        </member>
+        <member name="M:Seeq.Link.Agent.Interfaces.ILoginAuthManager.Logout">
+            
+             Invalidate any stored authentication token so we'll be forced to log in again with fresh credentials.
+            
+        </member>
+        <member name="T:Seeq.Link.Agent.Interfaces.IAgentKeyReader">
+            
+             Encapsulates the reading of an agent key, including monitoring for modifications or deletions and notifying a
+             listener.
+            
+        </member>
+        <member name="E:Seeq.Link.Agent.Interfaces.IAgentKeyReader.AgentKeyModified">
+            
+             An event that is triggered when the agent key file is modified or deleted.
+            
+        </member>
+        <member name="P:Seeq.Link.Agent.Interfaces.IAgentKeyReader.AgentKeyPath">
+            
+             Get the path to the agent key file.
+            
+        </member>
+        <member name="P:Seeq.Link.Agent.Interfaces.IAgentKeyReader.AgentKeyCredential">
+            
+             Returns the AgentKeyCredential or null if it is not available.
+            
+        </member>
+        <member name="M:Seeq.Link.Agent.Interfaces.IAgentKeyReader.Initialize">
+            
+             Reads the agent key in (if it exists) and begins watching the file for creation/modification/deletion.
+            
+        </member>
+        <member name="M:Seeq.Link.Agent.Interfaces.IAgentKeyReader.Destroy">
+            
+             Shuts down the file watcher for the agent key file.
+            
+        </member>
+        <member name="T:Seeq.Link.Agent.Interfaces.IAgent">
+            <summary>
+            The agent interface facilitates initialization/destruction of agents, and allows for querying of the sum of all connections.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.Agent.Interfaces.IAgent.Initialize(System.String,Seeq.Link.Agent.Interfaces.ISeeqWsConnection,Seeq.Link.Agent.Interfaces.ISeeqHttpConnection,Seeq.Link.Agent.Interfaces.IConnectorLoader,Seeq.Link.SDK.Interfaces.IConfigService,System.String,System.Boolean,Seeq.Utilities.RemoteAppender,Seeq.Link.SDK.Interfaces.IRemoteConfigChangeListener,System.Uri)">
+            <summary>
+            Agents have several dependencies, as detailed in the param documentation. The initialization call will load connectors and,
+            if they are enabled in the Agent's connector configuration (which they are by default), will initialize them. Typically,
+            a connector will detect established connection configurations and attempt to make connections automatically, but that is
+            dependent on the connector implementation.
+            </summary>
+            <param name="name">The name of the Agent, which is used in various communications and as the name of configuration file.</param>
+            <param name="seeqWsConnection">The Seeq Server bi-directional connection interface.</param>
+            <param name="seeqHttpConnection">The Seeq Server HTTP connection interface for communication using the API.</param>
+            <param name="connectorLoader">The interface used to find and load connectors.</param>
+            <param name="configService">The interface used to load configuration information.</param>
+            <param name="dataFolder">The path of the data folder for configuration, logs, and Seeq data</param>
+            <param name="isRemoteAgent">True if this agent is a remote agent that should use compression</param>
+            <param name="remoteAppender">The remote appender to harvest log entries from. Only supply when isRemoteAgent is true.</param>
+            <param name="remoteConfigChangeListener">The listener to be informed when agent / connector configuration changed remotely.</param>
+            <param name="seeqExternalUrl">The URL for Seeq users. (The agent connects on the private URL.)</param>
+        </member>
+        <member name="M:Seeq.Link.Agent.Interfaces.IAgent.Destroy">
+            <summary>
+            Destroys all connectors and stops sending heartbeats to the Seeq Server.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.Interfaces.IAgent.Connections">
+            <summary>
+            Provides a collection of connections, which represents the union of all connections being managed by all connectors.
+            </summary>
+            <returns>The union of all connections on all connectors.</returns>
+        </member>
+        <member name="T:Seeq.Link.Agent.Interfaces.IConnectorLoader">
+            <summary>
+            The interface that is used to load Connector DLLs into memory and inventory the
+            ConnectorTypes that are supported.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.Agent.Interfaces.IConnectorLoader.Initialize(System.String[])">
+            <summary>
+            Initializes the connector loader with a set of search paths to look for connectors on.
+            </summary>
+            <param name="connectorSearchPaths">An array of search paths, which may contain "glob" wildcards.</param>
+        </member>
+        <member name="M:Seeq.Link.Agent.Interfaces.IConnectorLoader.LoadConnectorDLLs">
+            <summary>
+            Searches for connectors on the search path, loads any that it finds, and returns
+            a list of constructed connectors that implemented <see cref="T:Seeq.Link.SDK.Interfaces.IConnector"/>.
+            </summary>
+            <returns>A list of constructed connectors that implemented <see cref="T:Seeq.Link.SDK.Interfaces.IConnector"/></returns>
+        </member>
+        <member name="T:Seeq.Link.Agent.Interfaces.ISeeqHttpConnection">
+            <summary>
+            The interface used for HTTP communication with the Seeq API.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.Interfaces.ISeeqHttpConnection.ApiProvider">
+            <summary>
+            Provides instances of API objects.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.Interfaces.ISeeqHttpConnection.IndexingApiProvider">
+            <summary>
+            Provides API provider instance that should be used during indexing.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.Interfaces.ISeeqHttpConnection.RestURL">
+            <summary>
+            The URL for the REST API this connection is utilizing.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.Agent.Interfaces.AgentMessageHandler">
+            <summary>
+            Delegate to handle the reception of messages from the Seeq Application Server.
+            </summary>
+            <param name="sender">The connection that the message was received from.</param>
+            <param name="message">The message received from the Application Server.</param>
+        </member>
+        <member name="T:Seeq.Link.Agent.Interfaces.ISeeqWsConnection">
+            <summary>
+            The interface used for basic communication with the Seeq server across a Websocket.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.Agent.Interfaces.ISeeqWsConnection.SendMessage(System.Byte[])">
+            <summary>
+            Send a message to the Seeq Application server.
+            </summary>
+            <param name="message">The message to be sent to the Application Server.</param>
+            <returns>True if message was sent successfully.</returns>
+        </member>
+        <member name="E:Seeq.Link.Agent.Interfaces.ISeeqWsConnection.MessageReceived">
+            <summary>
+            Event to handle the reception of messages from the Seeq Application Server.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.Agent.LoginAuthManager">
+            
+             Manages logging into Seeq's REST API and retrieving an authentication token.
+            
+        </member>
+        <member name="P:Seeq.Link.Agent.LoginAuthManager.AuthToken">
+            
+             Log into Seeq and retrieve an authentication token. To prevent unnecessary requests, the authentication token
+             is stored by this class in memory.
+            
+             <returns>An authentication token which can be used to log into Seeq, or null if the login attempt failed.</returns>
+            
+        </member>
+        <member name="M:Seeq.Link.Agent.LoginAuthManager.Logout">
+            
+             Invalidate any stored authentication token so we'll be forced to log in again with fresh credentials.
+            
+        </member>
+        <member name="M:Seeq.Link.Agent.AgentKeyReader.Initialize">
+            <summary>
+            Reads the agent key in (if it exists) and begins watching the file for creation/modification/deletion
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.Agent.AgentKeyReader.Destroy">
+            <summary>
+            Shuts down the file watcher for the agent key file.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.Agent.AgentStrings">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.AgentStrings.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.AgentStrings.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.AgentStrings.Connected">
+            <summary>
+              Looks up a localized string similar to Connected to {0}..
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.AgentStrings.ConnectingWithDefaultCredentials">
+            <summary>
+              Looks up a localized string similar to Connecting to {0} with default credentials....
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.AgentStrings.Disabled">
+            <summary>
+              Looks up a localized string similar to Disabled..
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.AgentStrings.Disconnected">
+            <summary>
+              Looks up a localized string similar to Disconnected..
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.Agent.ConnectorLoader">
+            <summary>
+            Loads any DLLs found on its ConnectorSearchPaths properties that have classes that
+            implement the <see cref="T:Seeq.Link.SDK.Interfaces.IConnector"/> interface.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.ConnectorLoader.ConnectorSearchPaths">
+             <summary>
+             A list of file paths with a terminating file pattern that dictates
+             where the loader will search for DLLs. Glob wildcards can be used.
+            
+             For example:
+             ..\..\..\**\Seeq.Link.Connector.PI\*.dll
+            
+             Relative and absolute file paths can be supplied. If relative, the
+             folder that the agent DLL is located in is used as the root.
+             </summary>
+        </member>
+        <member name="M:Seeq.Link.Agent.SeeqHttpConnection.Connect">
+            <summary>
+            Handles the act of connecting to the Seeq Application Server.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.Agent.SeeqHttpConnection.Monitor">
+            <summary>
+            Ping the API to determine if the client is connected and authenticated.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.Agent.SeeqHttpConnection.Disconnect">
+            <summary>
+            Disconnect from Seeq Application Server by logging out.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.Agent.Program.SetRestartRequested(System.Boolean)">
+            <summary>
+            Requests a restart of the agent to re-establish connections to appserver.
+            </summary>
+            <param name="restart">True if agent restart should be requested, false otherwise.</param>
+        </member>
+        <member name="M:Seeq.Link.Agent.Program.IsRestartRequested">
+            <summary>
+            Returns whether an agent restart has been requested or not.
+            </summary>
+            <returns>True if agent restart has been requested, false otherwise.</returns>
+        </member>
+        <member name="T:Seeq.Link.Agent.DotNetWebSocketConnection">
+             <summary>
+             Handles a WebSocket-based connection to the Seeq Application Server using .NET's ClientWebSocket.
+            
+             This implementation has support for proxy servers but requires Windows Server 2012.
+             </summary>
+        </member>
+        <member name="M:Seeq.Link.Agent.DotNetWebSocketConnection.Connect">
+            <summary>
+            Handles the act of connecting to the Seeq Application Server.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.Agent.DotNetWebSocketConnection.Disconnect">
+            <summary>
+            Disconnect from and disable reconnect for the Seeq Application Server.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.DotNetWebSocketConnection.ConnectionId">
+            <summary>
+            The connection string for the Seeq Application Server. This is the same as the URL property.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.Agent.Watchdog">
+            <summary>
+            Keeps a series of named timers and requires a call to Reset() in order to suppress "barking".
+            Used to trigger a reset of the agent if the connection to the server goes down or the heartbeat
+            thread gets stuck or dies.
+            </summary>
+        </member>
+        <member name="T:Seeq.Link.Agent.WebSocket4NetConnection">
+             <summary>
+             Handles a WebSocket-based connection to the Seeq Application Server using WebSocket4Net.
+            
+             This implementation runs on Windows Server 2008 R2 but does not have support for proxy servers.
+             </summary>
+        </member>
+        <member name="M:Seeq.Link.Agent.WebSocket4NetConnection.Connect">
+            <summary>
+            Handles the act of connecting to the Seeq Application Server.
+            </summary>
+        </member>
+        <member name="M:Seeq.Link.Agent.WebSocket4NetConnection.Disconnect">
+            <summary>
+            Disconnect from and disable reconnect for the Seeq Application Server.
+            </summary>
+        </member>
+        <member name="P:Seeq.Link.Agent.WebSocket4NetConnection.ConnectionId">
+            <summary>
+            The connection string for the Seeq Application Server. This is the same as the URL property.
+            </summary>
+        </member>
+        <member name="T:Seeq.Utilities.FixedSizeConcurrentQueue`1">
+            <summary>
+            Represents a thread-safe first in-first out (FIFO) collection that will automatically de-queue if it overflows
+            its fixed size.
+            </summary>
+            <typeparam name="T">The type of the elements contained in the queue</typeparam>
+        </member>
+        <member name="M:Seeq.Utilities.FixedSizeConcurrentQueue`1.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the System.Collections.Concurrent.ConcurrentQueue class.
+            </summary>
+            <param name="fixedSize">The maximum size of the queue, after which items will be de-queued to make room.</param>
+        </member>
+        <member name="P:Seeq.Utilities.FixedSizeConcurrentQueue`1.FixedSize">
+            <summary>
+            The maximum size of the queue, after which items will be de-queued to make room.
+            </summary>
+        </member>
+        <member name="M:Seeq.Utilities.FixedSizeConcurrentQueue`1.Enqueue(`0)">
+            <summary>
+            Adds an object to the end of the System.Collections.Concurrent.ConcurrentQueue.
+            </summary>
+            <param name="item">
+            The object to add to the end of the System.Collections.Concurrent.ConcurrentQueue.
+            The value can be a null reference (Nothing in Visual Basic) for reference types.
+            </param>
+        </member>
+        <member name="M:Seeq.Utilities.FixedSizeConcurrentQueue`1.TryDequeue(`0@)">
+            <summary>
+            Attempts to remove and return the object at the beginning of the System.Collections.Concurrent.ConcurrentQueue.
+            </summary>
+            <param name="result">
+            When this method returns, if the operation was successful, result contains the
+            object removed. If no object was available to be removed, the value is unspecified.
+            </param>
+            <returns>
+            true if an element was removed and returned from the beginning of the System.Collections.Concurrent.ConcurrentQueue
+            successfully; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Seeq.Utilities.FixedSizeConcurrentQueue`1.GetAndClearOverflowFlag">
+            <summary>
+            Returns true if queue has overflowed at some point since the last time this was called.
+            </summary>
+            <returns>true if queue has overflowed</returns>
+        </member>
+        <member name="P:Seeq.Utilities.FixedSizeConcurrentQueue`1.Count">
+            <summary>
+            Returns the number of items currently in the queue.
+            </summary>
+        </member>
+        <member name="T:Seeq.Utilities.RemoteAppender">
+            <summary>
+            This Log4Net appender stores log events in fixed-size queue that is drained by the Seeq Agent when
+            it sends the logs up to Appserver every few seconds.
+            </summary>
+        </member>
+    </members>
+</doc>
