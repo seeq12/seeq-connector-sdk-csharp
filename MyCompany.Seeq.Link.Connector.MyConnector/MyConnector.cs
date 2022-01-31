@@ -49,9 +49,6 @@ namespace MyCompany.Seeq.Link.Connector {
 
                 // Add the new connection configuration to its parent connector
                 this.connectorConfig.Connections.Add(connectionConfig);
-
-                // Save the new (default) configuration file so that the user can see it and modify it themselves
-                this.connectorService.SaveConfig(this.connectorConfig);
             }
 
             // Now instantiate your connections based on the configuration.
@@ -61,11 +58,12 @@ namespace MyCompany.Seeq.Link.Connector {
                     // If the ID is null, then the user likely copy/pasted an existing connection configuration and
                     // removed the ID so that a new one would be generated. Generate the new one!
                     connectionConfig.Id = Guid.NewGuid().ToString();
-                    this.connectorService.SaveConfig(this.connectorConfig);
                 }
 
                 this.connectorService.AddConnection(new MyConnection(this, connectionConfig));
             }
+            // Finally, save the connector configuration in a file for the user to view and modify as needed
+            this.connectorService.SaveConfig(this.connectorConfig);
         }
 
         public void Destroy() {
