@@ -72,8 +72,8 @@
     <Reference Include="NDesk.Options, Version=0.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NDesk.Options.0.2.1\lib\NDesk.Options.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NodaTime, Version=2.2.4.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
       <HintPath>..\packages\NodaTime.2.2.4\lib\net45\NodaTime.dll</HintPath>
@@ -87,17 +87,17 @@
     <Reference Include="RestSharp, Version=106.12.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.106.12.0\lib\net452\RestSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Seeq.Link.Agent, Version=56.1.5.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Seeq.Link.Agent.56.1.5\lib\net48\Seeq.Link.Agent.exe</HintPath>
+    <Reference Include="Seeq.Link.Agent, Version=56.1.6.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Seeq.Link.Agent.56.1.6\lib\net48\Seeq.Link.Agent.exe</HintPath>
     </Reference>
-    <Reference Include="Seeq.Link.SDK, Version=56.1.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.Link.SDK.56.1.5\lib\net48\Seeq.Link.SDK.dll</HintPath>
+    <Reference Include="Seeq.Link.SDK, Version=56.1.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Seeq.Link.SDK.56.1.6\lib\net48\Seeq.Link.SDK.dll</HintPath>
     </Reference>
-    <Reference Include="Seeq.SDK, Version=56.1.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.SDK.56.1.5\lib\net45\Seeq.SDK.dll</HintPath>
+    <Reference Include="Seeq.SDK, Version=56.1.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Seeq.SDK.56.1.6\lib\net45\Seeq.SDK.dll</HintPath>
     </Reference>
-    <Reference Include="Seeq.Utilities, Version=56.1.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.Utilities.56.1.5\lib\net48\Seeq.Utilities.dll</HintPath>
+    <Reference Include="Seeq.Utilities, Version=56.1.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Seeq.Utilities.56.1.6\lib\net48\Seeq.Utilities.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
