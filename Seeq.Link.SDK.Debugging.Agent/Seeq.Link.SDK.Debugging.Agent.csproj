@@ -87,17 +87,17 @@
     <Reference Include="RestSharp, Version=106.12.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.106.12.0\lib\net452\RestSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Seeq.Link.Agent, Version=58.3.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Seeq.Link.Agent.58.3.0\lib\net48\Seeq.Link.Agent.exe</HintPath>
+    <Reference Include="Seeq.Link.Agent, Version=59.1.1.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Seeq.Link.Agent.59.1.1\lib\net48\Seeq.Link.Agent.exe</HintPath>
     </Reference>
-    <Reference Include="Seeq.Link.SDK, Version=58.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.Link.SDK.58.3.0\lib\net48\Seeq.Link.SDK.dll</HintPath>
+    <Reference Include="Seeq.Link.SDK, Version=59.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Seeq.Link.SDK.59.1.1\lib\net48\Seeq.Link.SDK.dll</HintPath>
     </Reference>
-    <Reference Include="Seeq.SDK, Version=58.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.SDK.58.3.0\lib\net45\Seeq.SDK.dll</HintPath>
+    <Reference Include="Seeq.SDK, Version=59.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Seeq.SDK.59.1.1\lib\net45\Seeq.SDK.dll</HintPath>
     </Reference>
-    <Reference Include="Seeq.Utilities, Version=58.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.Utilities.58.3.0\lib\net48\Seeq.Utilities.dll</HintPath>
+    <Reference Include="Seeq.Utilities, Version=59.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Seeq.Utilities.59.1.1\lib\net48\Seeq.Utilities.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
