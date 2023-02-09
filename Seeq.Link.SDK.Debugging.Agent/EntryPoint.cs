@@ -22,12 +22,8 @@ namespace Seeq.Link.Debugging.Agent {
             // Provide a name for the agent that differentiates it from the "normal" .NET Agent
             config.Name = ".NET Connector SDK Debugging Agent";
             config.SeeqUrl = new Uri("https://yourserver.seeq.host");
-
-            // Specify the data folder; change this if you've configured Seeq to use a different location!
-            config.DataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Seeq", "data");
             config.IsRemoteAgent = true;
             // Set the connectorSearchPaths to only find connectors within the connector-sdk folder
-
             string executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
             config.DataFolder = Path.Combine(Path.GetDirectoryName(executingAssemblyLocation), "data");
 
