@@ -8,20 +8,12 @@ and facilitate access to data in Seeq.
 Seeq connectors can be written in Java or C# but this repository is intended to be used for developing C# Connectors. 
 C# development requires Windows operating system.
 
-It is recommended that you initially develop with a "private" version of Seeq Server that is unrelated to your
-production or official testing systems. You should install this private version directly on your development machine to
-minimize the amount of initial setup and troubleshooting.
-
-Install the version of Seeq Server that matches the version of the Connector SDK that you are using.
-
-If you need a license file for this purpose, contact [support@seeq.com](mailto:support@seeq.com).
-
 # Environment Setup
 
 ## The Build Environment
 
 The C# version of the SDK depends upon Microsoft Visual Studio for building and debugging. This SDK is tested with
-Microsoft Visual Studio 2015.
+Microsoft Visual Studio 2015 - 2019.
 
 The C# SDK also depends on .NET version 4.8. When upgrading .NET, you may need to restart your machine for the new
 version to take effect.
@@ -29,8 +21,8 @@ version to take effect.
 To begin using the SDK:
 
 1. Launch the Windows Command Prompt.
-2. Change directory to the root directory of this SDK.
-3. At the prompt, execute the *environment script*: Type `environment`.
+1. Change directory to the root directory of this SDK.
+1. At the prompt, execute the *environment script*: Type `environment`.
 
 Throughout this document, we will refer to the *build environment*, which is simply a command prompt or terminal window
 where you've executed the environment script as described.
@@ -44,8 +36,6 @@ From your build environment, execute the `build` command. If it fails for some (
 (including the error message) to [support@seeq.com](mailto:support@seeq.com). To clean the project and rebuild it 
 from scratch execute in your build environment `clean` command followed by `build` command.
 
-Make sure your private Seeq Server is running on this machine.
-
 From your build environment, execute the `ide` command. This command will launch Microsoft Visual Studio (VS), which you
 will use for development and debugging.
 
@@ -53,30 +43,30 @@ Take the following steps to confirm a properly configured development environmen
 
 1. Once VS is finished loading, right click on the `Seeq.Link.SDK.Debugging.Agent` project in *Solution Explorer* and
    select *Set as Startup Project*.
-2. In the solution configuration dropdown, select 'Debug'. **This step is required to ensure the necessary files are
+1. In the solution configuration dropdown, select 'Debug'. **This step is required to ensure the necessary files are
    built for debugging.**
-3. Select *Build* > *Build Solution* from the main menu.
-4. Wait for building to finish.
-5. Confirm that no compile errors occurred.
-6. Open the `EntryPoint.cs` file in the `Seeq.Link.SDK.Debugging.Agent` project.
-7. If you have configured Seeq to use a different location for the data folder than the default, update the snippet on
-   line 26 with the proper path. **This step is required to ensure that your agent can find the SSL keys to communicate
-   with Seeq Server.**
-8. Set a breakpoint (*Debug* > *Toggle Breakpoint*) on the first line of the `Main()` function.
-9. Select *Debug* > *Start Debugging* to launch the debugger.
-10. You should hit the breakpoint you set. **This verifies that VS built your project correctly and can launch it in its
+1. Select *Build* > *Build Solution* from the main menu.
+1. Wait for building to finish.
+1. Confirm that no compile errors occurred.
+1. Open the `EntryPoint.cs` file in the `Seeq.Link.SDK.Debugging.Agent` project.
+1. Modify the URL on the line `config.SeeqUrl = new Uri("https://yourserver.seeq.host");` to match your Seeq server
+1. Modify the `agent_api_key` in `Seeq.Link.SDK.Debugging.Agent\data\keys\agent.key` my replacing the `<your_agent_api_key>`
+   with the key that is located in the top right of your Seeq Administration page
+1. Set a breakpoint (*Debug* > *Toggle Breakpoint*) on the first line of the `Main()` function.
+1. Select *Debug* > *Start Debugging* to launch the debugger.
+1. You should hit the breakpoint you set. **This verifies that VS built your project correctly and can launch it in its
     debugger.**
-11. With execution paused at the breakpoint, open the `MyConnector.cs` file in the
+1. With execution paused at the breakpoint, open the `MyConnector.cs` file in the
     `MyCompany.Seeq.Link.Connector.MyConnector` and put a breakpoint on the first line of the `Initialize()` function.
     Because the connector is loaded dynamically, this breakpoint may appear broken until it is actually hit.
-12. Click *Debug* > *Continue*. You should hit the next breakpoint. **This verifies that the debugging agent can load
+1. Click *Debug* > *Continue*. You should hit the next breakpoint. **This verifies that the debugging agent can load
     the template connector correctly.**
-13. Click *Debug* > *Delete All Breakpoints* and then *Debug* > *Continue*.
-14. Bring up Seeq Workbench and click on the connections section at the top of the screen. You should
+1. Click *Debug* > *Delete All Breakpoints* and then *Debug* > *Continue*.
+1. Bring up Seeq Workbench and click on the connections section at the top of the screen. You should
     see `My Connector Type: My First Connection` in the list of connections, with 5000 items indexed.
-15. In Seeq Workbench's *Data* tab, search for `simulated`.
-16. A list of simulated signals should appear in the results. Click on any of the results.
-17. The signal should be added to the *Details* pane and a repeating waveform should be shown in the trend. **This
+1. In Seeq Workbench's *Data* tab, search for `simulated`.
+1. A list of simulated signals should appear in the results. Click on any of the results.
+1. The signal should be added to the *Details* pane and a repeating waveform should be shown in the trend. **This
     verifies that the template connector is able to index its signals and respond to data queries.**
 
 Now you're ready to start development!
