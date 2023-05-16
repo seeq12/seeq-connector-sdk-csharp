@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using Seeq.Utilities;
+using log4net.Config;
+using Seeq.Link.Agent;
 
 namespace Seeq.Link.Debugging.Agent {
 
@@ -14,10 +15,9 @@ namespace Seeq.Link.Debugging.Agent {
     public class EntryPoint {
 
         public static void Main(string[] args) {
-            log4net.Config.XmlConfigurator.Configure();
+            XmlConfigurator.Configure();
 
-            Seeq.Link.Agent.Program.Configuration config =
-                    Seeq.Link.Agent.Program.GetDefaultConfiguration();
+            Program.Configuration config = Program.GetDefaultConfiguration();
 
             // Provide a name for the agent that differentiates it from the "normal" .NET Agent
             config.Name = ".NET Connector SDK Debugging Agent";
@@ -40,7 +40,7 @@ namespace Seeq.Link.Debugging.Agent {
 
             config.ConnectorSearchPaths = searchPath + ";" + platformSpecificSearchPath;
 
-            new Seeq.Link.Agent.Program().Run(new Seeq.Link.Agent.ClassFactory(), new Seeq.Link.SDK.ClassFactory(), config);
+            new Program().Run(new ClassFactory(), new Seeq.Link.SDK.ClassFactory(), config);
         }
     }
 }
