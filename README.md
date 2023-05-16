@@ -15,7 +15,7 @@ C# development requires Windows operating system.
 The C# version of the SDK depends upon Microsoft Visual Studio for building and debugging. This SDK is tested with
 Microsoft Visual Studio 2015 - 2019.
 
-The C# SDK also depends on .NET version 4.8. When upgrading .NET, you may need to restart your machine for the new
+The C# SDK also depends on .NET 6.x. When upgrading .NET, you may need to restart your machine for the new
 version to take effect.
 
 To begin using the SDK:
