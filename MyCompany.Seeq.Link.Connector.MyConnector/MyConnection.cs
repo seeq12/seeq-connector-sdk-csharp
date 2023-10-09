@@ -139,6 +139,8 @@ namespace MyCompany.Seeq.Link.Connector {
         }
 
         public void Index(SyncMode syncMode) {
+            var rootAssetId = this.createRootAsset();
+
             // Do whatever is necessary to generate the list of signals you want to show up in Seeq. It is generally
             // preferable to use a "streaming" method of iterating through the tags. I.e., try not to hold them all in
             // memory because it is harder to scale to indexing hundreds of thousands of signals. These examples
@@ -176,8 +178,7 @@ namespace MyCompany.Seeq.Link.Connector {
                 // If you need the signals to be written to Seeq Server before any other work continues, you can
                 // call FlushSignals() on the connection service.
                 this.connectionService.PutSignal(signal);
-                
-                
+
                 ConditionInputV1 condition = new ConditionInputV1();
 
                 // The Data ID is a string that is unique within the data source, and is used by Seeq when referring
@@ -195,6 +196,8 @@ namespace MyCompany.Seeq.Link.Connector {
                 // If you need the conditions to be written to Seeq Server before any other work continues, you can
                 // call FlushConditions() on the connection service.
                 this.connectionService.PutCondition(condition);
+
+                this.createChildAsset(rootAssetId, signal.DataId, signal.Name);
             }
         }
 
@@ -258,10 +261,8 @@ namespace MyCompany.Seeq.Link.Connector {
             }
         }
 
-        public IEnumerable<Capsule> GetCapsules(GetCapsulesParameters parameters)
-        {
-            if (parameters.IsLastCertainKeyRequested)
-            {
+        public IEnumerable<Capsule> GetCapsules(GetCapsulesParameters parameters) {
+            if (parameters.IsLastCertainKeyRequested) {
                 var endTime = new TimeInstant(DateTime.UtcNow);
                 var startTime = new TimeInstant(endTime.Timestamp - parameters.MaximumDuration);
                 var lastTagValue = this.datasourceSimulator.RequestLastTagValue(
@@ -270,21 +271,19 @@ namespace MyCompany.Seeq.Link.Connector {
                     endTime
                 );
 
-                if (lastTagValue != null)
-                {
+                if (lastTagValue != null) {
                     parameters.SetLastCertainKey(new TimeInstant(lastTagValue.End));
                 }
             }
 
-            try
-            {
+            try {
                 var tagValues = this.datasourceSimulator.Query(
                     parameters.DataId,
                     parameters.StartTime,
                     parameters.EndTime,
                     parameters.CapsuleLimit
                 );
-                
+
                 // Return an enumeration to iterate through all of the capsules in the time range.
                 //
                 // IEnumerable is important to use here to avoid bringing all of the data into memory to satisfy the
@@ -293,11 +292,10 @@ namespace MyCompany.Seeq.Link.Connector {
                 //
                 // The code within this function is largely specific to the simulator example. But it should give you an idea of
                 // some of the concerns you'll need to attend to.
-                foreach (var tagValue in tagValues)
-                {
+                foreach (var tagValue in tagValues) {
                     var start = new TimeInstant(tagValue.Start);
                     var end = new TimeInstant(tagValue.End);
-                    var capsuleProperties = new List<Capsule.Property>()
+                    var capsuleProperties = new List<Capsule.Property>
                     {
                         new Capsule.Property("Value", tagValue.ToString(), "rads")
                     };
@@ -316,6 +314,35 @@ namespace MyCompany.Seeq.Link.Connector {
             // Configuration persistence is typically managed by the connector, which stores a list of all connection
             // configurations.
             this.connector.SaveConfig();
+        }
+
+        private string createRootAsset() {
+            var datasourceDataId = this.connectionService.Datasource.Id;
+
+            // create the root asset
+            var rootAsset = new AssetInputV1 {
+                DataId = datasourceDataId,
+                Name = "My Datasource Name"
+            };
+            this.connectionService.PutRootAsset(rootAsset);
+
+            return rootAsset.DataId;
+        }
+
+        private void createChildAsset(string parentDataId, string childDataId, string childAssetName) {
+            // create the child asset
+            var childAsset = new AssetInputV1 {
+                DataId = childDataId,
+                Name = childAssetName
+            };
+            this.connectionService.PutAsset(childAsset);
+
+            // create the child asset relationship to its parent
+            var relationship = new AssetTreeSingleInputV1() {
+                ChildDataId = childDataId,
+                ParentDataId = parentDataId
+            };
+            this.connectionService.PutRelationship(relationship);
         }
     }
 }
