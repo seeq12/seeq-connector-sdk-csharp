@@ -176,6 +176,25 @@ namespace MyCompany.Seeq.Link.Connector {
                 // If you need the signals to be written to Seeq Server before any other work continues, you can
                 // call FlushSignals() on the connection service.
                 this.connectionService.PutSignal(signal);
+                
+                
+                ConditionInputV1 condition = new ConditionInputV1();
+
+                // The Data ID is a string that is unique within the data source, and is used by Seeq when referring
+                // to condition data. Data ID is a string and does not need to be numeric, even though we are just
+                // using a number in this example.
+                condition.DataId = string.Format("{0}", tag.Id);
+
+                // The Name is a string that is displayed in the UI. It can change (typically as a result of a
+                // rename operation happening in the source system), but the unique Data ID preserves appropriate
+                // linkages.
+                condition.Name = tag.Name;
+
+                // PutCondition() queues items up for performance reasons and writes them in batch to the server.
+                //
+                // If you need the conditions to be written to Seeq Server before any other work continues, you can
+                // call FlushConditions() on the connection service.
+                this.connectionService.PutCondition(condition);
             }
         }
 
