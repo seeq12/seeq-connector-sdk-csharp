@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Seeq.Link.SDK.Utilities;
 
 namespace MyCompany.Seeq.Link.Connector {
 
@@ -36,6 +38,15 @@ namespace MyCompany.Seeq.Link.Connector {
                     return this.stepped;
                 }
             }
+        }
+
+        public class TagValue
+        {
+            public DateTime Start { get; set; }
+            
+            public DateTime End { get; set; }
+
+            public double Value { get; set; }
         }
 
         public DatasourceSimulator(int tagCount, TimeSpan signalPeriod) {
@@ -95,6 +106,33 @@ namespace MyCompany.Seeq.Link.Connector {
             }
 
             return value;
+        }
+
+        public TagValue RequestLastTagValue(string dataId, TimeInstant startTimestamp, TimeInstant endTimestamp)
+        {
+            return this.Query(dataId, startTimestamp, endTimestamp, 1).FirstOrDefault();
+        }
+
+        public IEnumerable<TagValue> Query(string dataId, TimeInstant startTimestamp, TimeInstant endTimestamp,
+            int limit)
+        {
+            var random = new Random();
+            var startTime = startTimestamp.ToDateTimeRoundDownTo100ns();
+            var endTime = endTimestamp.ToDateTimeRoundUpTo100ns();
+            var timespanInMs = (int) (endTime - startTime).TotalMilliseconds;
+            var timestampIncrement = timespanInMs / limit;
+
+            for (var i = 1; i <= limit; i++)
+            {
+                var start = startTime + TimeSpan.FromMilliseconds(timestampIncrement * i);
+                var end = start + TimeSpan.FromMilliseconds(10);
+                yield return new TagValue()
+                {
+                    Start = start,
+                    End = end,
+                    Value = random.NextDouble()
+                };
+            }
         }
     }
 }

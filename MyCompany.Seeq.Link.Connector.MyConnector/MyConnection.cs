@@ -23,7 +23,7 @@ namespace MyCompany.Seeq.Link.Connector {
     /// obtained via <see cref="ISeeqApiProvider"/> on <see cref="IAgentService"/> on
     /// <see cref="IDatasourceConnectionServiceV2"/>.
     /// </summary>
-    public class MyConnection : ISignalPullDatasourceConnection {
+    public class MyConnection : ISignalPullDatasourceConnection, IConditionPullDatasourceConnection {
         private readonly MyConnector connector;
         private readonly MyConnectionConfigV1 connectionConfig;
         private IDatasourceConnectionServiceV2 connectionService;
@@ -255,6 +255,60 @@ namespace MyCompany.Seeq.Link.Connector {
                 // This parameter can help control the load and memory usage that Seeq puts on an external datasource.
                 // It is typically controlled from the configuration file.
                 return this.connectionConfig.MaxResultsPerRequest;
+            }
+        }
+
+        public IEnumerable<Capsule> GetCapsules(GetCapsulesParameters parameters)
+        {
+            if (parameters.IsLastCertainKeyRequested)
+            {
+                var endTime = new TimeInstant(DateTime.UtcNow);
+                var startTime = new TimeInstant(endTime.Timestamp - parameters.MaximumDuration);
+                var lastTagValue = this.datasourceSimulator.RequestLastTagValue(
+                    parameters.DataId,
+                    startTime,
+                    endTime
+                );
+
+                if (lastTagValue != null)
+                {
+                    parameters.SetLastCertainKey(new TimeInstant(lastTagValue.End));
+                }
+            }
+
+            try
+            {
+                var tagValues = this.datasourceSimulator.Query(
+                    parameters.DataId,
+                    parameters.StartTime,
+                    parameters.EndTime,
+                    parameters.CapsuleLimit
+                );
+                
+                // Return an enumeration to iterate through all of the capsules in the time range.
+                //
+                // IEnumerable is important to use here to avoid bringing all of the data into memory to satisfy the
+                // request. The Seeq connector host will automatically "page" the data upload so that we don't hit memory
+                // ceilings on large requests. You can use C#'s "yield return" keyword to easily create lazy enumerations.
+                //
+                // The code within this function is largely specific to the simulator example. But it should give you an idea of
+                // some of the concerns you'll need to attend to.
+                foreach (var tagValue in tagValues)
+                {
+                    var start = new TimeInstant(tagValue.Start);
+                    var end = new TimeInstant(tagValue.End);
+                    var capsuleProperties = new List<Capsule.Property>()
+                    {
+                        new Capsule.Property("Value", tagValue.ToString(), "rads")
+                    };
+                    yield return new Capsule(start, end, capsuleProperties);
+                }
+
+                // Warning: Any code you put outside of the main for-loop may not be executed. Use the finally block
+                //          for any cleanup you might have to do.
+            } finally {
+                // If you have any cleanup to do, do it in this finally block. This is guaranteed to be called if
+                // iteration is short-circuited for any reason.
             }
         }
 
