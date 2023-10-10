@@ -173,6 +173,16 @@ namespace MyCompany.Seeq.Link.Connector {
                         ? InterpolationMethod.Step
                         : InterpolationMethod.Linear;
 
+                // Additional Properties are used to store and track "Scalars" which are "facts" about the signal/
+                // condition/asset i.e. a piece of data that does not change. Special care should be taken to
+                // ensure only non-null values are provided.
+                signal.AdditionalProperties = new List<ScalarPropertyV1> {
+                    new ScalarPropertyV1 {
+                        Name = "Provider",
+                        Value = "Seeq"
+                    }
+                };
+
                 // PutSignal() queues items up for performance reasons and writes them in batch to the server.
                 //
                 // If you need the signals to be written to Seeq Server before any other work continues, you can
