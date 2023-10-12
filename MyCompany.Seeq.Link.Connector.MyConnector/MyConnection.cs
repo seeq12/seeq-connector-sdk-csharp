@@ -294,7 +294,7 @@ namespace MyCompany.Seeq.Link.Connector {
                     parameters.CapsuleLimit
                 );
 
-                // Return an enumeration to iterate through all of the capsules in the time range.
+                // Return an enumeration to iterate through all the capsules in the time range.
                 //
                 // IEnumerable is important to use here to avoid bringing all of the data into memory to satisfy the
                 // request. The Seeq connector host will automatically "page" the data upload so that we don't hit memory
@@ -305,9 +305,8 @@ namespace MyCompany.Seeq.Link.Connector {
                 foreach (var tagValue in tagValues) {
                     var start = new TimeInstant(tagValue.Start);
                     var end = new TimeInstant(tagValue.End);
-                    var capsuleProperties = new List<Capsule.Property>
-                    {
-                        new Capsule.Property("Value", tagValue.ToString(), "rads")
+                    var capsuleProperties = new List<Capsule.Property> {
+                        new Capsule.Property("Value", tagValue.Value.ToString(), "rads")
                     };
                     yield return new Capsule(start, end, capsuleProperties);
                 }
