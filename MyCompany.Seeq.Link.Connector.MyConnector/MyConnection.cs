@@ -348,7 +348,7 @@ namespace MyCompany.Seeq.Link.Connector {
             this.connectionService.PutAsset(childAsset);
 
             // create the child asset relationship to its parent
-            var relationship = new AssetTreeSingleInputV1() {
+            var relationship = new AssetTreeSingleInputV1 {
                 ChildDataId = childDataId,
                 ParentDataId = parentDataId
             };
