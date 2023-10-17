@@ -276,20 +276,6 @@ namespace MyCompany.Seeq.Link.Connector {
         }
 
         public IEnumerable<Capsule> GetCapsules(GetCapsulesParameters parameters) {
-            if (parameters.IsLastCertainKeyRequested) {
-                var endTime = new TimeInstant(DateTime.UtcNow);
-                var startTime = new TimeInstant(endTime.Timestamp - parameters.MaximumDuration);
-                var lastTagValue = this.datasourceSimulator.RequestLastTagValue(
-                    parameters.DataId,
-                    startTime,
-                    endTime
-                );
-
-                if (lastTagValue != null) {
-                    parameters.SetLastCertainKey(new TimeInstant(lastTagValue.End));
-                }
-            }
-
             try {
                 var tagValues = this.datasourceSimulator.Query(
                     parameters.DataId,
