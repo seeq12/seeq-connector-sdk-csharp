@@ -40,6 +40,8 @@ namespace MyCompany.Seeq.Link.Connector {
             }
         }
 
+        // This is NOT intended for production use and is solely to model possible 
+        // datasource response structures.
         public class TagValue {
             public DateTime Start { get; }
 

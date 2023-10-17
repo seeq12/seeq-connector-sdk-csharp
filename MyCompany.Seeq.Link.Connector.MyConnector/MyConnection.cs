@@ -156,6 +156,10 @@ namespace MyCompany.Seeq.Link.Connector {
             IEnumerator<DatasourceSimulator.Tag> tags = this.datasourceSimulator.Tags;
             while (tags.MoveNext()) {
                 DatasourceSimulator.Tag tag = tags.Current;
+                string tagId = string.Format("{0}", tag.Id);
+
+                this.createChildAsset(rootAssetId, tagId, tag.Name);
+
                 SignalWithIdInputV1 signal = new SignalWithIdInputV1();
 
                 // The Data ID is a string that is unique within the data source, and is used by Seeq when referring
@@ -210,8 +214,6 @@ namespace MyCompany.Seeq.Link.Connector {
                 // If you need the conditions to be written to Seeq Server before any other work continues, you can
                 // call FlushConditions() on the connection service.
                 this.connectionService.PutCondition(condition);
-
-                this.createChildAsset(rootAssetId, signal.DataId, signal.Name);
             }
         }
 
@@ -277,7 +279,9 @@ namespace MyCompany.Seeq.Link.Connector {
 
         public IEnumerable<Capsule> GetCapsules(GetCapsulesParameters parameters) {
             try {
-                var tagValues = this.datasourceSimulator.Query(
+                // This is an example of how you may query your datasource for tag values and is specific to the
+                // simulator example. This should be replaced with a call to your own datasource-specific call.
+                IEnumerable<DatasourceSimulator.TagValue> tagValues = this.datasourceSimulator.Query(
                     parameters.DataId,
                     parameters.StartTime,
                     parameters.EndTime,
@@ -292,10 +296,10 @@ namespace MyCompany.Seeq.Link.Connector {
                 //
                 // The code within this function is largely specific to the simulator example. But it should give you an idea of
                 // some of the concerns you'll need to attend to.
-                foreach (var tagValue in tagValues) {
-                    var start = new TimeInstant(tagValue.Start);
-                    var end = new TimeInstant(tagValue.End);
-                    var capsuleProperties = new List<Capsule.Property> {
+                foreach (DatasourceSimulator.TagValue tagValue in tagValues) {
+                    TimeInstant start = new TimeInstant(tagValue.Start);
+                    TimeInstant end = new TimeInstant(tagValue.End);
+                    List<Capsule.Property> capsuleProperties = new List<Capsule.Property> {
                         new Capsule.Property("Value", tagValue.Value.ToString(), "rads")
                     };
                     yield return new Capsule(start, end, capsuleProperties);
@@ -319,10 +323,10 @@ namespace MyCompany.Seeq.Link.Connector {
         // between them. This means there needs to be a starting point; a root. This example shows how to create the root
         // asset in the Seeq database.
         private string createRootAsset() {
-            var datasourceDataId = this.connectionService.Datasource.Id;
+            string datasourceDataId = this.connectionService.Datasource.Id;
 
             // create the root asset
-            var rootAsset = new AssetInputV1 {
+            AssetInputV1 rootAsset = new AssetInputV1 {
                 DataId = datasourceDataId,
                 Name = "My Datasource Name"
             };
@@ -335,14 +339,14 @@ namespace MyCompany.Seeq.Link.Connector {
         // a relationship needs to be established between the created asset an it's parent which this example also demonstrates.
         private void createChildAsset(string parentDataId, string childDataId, string childAssetName) {
             // create the child asset
-            var childAsset = new AssetInputV1 {
+            AssetInputV1 childAsset = new AssetInputV1 {
                 DataId = childDataId,
                 Name = childAssetName
             };
             this.connectionService.PutAsset(childAsset);
 
             // create the child asset relationship to its parent
-            var relationship = new AssetTreeSingleInputV1 {
+            AssetTreeSingleInputV1 relationship = new AssetTreeSingleInputV1 {
                 ChildDataId = childDataId,
                 ParentDataId = parentDataId
             };
