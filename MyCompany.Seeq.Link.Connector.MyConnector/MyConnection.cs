@@ -329,6 +329,9 @@ namespace MyCompany.Seeq.Link.Connector {
             this.connector.SaveConfig();
         }
 
+        // An asset tree is exactly what it sounds like; a tree that describes your asset hierarchies and the relationships
+        // between them. This means there needs to be a starting point; a root. This example shows how to create the root
+        // asset in the Seeq database.
         private string createRootAsset() {
             var datasourceDataId = this.connectionService.Datasource.Id;
 
@@ -342,6 +345,8 @@ namespace MyCompany.Seeq.Link.Connector {
             return rootAsset.DataId;
         }
 
+        // To extend the asset tree, a child asset can be created, this examples shows how to do that. To complete the process,
+        // a relationship needs to be established between the created asset an it's parent which this example also demonstrates.
         private void createChildAsset(string parentDataId, string childDataId, string childAssetName) {
             // create the child asset
             var childAsset = new AssetInputV1 {
