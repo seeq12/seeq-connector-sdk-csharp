@@ -115,10 +115,6 @@ namespace MyCompany.Seeq.Link.Connector {
             return value;
         }
 
-        public TagValue RequestLastTagValue(string dataId, TimeInstant startTimestamp, TimeInstant endTimestamp) {
-            return this.Query(dataId, startTimestamp, endTimestamp, 1).FirstOrDefault();
-        }
-
         public IEnumerable<TagValue> Query(string dataId, TimeInstant startTimestamp, TimeInstant endTimestamp,
             int limit) {
             // To be able to yield consistent, reproducible tag values, we need a constant seed. This helps us
