@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Web.UI.WebControls;
 using Seeq.Link.SDK;
 using Seeq.Link.SDK.Interfaces;
 using Seeq.Link.SDK.Utilities;
@@ -139,7 +140,10 @@ namespace MyCompany.Seeq.Link.Connector {
         }
 
         public void Index(SyncMode syncMode) {
-            var rootAssetId = this.createRootAsset();
+            // An asset tree is exactly what it sounds like; a tree that describes your asset hierarchies and the relationships
+            // between them. This means there needs to be a starting point; a root. This example shows how to create the root
+            // asset in the Seeq database.
+            string rootAssetId = this.createRootAsset();
 
             // Do whatever is necessary to generate the list of signals you want to show up in Seeq. It is generally
             // preferable to use a "streaming" method of iterating through the tags. I.e., try not to hold them all in
@@ -157,63 +161,15 @@ namespace MyCompany.Seeq.Link.Connector {
             while (tags.MoveNext()) {
                 DatasourceSimulator.Tag tag = tags.Current;
                 string tagId = string.Format("{0}", tag.Id);
+                string tagName = tag.Name;
 
-                this.createChildAsset(rootAssetId, tagId, tag.Name);
+                // To extend the asset tree, a child asset can be created, this examples shows how to do that. To complete the process,
+                // a relationship needs to be established between the created asset an it's parent which this example also demonstrates.
+                this.createChildAsset(rootAssetId, tagId, tagName);
 
-                SignalWithIdInputV1 signal = new SignalWithIdInputV1();
+                this.createSignal(tagId, tagName, tag.Stepped);
 
-                // The Data ID is a string that is unique within the data source, and is used by Seeq when referring
-                // to signal/asset data. It is important that the Data ID be consistent across connections which means
-                // that transient values like generated GUID/UUIDs or the Datasource name would not be ideal. The
-                // Data ID is a string and does not need to be numeric, even though we are just using a number in
-                // this example.
-                signal.DataId = string.Format("{0}", tag.Id);
-
-                // The Name is a string that is displayed in the UI. It can change (typically as a result of a
-                // rename operation happening in the source system), but the unique Data ID preserves appropriate
-                // linkages.
-                signal.Name = tag.Name;
-
-                // The interpolation method is the readonly piece of critical information for a signal.
-                signal.InterpolationMethod = tag.Stepped
-                        ? InterpolationMethod.Step
-                        : InterpolationMethod.Linear;
-
-                // Additional Properties are used to store and track "Scalars" which are "facts" about the signal/
-                // condition/asset i.e. a piece of data that does not change. Special care should be taken to
-                // ensure only non-null values are provided.
-                signal.AdditionalProperties = new List<ScalarPropertyV1> {
-                    new ScalarPropertyV1 {
-                        Name = "Provider",
-                        Value = "Seeq"
-                    }
-                };
-
-                // PutSignal() queues items up for performance reasons and writes them in batch to the server.
-                //
-                // If you need the signals to be written to Seeq Server before any other work continues, you can
-                // call FlushSignals() on the connection service.
-                this.connectionService.PutSignal(signal);
-
-                ConditionInputV1 condition = new ConditionInputV1();
-
-                // The Data ID is a string that is unique within the data source, and is used by Seeq when referring
-                // to condition data. It is important that the Data ID be consistent across connections which means
-                // that transient values like generated GUID/UUIDs or the Datasource name would not be ideal. The
-                // Data ID is a string and does not need to be numeric, even though we are just using a number in
-                // this example.
-                condition.DataId = string.Format("{0}", tag.Id);
-
-                // The Name is a string that is displayed in the UI. It can change (typically as a result of a
-                // rename operation happening in the source system), but the unique Data ID preserves appropriate
-                // linkages.
-                condition.Name = tag.Name;
-
-                // PutCondition() queues items up for performance reasons and writes them in batch to the server.
-                //
-                // If you need the conditions to be written to Seeq Server before any other work continues, you can
-                // call FlushConditions() on the connection service.
-                this.connectionService.PutCondition(condition);
+                this.createCondition(tagId, tagName);
             }
         }
 
@@ -319,9 +275,6 @@ namespace MyCompany.Seeq.Link.Connector {
             this.connector.SaveConfig();
         }
 
-        // An asset tree is exactly what it sounds like; a tree that describes your asset hierarchies and the relationships
-        // between them. This means there needs to be a starting point; a root. This example shows how to create the root
-        // asset in the Seeq database.
         private string createRootAsset() {
             string datasourceDataId = this.connectionService.Datasource.Id;
 
@@ -335,8 +288,6 @@ namespace MyCompany.Seeq.Link.Connector {
             return rootAsset.DataId;
         }
 
-        // To extend the asset tree, a child asset can be created, this examples shows how to do that. To complete the process,
-        // a relationship needs to be established between the created asset an it's parent which this example also demonstrates.
         private void createChildAsset(string parentDataId, string childDataId, string childAssetName) {
             // create the child asset
             AssetInputV1 childAsset = new AssetInputV1 {
@@ -351,6 +302,65 @@ namespace MyCompany.Seeq.Link.Connector {
                 ParentDataId = parentDataId
             };
             this.connectionService.PutRelationship(relationship);
+        }
+
+        private void createSignal(string tagId, string tagName, bool isStepped) {
+            SignalWithIdInputV1 signal = new SignalWithIdInputV1();
+
+            // The Data ID is a string that is unique within the data source, and is used by Seeq when referring
+            // to signal/asset data. It is important that the Data ID be consistent across connections which means
+            // that transient values like generated GUID/UUIDs or the Datasource name would not be ideal. The
+            // Data ID is a string and does not need to be numeric, even though we are just using a number in
+            // this example.
+            signal.DataId = tagId;
+
+            // The Name is a string that is displayed in the UI. It can change (typically as a result of a
+            // rename operation happening in the source system), but the unique Data ID preserves appropriate
+            // linkages.
+            signal.Name = tagName;
+
+            // The interpolation method is the readonly piece of critical information for a signal.
+            signal.InterpolationMethod = isStepped
+                    ? InterpolationMethod.Step
+                    : InterpolationMethod.Linear;
+
+            // Additional Properties are used to store and track "Scalars" which are "facts" about the signal/
+            // condition/asset i.e. a piece of data that does not change. Special care should be taken to
+            // ensure only non-null values are provided.
+            signal.AdditionalProperties = new List<ScalarPropertyV1> {
+                    new ScalarPropertyV1 {
+                        Name = "Provider",
+                        Value = "Seeq"
+                    }
+                };
+
+            // PutSignal() queues items up for performance reasons and writes them in batch to the server.
+            //
+            // If you need the signals to be written to Seeq Server before any other work continues, you can
+            // call FlushSignals() on the connection service.
+            this.connectionService.PutSignal(signal);
+        }
+
+        private void createCondition(string tagId, string tagName) {
+            ConditionInputV1 condition = new ConditionInputV1();
+
+            // The Data ID is a string that is unique within the data source, and is used by Seeq when referring
+            // to condition data. It is important that the Data ID be consistent across connections which means
+            // that transient values like generated GUID/UUIDs or the Datasource name would not be ideal. The
+            // Data ID is a string and does not need to be numeric, even though we are just using a number in
+            // this example.
+            condition.DataId = tagId;
+
+            // The Name is a string that is displayed in the UI. It can change (typically as a result of a
+            // rename operation happening in the source system), but the unique Data ID preserves appropriate
+            // linkages.
+            condition.Name = tagName;
+
+            // PutCondition() queues items up for performance reasons and writes them in batch to the server.
+            //
+            // If you need the conditions to be written to Seeq Server before any other work continues, you can
+            // call FlushConditions() on the connection service.
+            this.connectionService.PutCondition(condition);
         }
     }
 }
