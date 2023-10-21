@@ -237,7 +237,7 @@ namespace MyCompany.Seeq.Link.Connector {
             try {
                 // This is an example of how you may query your datasource for tag values and is specific to the
                 // simulator example. This should be replaced with a call to your own datasource-specific call.
-                IEnumerable<DatasourceSimulator.TagValue> tagValues = this.datasourceSimulator.Query(
+                IEnumerable<DatasourceSimulator.Event> events = this.datasourceSimulator.Query(
                     parameters.DataId,
                     parameters.StartTime,
                     parameters.EndTime,
@@ -252,11 +252,11 @@ namespace MyCompany.Seeq.Link.Connector {
                 //
                 // The code within this function is largely specific to the simulator example. But it should give you an idea of
                 // some of the concerns you'll need to attend to.
-                foreach (DatasourceSimulator.TagValue tagValue in tagValues) {
-                    TimeInstant start = new TimeInstant(tagValue.Start);
-                    TimeInstant end = new TimeInstant(tagValue.End);
+                foreach (DatasourceSimulator.Event @event in events) {
+                    TimeInstant start = new TimeInstant(@event.Start);
+                    TimeInstant end = new TimeInstant(@event.End);
                     List<Capsule.Property> capsuleProperties = new List<Capsule.Property> {
-                        new Capsule.Property("Value", tagValue.Value.ToString(), "rads")
+                        new Capsule.Property("Intensity", @event.Intensity.ToString(), "rads")
                     };
                     yield return new Capsule(start, end, capsuleProperties);
                 }

@@ -6,59 +6,60 @@ using Seeq.Link.SDK.Utilities;
 namespace MyCompany.Seeq.Link.Connector {
 
     public class DatasourceSimulator {
+        
+        // To be able to yield consistent, reproducible tag values, we need a constant seed. This helps us
+        // approximate the behaviour of a real datasource which should be deterministic. 
+        private const int RandomnessSeed = 1_000_000;
+        private readonly Random RNG = new Random(RandomnessSeed);
+        
         private bool connected;
         private readonly int tagCount;
         private TimeSpan signalPeriod;
 
+        // This is NOT intended for production use and is solely to model possible 
+        // datasource tag structures that can used when syncing signals.
         public class Tag {
-            private readonly int id;
-            private readonly string name;
-            private readonly bool stepped;
+            public int Id { get; }
+
+            public string Name { get; }
+
+            public bool Stepped { get; }
 
             public Tag(int id, string name, bool stepped) {
-                this.id = id;
-                this.name = name;
-                this.stepped = stepped;
+                this.Id = id;
+                this.Name = name;
+                this.Stepped = stepped;
             }
-
-            public int Id {
-                get {
-                    return this.id;
-                }
-            }
-
-            public string Name {
-                get {
-                    return this.name;
-                }
-            }
-
-            public bool Stepped {
-                get {
-                    return this.stepped;
-                }
-            }
-        }
+ }
 
         // This is NOT intended for production use and is solely to model possible 
-        // datasource response structures.
-        public class TagValue {
+        // datasource event structures that can used when syncing conditions
+        public class Event {
             public DateTime Start { get; }
 
             public DateTime End { get; }
 
-            public double Value { get; }
+            public double Intensity { get; }
 
-            public TagValue(DateTime start, DateTime end, double value) {
+            public Event(DateTime start, DateTime end, double intensity) {
                 this.Start = start;
                 this.End = end;
-                this.Value = value;
+                this.Intensity = intensity;
             }
         }
 
         public DatasourceSimulator(int tagCount, TimeSpan signalPeriod) {
             this.tagCount = tagCount;
             this.signalPeriod = signalPeriod;
+        }
+
+        public int AssetLevels
+        {
+            get
+            {
+                // We do not want to exceed three levels to keep complexity low
+                return RNG.Next(2, 4);
+            }
         }
 
         public bool Connect() {
@@ -115,12 +116,8 @@ namespace MyCompany.Seeq.Link.Connector {
             return value;
         }
 
-        public IEnumerable<TagValue> Query(string dataId, TimeInstant startTimestamp, TimeInstant endTimestamp,
+        public IEnumerable<Event> Query(string dataId, TimeInstant startTimestamp, TimeInstant endTimestamp,
             int limit) {
-            // To be able to yield consistent, reproducible tag values, we need a constant seed. This helps us
-            // approximate the behaviour of a real datasource which should be deterministic. 
-            const int seed = 1_000_000;
-            var random = new Random(seed);
             var startTime = startTimestamp.ToDateTimeRoundDownTo100ns();
             var endTime = endTimestamp.ToDateTimeRoundUpTo100ns();
             var timespanInMs = (long)(endTime - startTime).TotalMilliseconds;
@@ -129,8 +126,10 @@ namespace MyCompany.Seeq.Link.Connector {
             for (var i = 1; i <= limit; i++) {
                 var start = startTime + TimeSpan.FromMilliseconds(timestampIncrement * i);
                 var end = start + TimeSpan.FromMilliseconds(10);
-                yield return new TagValue(start, end, random.NextDouble());
+                yield return new Event(start, end, RNG.NextDouble());
             }
         }
+        
+        private static int 
     }
 }
