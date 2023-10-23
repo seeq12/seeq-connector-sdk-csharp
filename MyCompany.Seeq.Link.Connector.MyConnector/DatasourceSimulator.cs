@@ -6,87 +6,88 @@ using Seeq.Link.SDK.Utilities;
 namespace MyCompany.Seeq.Link.Connector {
 
     public class DatasourceSimulator {
+
         // NOTE: the data structures in this file are purely for illustration purposes only
-        // and are here solely to approximate datasource response structures for syncing 
-    public class Element {
-        public string Id { get; }
+        // and are here solely to approximate datasource response structures for syncing
+        public class Element {
+            public string Id { get; }
 
-        public string Name { get; }
+            public string Name { get; }
 
-        public Element(int elementId) {
-            Id = elementId.ToString();
-            Name = $"Simulated Element #{elementId}";
-        }
-    }
-
-    public class Alarm {
-        public string Id { get; }
-
-        public string Name { get; }
-
-        public Alarm(string elementId, int alarmId) {
-            Id = $"Element={elementId};Alarm={alarmId}";
-            Name = $"Simulated Alarm #{alarmId}";
-        }
-
-        public class Event {
-            public DateTime Start { get; }
-
-            public DateTime End { get; }
-
-            public double Intensity { get; }
-
-            public Event(DateTime start, DateTime end, double intensity) {
-                this.Start = start;
-                this.End = end;
-                this.Intensity = intensity;
+            public Element(int elementId) {
+                Id = elementId.ToString();
+                Name = $"Simulated Element #{elementId}";
             }
         }
-    }
 
-    // This is NOT intended for production use and is solely to model possible
-    // datasource tag and measurement structures that can used when syncing signals.
-    public class Tag {
-        public string Id { get; }
+        public class Alarm {
+            public string Id { get; }
 
-        public string Name { get; }
+            public string Name { get; }
 
-        public bool Stepped { get; }
+            public Alarm(string elementId, int alarmId) {
+                Id = $"Element={elementId};Alarm={alarmId}";
+                Name = $"Simulated Alarm #{alarmId}";
+            }
 
-        public Tag(string elementId, int tagId, bool stepped) {
-            Id = $"Element={elementId};Tag={tagId}";
-            this.Name = $"Simulated Tag #{tagId}";
-            this.Stepped = stepped;
-        }
+            public class Event {
+                public DateTime Start { get; }
 
-        public class Value {
-            public TimeInstant Timestamp { get; }
+                public DateTime End { get; }
 
-            public double Measure { get; }
+                public double Intensity { get; }
 
-            public Value(TimeInstant timestamp, double value) {
-                this.Timestamp = timestamp;
-                this.Measure = value;
+                public Event(DateTime start, DateTime end, double intensity) {
+                    this.Start = start;
+                    this.End = end;
+                    this.Intensity = intensity;
+                }
             }
         }
-    }
 
-    public class Constant {
-        public string Id { get; }
+        // This is NOT intended for production use and is solely to model possible
+        // datasource tag and measurement structures that can used when syncing signals.
+        public class Tag {
+            public string Id { get; }
 
-        public string Name { get; }
+            public string Name { get; }
 
-        public string UnitOfMeasure { get; }
+            public bool Stepped { get; }
 
-        public object Value { get; }
+            public Tag(string elementId, int tagId, bool stepped) {
+                Id = $"Element={elementId};Tag={tagId}";
+                this.Name = $"Simulated Tag #{tagId}";
+                this.Stepped = stepped;
+            }
 
-        public Constant(string elementId, int constantId, string unitOfMeasure, object value) {
-            this.Id = $"Element={elementId};Constant={constantId}";
-            this.Name = $"Simulated Constant #{constantId}";
-            this.UnitOfMeasure = unitOfMeasure;
-            this.Value = value;
+            public class Value {
+                public TimeInstant Timestamp { get; }
+
+                public double Measure { get; }
+
+                public Value(TimeInstant timestamp, double value) {
+                    this.Timestamp = timestamp;
+                    this.Measure = value;
+                }
+            }
         }
-    }
+
+        public class Constant {
+            public string Id { get; }
+
+            public string Name { get; }
+
+            public string UnitOfMeasure { get; }
+
+            public object Value { get; }
+
+            public Constant(string elementId, int constantId, string unitOfMeasure, object value) {
+                this.Id = $"Element={elementId};Constant={constantId}";
+                this.Name = $"Simulated Constant #{constantId}";
+                this.UnitOfMeasure = unitOfMeasure;
+                this.Value = value;
+            }
+        }
 
         // To be able to yield consistent, reproducible tag values, we need a constant seed. This helps us
         // approximate the behaviour of a real datasource which should be deterministic.

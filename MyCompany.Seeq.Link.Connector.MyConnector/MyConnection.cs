@@ -220,8 +220,7 @@ namespace MyCompany.Seeq.Link.Connector {
         }
 
         public IEnumerable<Capsule> GetCapsules(GetCapsulesParameters parameters) {
-            try
-            {
+            try {
                 // This is an example of how you may query your datasource for tag values and is specific to the
                 // simulator example. This should be replaced with a call to your own datasource-specific call.
                 IEnumerable<DatasourceSimulator.Alarm.Event> events = this.datasourceSimulator.GetAlarmEvents(
@@ -239,8 +238,7 @@ namespace MyCompany.Seeq.Link.Connector {
                 //
                 // The code within this function is largely specific to the simulator example. But it should give you an idea of
                 // some of the concerns you'll need to attend to.
-                foreach (DatasourceSimulator.Alarm.Event @event in events)
-                {
+                foreach (DatasourceSimulator.Alarm.Event @event in events) {
                     TimeInstant start = new TimeInstant(@event.Start);
                     TimeInstant end = new TimeInstant(@event.End);
                     List<Capsule.Property> capsuleProperties = new List<Capsule.Property>
