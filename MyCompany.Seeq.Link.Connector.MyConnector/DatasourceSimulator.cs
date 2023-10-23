@@ -5,27 +5,29 @@ using Seeq.Link.SDK.Utilities;
 
 namespace MyCompany.Seeq.Link.Connector {
 
-    public class Asset {
+    // NOTE: the data structures in this file are purely for illustration purposes only
+    // and are here solely to approximate datasource response structures
+    public class Element {
         public string Id { get; }
 
         public string Name { get; }
 
-        public Asset(int assetId) {
-            Id = assetId.ToString();
-            Name = $"Simulated Asset #{assetId}";
+        public Element(int elementId) {
+            Id = elementId.ToString();
+            Name = $"Simulated Element #{elementId}";
         }
     }
 
     // This is NOT intended for production use and is solely to model possible
     // datasource sensor and event structures that can used when syncing conditions
-    public class Sensor {
+    public class Alarm {
         public string Id { get; }
 
         public string Name { get; }
 
-        public Sensor(string assetId, int sensorId) {
-            Id = $"Asset={assetId};Sensor={sensorId}";
-            Name = $"Simulated Sensor #{sensorId}";
+        public Alarm(string elementId, int sensorId) {
+            Id = $"Element={elementId};Alarm={sensorId}";
+            Name = $"Simulated Alarm #{sensorId}";
         }
 
         public class Event {
@@ -52,8 +54,8 @@ namespace MyCompany.Seeq.Link.Connector {
 
         public bool Stepped { get; }
 
-        public Tag(string assetId, int tagId, bool stepped) {
-            Id = $"Asset={assetId};Tag={tagId}";
+        public Tag(string elementId, int tagId, bool stepped) {
+            Id = $"Element={elementId};Tag={tagId}";
             this.Name = $"Simulated Tag #{tagId}";
             this.Stepped = stepped;
         }
@@ -79,8 +81,8 @@ namespace MyCompany.Seeq.Link.Connector {
 
         public object Value { get; }
 
-        public Constant(string assetId, int constantId, string unitOfMeasure, object value) {
-            this.Id = $"Asset={assetId};Constant={constantId}";
+        public Constant(string elementId, int constantId, string unitOfMeasure, object value) {
+            this.Id = $"Element={elementId};Constant={constantId}";
             this.Name = $"Simulated Constant #{constantId}";
             this.UnitOfMeasure = unitOfMeasure;
             this.Value = value;
@@ -119,28 +121,28 @@ namespace MyCompany.Seeq.Link.Connector {
         public void Disconnect() {
         }
 
-        public IEnumerable<Asset> GetSubAssets() {
+        public IEnumerable<Element> GetDatabases() {
             int subAssetCount = RNG.Next(10);
             return Enumerable.Range(1, subAssetCount)
-                .Select(assetId => new Asset(assetId));
+                .Select(assetId => new Element(assetId));
         }
 
-        public IEnumerable<Sensor> GetSensorsForAsset(string assetId) {
+        public IEnumerable<Alarm> GetSensorsForDatabase(string elementId) {
             int sensorCount = RNG.Next(10);
             return Enumerable.Range(1, sensorCount)
-                .Select(sensorId => new Sensor(assetId, sensorId));
+                .Select(sensorId => new Alarm(elementId, sensorId));
         }
 
-        public IEnumerable<Tag> GetTagsForAsset(string assetId) {
+        public IEnumerable<Tag> GetTagsForDatabase(string elementId) {
             int tagCount = RNG.Next(10);
             return Enumerable.Range(1, tagCount)
-                .Select(tagId => new Tag(assetId, tagId, tagId % 2 == 0));
+                .Select(tagId => new Tag(elementId, tagId, tagId % 2 == 0));
         }
 
-        public IEnumerable<Constant> GetConstantsForAsset(string assetId) {
+        public IEnumerable<Constant> GetConstantsForDatabase(string elementId) {
             int constantCount = RNG.Next(10);
             return Enumerable.Range(1, constantCount)
-                .Select(constId => new Constant(assetId, constId, "°C", constId * 10));
+                .Select(constId => new Constant(elementId, constId, "°C", constId * 10));
         }
 
         public enum Waveform {
@@ -161,7 +163,7 @@ namespace MyCompany.Seeq.Link.Connector {
             }
         }
 
-        public IEnumerable<Sensor.Event> GetSensorEvents(string dataId, TimeInstant startTimestamp, TimeInstant endTimestamp,
+        public IEnumerable<Alarm.Event> GetSensorEvents(string dataId, TimeInstant startTimestamp, TimeInstant endTimestamp,
             int limit) {
             var startTime = startTimestamp.ToDateTimeRoundDownTo100ns();
             var endTime = endTimestamp.ToDateTimeRoundUpTo100ns();
@@ -171,7 +173,7 @@ namespace MyCompany.Seeq.Link.Connector {
             for (int i = 1; i <= limit; i++) {
                 var start = startTime + TimeSpan.FromMilliseconds(timestampIncrement * i);
                 var end = start + TimeSpan.FromMilliseconds(10);
-                yield return new Sensor.Event(start, end, RNG.NextDouble());
+                yield return new Alarm.Event(start, end, RNG.NextDouble());
             }
         }
 

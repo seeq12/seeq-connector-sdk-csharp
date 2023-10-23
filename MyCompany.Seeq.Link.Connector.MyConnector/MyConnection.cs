@@ -69,6 +69,22 @@ namespace MyCompany.Seeq.Link.Connector {
             }
         }
 
+        public int? MaxConcurrentRequests {
+            get {
+                // This parameter can help control the load that Seeq puts on an external datasource. It is typically
+                // controlled from the configuration file.
+                return this.connectionConfig.MaxConcurrentRequests;
+            }
+        }
+
+        public int? MaxResultsPerRequest {
+            get {
+                // This parameter can help control the load and memory usage that Seeq puts on an external datasource.
+                // It is typically controlled from the configuration file.
+                return this.connectionConfig.MaxResultsPerRequest;
+            }
+        }
+
         public void Initialize(IDatasourceConnectionServiceV2 connectionService) {
             // You probably won't do much in the initialize() function. But if you have to do some I/O that is separate
             // from the act of connecting, you could do it here.
@@ -203,27 +219,12 @@ namespace MyCompany.Seeq.Link.Connector {
             }
         }
 
-        public int? MaxConcurrentRequests {
-            get {
-                // This parameter can help control the load that Seeq puts on an external datasource. It is typically
-                // controlled from the configuration file.
-                return this.connectionConfig.MaxConcurrentRequests;
-            }
-        }
-
-        public int? MaxResultsPerRequest {
-            get {
-                // This parameter can help control the load and memory usage that Seeq puts on an external datasource.
-                // It is typically controlled from the configuration file.
-                return this.connectionConfig.MaxResultsPerRequest;
-            }
-        }
-
         public IEnumerable<Capsule> GetCapsules(GetCapsulesParameters parameters) {
-            try {
+            try
+            {
                 // This is an example of how you may query your datasource for tag values and is specific to the
                 // simulator example. This should be replaced with a call to your own datasource-specific call.
-                IEnumerable<Sensor.Event> events = this.datasourceSimulator.GetSensorEvents(
+                IEnumerable<Alarm.Event> events = this.datasourceSimulator.GetSensorEvents(
                     parameters.DataId,
                     parameters.StartTime,
                     parameters.EndTime,
@@ -238,10 +239,12 @@ namespace MyCompany.Seeq.Link.Connector {
                 //
                 // The code within this function is largely specific to the simulator example. But it should give you an idea of
                 // some of the concerns you'll need to attend to.
-                foreach (Sensor.Event @event in events) {
+                foreach (Alarm.Event @event in events)
+                {
                     TimeInstant start = new TimeInstant(@event.Start);
                     TimeInstant end = new TimeInstant(@event.End);
-                    List<Capsule.Property> capsuleProperties = new List<Capsule.Property> {
+                    List<Capsule.Property> capsuleProperties = new List<Capsule.Property>
+                    {
                         new Capsule.Property("Intensity", @event.Intensity.ToString(), "rads")
                     };
                     yield return new Capsule(start, end, capsuleProperties);
@@ -275,38 +278,38 @@ namespace MyCompany.Seeq.Link.Connector {
         }
 
         private void syncAssets(string rootAssetId) {
-            foreach (Asset subAsset in this.datasourceSimulator.GetSubAssets()) {
-                this.syncSubAsset(subAsset);
-                this.linkToParentAsset(rootAssetId, subAsset.Id);
+            foreach (Element database in this.datasourceSimulator.GetDatabases()) {
+                this.syncDatabase(database);
+                this.linkToParentAsset(rootAssetId, database.Id);
 
-                IEnumerable<Tag> tags = this.datasourceSimulator.GetTagsForAsset(subAsset.Id);
+                IEnumerable<Tag> tags = this.datasourceSimulator.GetTagsForDatabase(database.Id);
 
                 foreach (Tag tag in tags) {
                     this.syncSignal(tag);
-                    this.linkToParentAsset(subAsset.Id, tag.Id);
+                    this.linkToParentAsset(database.Id, tag.Id);
                 }
 
-                IEnumerable<Sensor> sensors = this.datasourceSimulator.GetSensorsForAsset(subAsset.Id);
+                IEnumerable<Alarm> alarms = this.datasourceSimulator.GetSensorsForDatabase(database.Id);
 
-                foreach (Sensor sensor in sensors) {
-                    this.syncCondition(sensor);
-                    this.linkToParentAsset(subAsset.Id, sensor.Id);
+                foreach (Alarm alarm in alarms) {
+                    this.syncCondition(alarm);
+                    this.linkToParentAsset(database.Id, alarm.Id);
                 }
 
-                IEnumerable<Constant> constants = this.datasourceSimulator.GetConstantsForAsset(subAsset.Id);
+                IEnumerable<Constant> constants = this.datasourceSimulator.GetConstantsForDatabase(database.Id);
 
                 foreach (Constant constant in constants) {
                     this.syncScalar(constant);
-                    this.linkToParentAsset(subAsset.Id, constant.Id);
+                    this.linkToParentAsset(database.Id, constant.Id);
                 }
             }
         }
 
-        private void syncSubAsset(Asset subAsset) {
+        private void syncDatabase(Element subElement) {
             // create the child asset
             AssetInputV1 childAsset = new AssetInputV1 {
-                DataId = subAsset.Id,
-                Name = subAsset.Name
+                DataId = subElement.Id,
+                Name = subElement.Name
             };
             this.connectionService.PutAsset(childAsset);
         }
@@ -357,7 +360,7 @@ namespace MyCompany.Seeq.Link.Connector {
             this.connectionService.PutSignal(signal);
         }
 
-        private void syncCondition(Sensor sensor) {
+        private void syncCondition(Alarm alarm) {
             ConditionInputV1 condition = new ConditionInputV1();
 
             // The Data ID is a string that is unique within the data source, and is used by Seeq when referring
@@ -365,12 +368,12 @@ namespace MyCompany.Seeq.Link.Connector {
             // that transient values like generated GUID/UUIDs or the Datasource name would not be ideal. The
             // Data ID is a string and does not need to be numeric, even though we are just using a number in
             // this example.
-            condition.DataId = sensor.Id;
+            condition.DataId = alarm.Id;
 
             // The Name is a string that is displayed in the UI. It can change (typically as a result of a
             // rename operation happening in the source system), but the unique Data ID preserves appropriate
             // linkages.
-            condition.Name = sensor.Name;
+            condition.Name = alarm.Name;
 
             // PutCondition() queues items up for performance reasons and writes them in batch to the server.
             //
