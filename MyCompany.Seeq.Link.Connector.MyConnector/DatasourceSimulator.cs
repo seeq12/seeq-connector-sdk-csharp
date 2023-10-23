@@ -5,8 +5,9 @@ using Seeq.Link.SDK.Utilities;
 
 namespace MyCompany.Seeq.Link.Connector {
 
-    // NOTE: the data structures in this file are purely for illustration purposes only
-    // and are here solely to approximate datasource response structures
+    public class DatasourceSimulator {
+        // NOTE: the data structures in this file are purely for illustration purposes only
+        // and are here solely to approximate datasource response structures for syncing 
     public class Element {
         public string Id { get; }
 
@@ -18,16 +19,14 @@ namespace MyCompany.Seeq.Link.Connector {
         }
     }
 
-    // This is NOT intended for production use and is solely to model possible
-    // datasource sensor and event structures that can used when syncing conditions
     public class Alarm {
         public string Id { get; }
 
         public string Name { get; }
 
-        public Alarm(string elementId, int sensorId) {
-            Id = $"Element={elementId};Alarm={sensorId}";
-            Name = $"Simulated Alarm #{sensorId}";
+        public Alarm(string elementId, int alarmId) {
+            Id = $"Element={elementId};Alarm={alarmId}";
+            Name = $"Simulated Alarm #{alarmId}";
         }
 
         public class Event {
@@ -89,8 +88,6 @@ namespace MyCompany.Seeq.Link.Connector {
         }
     }
 
-    public class DatasourceSimulator {
-
         // To be able to yield consistent, reproducible tag values, we need a constant seed. This helps us
         // approximate the behaviour of a real datasource which should be deterministic.
         private const int RandomnessSeed = 1_000_000;
@@ -127,10 +124,10 @@ namespace MyCompany.Seeq.Link.Connector {
                 .Select(assetId => new Element(assetId));
         }
 
-        public IEnumerable<Alarm> GetSensorsForDatabase(string elementId) {
-            int sensorCount = RNG.Next(10);
-            return Enumerable.Range(1, sensorCount)
-                .Select(sensorId => new Alarm(elementId, sensorId));
+        public IEnumerable<Alarm> GetAlarmsForDatabase(string elementId) {
+            int alarmCount = RNG.Next(10);
+            return Enumerable.Range(1, alarmCount)
+                .Select(alarmId => new Alarm(elementId, alarmId));
         }
 
         public IEnumerable<Tag> GetTagsForDatabase(string elementId) {
@@ -163,7 +160,7 @@ namespace MyCompany.Seeq.Link.Connector {
             }
         }
 
-        public IEnumerable<Alarm.Event> GetSensorEvents(string dataId, TimeInstant startTimestamp, TimeInstant endTimestamp,
+        public IEnumerable<Alarm.Event> GetAlarmEvents(string dataId, TimeInstant startTimestamp, TimeInstant endTimestamp,
             int limit) {
             var startTime = startTimestamp.ToDateTimeRoundDownTo100ns();
             var endTime = endTimestamp.ToDateTimeRoundUpTo100ns();

@@ -200,14 +200,14 @@ namespace MyCompany.Seeq.Link.Connector {
             }
 
             try {
-                IEnumerable<Tag.Value> tagValues = this.datasourceSimulator.GetTagValues(
+                IEnumerable<DatasourceSimulator.Tag.Value> tagValues = this.datasourceSimulator.GetTagValues(
                     parameters.DataId,
                     parameters.StartTime,
                     parameters.EndTime,
                     parameters.SampleLimit
                 );
 
-                foreach (Tag.Value tagValue in tagValues) {
+                foreach (DatasourceSimulator.Tag.Value tagValue in tagValues) {
                     yield return new Sample(tagValue.Timestamp, tagValue.Measure);
                 }
 
@@ -224,7 +224,7 @@ namespace MyCompany.Seeq.Link.Connector {
             {
                 // This is an example of how you may query your datasource for tag values and is specific to the
                 // simulator example. This should be replaced with a call to your own datasource-specific call.
-                IEnumerable<Alarm.Event> events = this.datasourceSimulator.GetSensorEvents(
+                IEnumerable<DatasourceSimulator.Alarm.Event> events = this.datasourceSimulator.GetAlarmEvents(
                     parameters.DataId,
                     parameters.StartTime,
                     parameters.EndTime,
@@ -239,7 +239,7 @@ namespace MyCompany.Seeq.Link.Connector {
                 //
                 // The code within this function is largely specific to the simulator example. But it should give you an idea of
                 // some of the concerns you'll need to attend to.
-                foreach (Alarm.Event @event in events)
+                foreach (DatasourceSimulator.Alarm.Event @event in events)
                 {
                     TimeInstant start = new TimeInstant(@event.Start);
                     TimeInstant end = new TimeInstant(@event.End);
@@ -278,34 +278,34 @@ namespace MyCompany.Seeq.Link.Connector {
         }
 
         private void syncAssets(string rootAssetId) {
-            foreach (Element database in this.datasourceSimulator.GetDatabases()) {
+            foreach (DatasourceSimulator.Element database in this.datasourceSimulator.GetDatabases()) {
                 this.syncDatabase(database);
                 this.linkToParentAsset(rootAssetId, database.Id);
 
-                IEnumerable<Tag> tags = this.datasourceSimulator.GetTagsForDatabase(database.Id);
+                IEnumerable<DatasourceSimulator.Tag> tags = this.datasourceSimulator.GetTagsForDatabase(database.Id);
 
-                foreach (Tag tag in tags) {
+                foreach (DatasourceSimulator.Tag tag in tags) {
                     this.syncSignal(tag);
                     this.linkToParentAsset(database.Id, tag.Id);
                 }
 
-                IEnumerable<Alarm> alarms = this.datasourceSimulator.GetSensorsForDatabase(database.Id);
+                IEnumerable<DatasourceSimulator.Alarm> alarms = this.datasourceSimulator.GetAlarmsForDatabase(database.Id);
 
-                foreach (Alarm alarm in alarms) {
+                foreach (DatasourceSimulator.Alarm alarm in alarms) {
                     this.syncCondition(alarm);
                     this.linkToParentAsset(database.Id, alarm.Id);
                 }
 
-                IEnumerable<Constant> constants = this.datasourceSimulator.GetConstantsForDatabase(database.Id);
+                IEnumerable<DatasourceSimulator.Constant> constants = this.datasourceSimulator.GetConstantsForDatabase(database.Id);
 
-                foreach (Constant constant in constants) {
+                foreach (DatasourceSimulator.Constant constant in constants) {
                     this.syncScalar(constant);
                     this.linkToParentAsset(database.Id, constant.Id);
                 }
             }
         }
 
-        private void syncDatabase(Element subElement) {
+        private void syncDatabase(DatasourceSimulator.Element subElement) {
             // create the child asset
             AssetInputV1 childAsset = new AssetInputV1 {
                 DataId = subElement.Id,
@@ -323,7 +323,7 @@ namespace MyCompany.Seeq.Link.Connector {
             this.connectionService.PutRelationship(relationship);
         }
 
-        private void syncSignal(Tag tag) {
+        private void syncSignal(DatasourceSimulator.Tag tag) {
             SignalWithIdInputV1 signal = new SignalWithIdInputV1();
 
             // The Data ID is a string that is unique within the data source, and is used by Seeq when referring
@@ -360,7 +360,7 @@ namespace MyCompany.Seeq.Link.Connector {
             this.connectionService.PutSignal(signal);
         }
 
-        private void syncCondition(Alarm alarm) {
+        private void syncCondition(DatasourceSimulator.Alarm alarm) {
             ConditionInputV1 condition = new ConditionInputV1();
 
             // The Data ID is a string that is unique within the data source, and is used by Seeq when referring
@@ -382,7 +382,7 @@ namespace MyCompany.Seeq.Link.Connector {
             this.connectionService.PutCondition(condition);
         }
 
-        private void syncScalar(Constant constant) {
+        private void syncScalar(DatasourceSimulator.Constant constant) {
             ScalarInputV1 scalar = new ScalarInputV1();
 
             scalar.DataId = constant.Id;
