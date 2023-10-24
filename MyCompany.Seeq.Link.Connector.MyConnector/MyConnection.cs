@@ -200,6 +200,8 @@ namespace MyCompany.Seeq.Link.Connector {
             }
 
             try {
+                // This is an example of how you may query your datasource for tag values and is specific to the
+                // simulator example. This should be replaced with your own datasource-specific call.
                 IEnumerable<DatasourceSimulator.Tag.Value> tagValues = this.datasourceSimulator.GetTagValues(
                     parameters.DataId,
                     parameters.StartTime,
@@ -221,8 +223,8 @@ namespace MyCompany.Seeq.Link.Connector {
 
         public IEnumerable<Capsule> GetCapsules(GetCapsulesParameters parameters) {
             try {
-                // This is an example of how you may query your datasource for tag values and is specific to the
-                // simulator example. This should be replaced with a call to your own datasource-specific call.
+                // This is an example of how you may query your datasource for alarm events and is specific to the
+                // simulator example. This should be replaced with your own datasource-specific call.
                 IEnumerable<DatasourceSimulator.Alarm.Event> events = this.datasourceSimulator.GetAlarmEvents(
                     parameters.DataId,
                     parameters.StartTime,
@@ -381,12 +383,12 @@ namespace MyCompany.Seeq.Link.Connector {
         }
 
         private void syncScalar(DatasourceSimulator.Constant constant) {
-            ScalarInputV1 scalar = new ScalarInputV1();
-
-            scalar.DataId = constant.Id;
-            scalar.Name = constant.Name;
-            scalar.UnitOfMeasure = constant.UnitOfMeasure;
-            scalar.Formula = this.getFormula(constant.Value);
+            ScalarInputV1 scalar = new ScalarInputV1 {
+                DataId = constant.Id,
+                Name = constant.Name,
+                UnitOfMeasure = constant.UnitOfMeasure,
+                Formula = this.getFormula(constant.Value)
+            };
             this.connectionService.PutScalar(scalar);
         }
 
