@@ -96,18 +96,10 @@ namespace MyCompany.Seeq.Link.Connector {
         private readonly Random RNG = new Random(RandomnessSeed);
 
         private bool connected;
-        private readonly int tagCount;
         private TimeSpan signalPeriod;
 
-        public DatasourceSimulator(int tagCount, TimeSpan signalPeriod) {
-            this.tagCount = tagCount;
+        public DatasourceSimulator(TimeSpan signalPeriod) {
             this.signalPeriod = signalPeriod;
-        }
-
-        public bool Connect() {
-            this.connected = true;
-
-            return true;
         }
 
         public bool IsConnected {
@@ -116,13 +108,19 @@ namespace MyCompany.Seeq.Link.Connector {
             }
         }
 
+        public bool Connect() {
+            this.connected = true;
+
+            return true;
+        }
+
         public void Disconnect() {
         }
 
         public IEnumerable<Element> GetDatabases() {
-            int subAssetCount = RNG.Next(10);
-            return Enumerable.Range(1, subAssetCount)
-                .Select(assetId => new Element(assetId));
+            int databaseCount = RNG.Next(10);
+            return Enumerable.Range(1, databaseCount)
+                .Select(elementId => new Element(elementId));
         }
 
         public IEnumerable<Alarm> GetAlarmsForDatabase(string elementId) {
@@ -163,14 +161,14 @@ namespace MyCompany.Seeq.Link.Connector {
 
         public IEnumerable<Alarm.Event> GetAlarmEvents(string dataId, TimeInstant startTimestamp, TimeInstant endTimestamp,
             int limit) {
-            var startTime = startTimestamp.ToDateTimeRoundDownTo100ns();
-            var endTime = endTimestamp.ToDateTimeRoundUpTo100ns();
-            var timespanInMs = (long)(endTime - startTime).TotalMilliseconds;
-            var timestampIncrement = timespanInMs / limit;
+            DateTime startTime = startTimestamp.ToDateTimeRoundDownTo100ns();
+            DateTime endTime = endTimestamp.ToDateTimeRoundUpTo100ns();
+            long timespanInMs = (long)(endTime - startTime).TotalMilliseconds;
+            long timestampIncrement = timespanInMs / limit;
 
             for (int i = 1; i <= limit; i++) {
-                var start = startTime + TimeSpan.FromMilliseconds(timestampIncrement * i);
-                var end = start + TimeSpan.FromMilliseconds(10);
+                DateTime start = startTime + TimeSpan.FromMilliseconds(timestampIncrement * i);
+                DateTime end = start + TimeSpan.FromMilliseconds(10);
                 yield return new Alarm.Event(start, end, RNG.NextDouble());
             }
         }

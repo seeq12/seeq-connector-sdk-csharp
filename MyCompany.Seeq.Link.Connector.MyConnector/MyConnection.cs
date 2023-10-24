@@ -121,7 +121,7 @@ namespace MyCompany.Seeq.Link.Connector {
 
             // Second, perform whatever I/O is necessary to establish a connection to your datasource. For example, you
             // might instantiate an ODBC connection object and connect to a SQL database.
-            this.datasourceSimulator = new DatasourceSimulator(this.connectionConfig.TagCount, signalPeriod);
+            this.datasourceSimulator = new DatasourceSimulator(signalPeriod);
 
             if (this.datasourceSimulator.Connect()) {
                 // If the connection is successful, transition to the CONNECTED state. The monitor() function will then
