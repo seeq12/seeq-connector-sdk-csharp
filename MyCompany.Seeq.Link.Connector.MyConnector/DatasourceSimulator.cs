@@ -80,15 +80,14 @@ namespace MyCompany.Seeq.Link.Connector {
         public IEnumerable<Alarm.Event> GetAlarmEvents(string dataId, TimeInstant startTimestamp, TimeInstant endTimestamp,
             int limit) {
             DateTime startTime = startTimestamp.ToDateTimeRoundDownTo100ns();
-            DateTime endTime = endTimestamp.ToDateTimeRoundUpTo100ns();
-            long timespanInMs = (long)(endTime - startTime).TotalMilliseconds;
-            long timestampIncrement = timespanInMs / limit;
-
-            for (int i = 1; i <= limit; i++) {
-                DateTime start = startTime + TimeSpan.FromMilliseconds(timestampIncrement * i);
-                DateTime end = start + TimeSpan.FromMilliseconds(10);
-                yield return new Alarm.Event(start, end, Rng.NextDouble());
-            }
+            long eventPeriodInNanos = (endTimestamp.Timestamp - startTimestamp.Timestamp) / limit;
+            return Enumerable.Range(0, limit)
+                .Select(index => {
+                    DateTime start = startTime + TimeSpan.FromTicks(index * eventPeriodInNanos / 100);
+                    DateTime end = start + TimeSpan.FromMilliseconds(10);
+                    return new Alarm.Event(start, end, Rng.NextDouble());
+                })
+                .Take(limit);
         }
 
         private double getWaveformValue(Waveform waveform, long timestamp) {
@@ -108,7 +107,7 @@ namespace MyCompany.Seeq.Link.Connector {
 
         // NOTE: the data structures in this file are purely for illustration purposes only
         // and are here solely to approximate datasource response structures for syncing
-        
+
         /// <summary>
         /// This class defines an element that can be used for syncing assets
         /// </summary>
