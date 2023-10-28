@@ -108,6 +108,10 @@ namespace MyCompany.Seeq.Link.Connector {
 
         // NOTE: the data structures in this file are purely for illustration purposes only
         // and are here solely to approximate datasource response structures for syncing
+        
+        /// <summary>
+        /// This class defines an element that can be used for syncing assets
+        /// </summary>
         public class Element {
             public string Id { get; }
 
@@ -119,6 +123,9 @@ namespace MyCompany.Seeq.Link.Connector {
             }
         }
 
+        /// <summary>
+        /// This class defines an alarm that can be used for syncing conditions
+        /// </summary>
         public class Alarm {
             public string Id { get; }
 
@@ -144,6 +151,9 @@ namespace MyCompany.Seeq.Link.Connector {
             }
         }
 
+        /// <summary>
+        /// This class defines a tag that can be used for syncing signals
+        /// </summary>
         public class Tag {
             public string Id { get; }
 
@@ -169,6 +179,9 @@ namespace MyCompany.Seeq.Link.Connector {
             }
         }
 
+        /// <summary>
+        /// This class defines a constant that can be used for syncing scalars
+        /// </summary>
         public class Constant {
             public string Id { get; }
 
