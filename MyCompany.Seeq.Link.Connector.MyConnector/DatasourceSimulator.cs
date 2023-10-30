@@ -66,15 +66,16 @@ namespace MyCompany.Seeq.Link.Connector {
         public IEnumerable<Tag.Value> GetTagValues(string dataId, TimeInstant startTimestamp, TimeInstant endTimestamp,
             int limit) {
             long samplePeriodInNanos = this.signalPeriod.Ticks * 100;
-            long leftBoundTimestamp = startTimestamp.Timestamp / samplePeriodInNanos;
-            long rightBoundTimestamp = (endTimestamp.Timestamp + samplePeriodInNanos - 1) / samplePeriodInNanos;
-
-            for (long sampleIndex = leftBoundTimestamp;
-                 sampleIndex <= rightBoundTimestamp && sampleIndex - leftBoundTimestamp < limit; sampleIndex++) {
-                TimeInstant key = new TimeInstant(sampleIndex * samplePeriodInNanos);
-                double value = this.getWaveformValue(Waveform.SINE, key.Timestamp);
-                yield return new Tag.Value(key, value);
-            }
+            return EnumerableExtensions.RangeClosed(
+                    startTimestamp.Timestamp / samplePeriodInNanos,
+                    endTimestamp.Timestamp / samplePeriodInNanos
+                )
+                .Select(index => {
+                    TimeInstant key = new TimeInstant(index * samplePeriodInNanos);
+                    double value = this.getWaveformValue(Waveform.SINE, key.Timestamp);
+                    return new Tag.Value(key, value);
+                })
+                .Take(limit);
         }
 
         public IEnumerable<Alarm.Event> GetAlarmEvents(string dataId, TimeInstant startTimestamp, TimeInstant endTimestamp,
