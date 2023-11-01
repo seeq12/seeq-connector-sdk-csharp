@@ -141,9 +141,9 @@ namespace MyCompany.Seeq.Link.Connector {
 
                 public DateTime End { get; }
 
-                public double Intensity { get; }
+                public object Intensity { get; }
 
-                public Event(DateTime start, DateTime end, double intensity) {
+                public Event(DateTime start, DateTime end, object intensity) {
                     this.Start = start;
                     this.End = end;
                     this.Intensity = intensity;
@@ -170,9 +170,9 @@ namespace MyCompany.Seeq.Link.Connector {
             public class Value {
                 public TimeInstant Timestamp { get; }
 
-                public double Measure { get; }
+                public object Measure { get; }
 
-                public Value(TimeInstant timestamp, double value) {
+                public Value(TimeInstant timestamp, object value) {
                     this.Timestamp = timestamp;
                     this.Measure = value;
                 }
