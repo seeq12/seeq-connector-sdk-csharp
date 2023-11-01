@@ -176,29 +176,6 @@ namespace MyCompany.Seeq.Link.Connector {
         }
 
         public IEnumerable<Sample> GetSamples(GetSamplesParameters parameters) {
-            // Return an enumeration to iterate through all of the samples in the time range.
-            //
-            // Very important: You must return one sample 'on or earlier' than the requested interval and one sample 'on or
-            // later' (if such samples exist). This allows Seeq to interpolate appropriately to the edge of the requested
-            // time range.
-            //
-            // IEnumerable is important to use here to avoid bringing all of the data into memory to satisfy the
-            // request. The Seeq connector host will automatically "page" the data upload so that we don't hit memory
-            // ceilings on large requests. You can use C#'s "yield return" keyword to easily create lazy enumerations.
-            //
-            // The code within this function is largely specific to the simulator example. But it should give you an idea of
-            // some of the concerns you'll need to attend to.
-
-            // If a "last certain key" is requested, then you can specify one by calling SetLastCertainKey. This informs
-            // Seeq that there is a time boundary between certain and uncertain samples: everything at or before the key
-            // is certain, whereas any sample after the key is uncertain.
-            //
-            // This connector does not explicitly control sample certainty, so we don't make a call below.
-            if (parameters.IsLastCertainKeyRequested) {
-                // ...but if we did make a call, this is what it would look like:
-                // parameters.SetLastCertainKey(new TimeInstant(...));
-            }
-
             try {
                 // This is an example of how you may query your datasource for tag values and is specific to the
                 // simulator example. This should be replaced with your own datasource-specific call.
@@ -209,6 +186,18 @@ namespace MyCompany.Seeq.Link.Connector {
                     parameters.SampleLimit
                 );
 
+                // Return an enumeration to iterate through all of the samples in the time range.
+                //
+                // Very important: You must return one sample 'on or earlier' than the requested interval and one sample 'on or
+                // later' (if such samples exist). This allows Seeq to interpolate appropriately to the edge of the requested
+                // time range.
+                //
+                // IEnumerable is important to use here to avoid bringing all of the data into memory to satisfy the
+                // request. The Seeq connector host will automatically "page" the data upload so that we don't hit memory
+                // ceilings on large requests. You can use C#'s "yield return" keyword to easily create lazy enumerations.
+                //
+                // The code within this function is largely specific to the simulator example. But it should give you an idea of
+                // some of the concerns you'll need to attend to.
                 foreach (DatasourceSimulator.Tag.Value tagValue in tagValues) {
                     yield return new Sample(tagValue.Timestamp, tagValue.Measure);
                 }
@@ -223,6 +212,18 @@ namespace MyCompany.Seeq.Link.Connector {
 
         public IEnumerable<Capsule> GetCapsules(GetCapsulesParameters parameters) {
             try {
+                // If a "last certain key" is requested, then you MUST specify one by calling setLastCertainKey. This informs
+                // Seeq that there is a time boundary between certain and uncertain capsules: everything at or before the key
+                // is certain, whereas any capsule after the key is uncertain. If setLastCertainKey is not called, then all
+                // capsules are treated as uncertain
+                //
+                // This example connector does not explicitly control capsule certainty, so we don't make a call below, but we
+                // show how it would be done in your connector.
+                if (parameters.IsLastCertainKeyRequested) {
+                    // ...but if we did make a call, this is what it would look like:
+                    // parameters.SetLastCertainKey(new TimeInstant(...));
+                }
+
                 // This is an example of how you may query your datasource for alarm events and is specific to the
                 // simulator example. This should be replaced with your own datasource-specific call.
                 IEnumerable<DatasourceSimulator.Alarm.Event> events = this.datasourceSimulator.GetAlarmEvents(
