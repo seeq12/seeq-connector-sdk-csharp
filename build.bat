@@ -15,6 +15,7 @@ if not exist ".\nuget.exe" powershell -Command "(new-object System.Net.WebClient
 
 .\nuget install Seeq.Link.SDK.Debugging.Agent\packages.config -o packages
 .\nuget install MyCompany.Seeq.Link.Connector.MyConnector\packages.config -o packages
+.\nuget install MyCompany.Seeq.Link.Connector.MyConnector.Test\packages.config -o packages
 
 "%WINDIR%\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe" "%~dp0.\Seeq.Connector.SDK.sln" /p:Configuration="Release"
 if ERRORLEVEL 1 goto :Error
