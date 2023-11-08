@@ -5,4 +5,6 @@
 /MyCompany.Seeq.Link.Connector.MyConnector/obj/
 /Seeq.Link.SDK.Debugging.Agent/bin/
 /Seeq.Link.SDK.Debugging.Agent/obj/
+/MyCompany.Seeq.Link.Connector.MyConnector.Test/bin/
+/MyCompany.Seeq.Link.Connector.MyConnector.Test/obj/
 /nuget.exe
