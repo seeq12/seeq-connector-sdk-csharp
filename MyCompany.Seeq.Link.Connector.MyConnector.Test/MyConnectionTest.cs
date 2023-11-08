@@ -15,7 +15,7 @@ namespace MyCompany.Seeq.Link.Connector.MyConnector.Test {
         public void GetSamples() {
             MyConnectionConfigV1 config = new MyConnectionConfigV1();
 
-            config.SamplePeriod = "1s";
+            config.SamplePeriod = "0:00:01";
             config.TagCount = 100;
 
             Mock<IDatasourceConnectionServiceV2> connectionServiceMock = new Mock<IDatasourceConnectionServiceV2>();

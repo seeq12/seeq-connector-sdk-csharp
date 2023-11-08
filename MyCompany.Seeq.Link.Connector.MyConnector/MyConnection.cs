@@ -404,7 +404,7 @@ namespace MyCompany.Seeq.Link.Connector {
 
             // The Unit Of Measure is a string that denotes what the unit of measure of the scalar value is.
             scalar.UnitOfMeasure = constant.UnitOfMeasure;
-            
+
             scalar.Formula = this.getFormula(constant.Value);
 
             // PutScalar() queues items up for performance reasons and writes them in batch to the server.

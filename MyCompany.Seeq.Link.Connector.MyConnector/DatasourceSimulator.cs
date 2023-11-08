@@ -69,8 +69,8 @@ namespace MyCompany.Seeq.Link.Connector {
             int limit) {
             long samplePeriodInNanos = this.samplePeriod.Ticks * 100;
             return EnumerableExtensions.RangeClosed(
-                    startTimestamp.Timestamp / samplePeriodInNanos,
-                    endTimestamp.Timestamp / samplePeriodInNanos
+                    (long)Math.Floor(startTimestamp.Timestamp / (double)samplePeriodInNanos),
+                    (long)Math.Ceiling(endTimestamp.Timestamp / (double)samplePeriodInNanos)
                 )
                 .Select(index => {
                     TimeInstant key = new TimeInstant(index * samplePeriodInNanos);
