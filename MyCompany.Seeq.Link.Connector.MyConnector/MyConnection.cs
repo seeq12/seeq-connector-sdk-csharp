@@ -28,7 +28,6 @@ namespace MyCompany.Seeq.Link.Connector {
         private readonly MyConnectionConfigV1 connectionConfig;
         private IDatasourceConnectionServiceV2 connectionService;
         private DatasourceSimulator datasourceSimulator;
-        private TimeSpan samplePeriod;
 
         public MyConnection(MyConnector connector, MyConnectionConfigV1 connectionConfig) {
             // You will generally want to accept a configuration object from your connector parent. Do not do any I/O in the
@@ -108,20 +107,20 @@ namespace MyCompany.Seeq.Link.Connector {
             this.connectionService.ConnectionState = ConnectionState.CONNECTING;
 
             // These lines are specific to the simulator example.
-            this.samplePeriod = TimeSpan.Parse(this.connectionConfig.SamplePeriod.ToUpper());
-            TimeSpan signalPeriod = new TimeSpan(this.samplePeriod.Ticks * 100);
+            TimeSpan samplePeriod = TimeSpan.Parse(this.connectionConfig.SamplePeriod.ToUpper());
+            TimeSpan signalPeriod = new TimeSpan(samplePeriod.Ticks * 100);
 
             // Use logging statements to show important information in the log files. These logging statements will be
             // output to the console when you're in the IDE and also to
             // "csharp/Seeq.Link.SDK.Debugging.Agent/bin/Debug/log/net-debugging-agent.log" within the Connector SDK.
             // When you have deployed your connector, the log statements
             // will go to the "log/net-link.log" file in the Seeq data folder.
-            this.connectionService.Log.DebugFormat("Sample period parsed as '{0}'", this.samplePeriod);
+            this.connectionService.Log.DebugFormat("Sample period parsed as '{0}'", samplePeriod);
             this.connectionService.Log.DebugFormat("Signal period determined to be '{0}'", signalPeriod);
 
             // Second, perform whatever I/O is necessary to establish a connection to your datasource. For example, you
             // might instantiate an ODBC connection object and connect to a SQL database.
-            this.datasourceSimulator = new DatasourceSimulator(signalPeriod);
+            this.datasourceSimulator = new DatasourceSimulator(samplePeriod, signalPeriod);
 
             if (this.datasourceSimulator.Connect()) {
                 // If the connection is successful, transition to the CONNECTED state. The monitor() function will then
@@ -362,7 +361,7 @@ namespace MyCompany.Seeq.Link.Connector {
         }
 
         private void syncCondition(DatasourceSimulator.Alarm alarm) {
-            ConditionInputV1 condition = new ConditionInputV1();
+            ConditionUpdateInputV1 condition = new ConditionUpdateInputV1();
 
             // The Data ID is a string that is unique within the data source, and is used by Seeq when referring
             // to condition data. It is important that the Data ID be consistent across connections which means

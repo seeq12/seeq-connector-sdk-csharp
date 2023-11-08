@@ -14,9 +14,11 @@ namespace MyCompany.Seeq.Link.Connector {
         private static readonly Random Rng = new Random(RandomnessSeed);
 
         private bool connected;
+        private TimeSpan samplePeriod;
         private TimeSpan signalPeriod;
 
-        public DatasourceSimulator(TimeSpan signalPeriod) {
+        public DatasourceSimulator(TimeSpan samplePeriod, TimeSpan signalPeriod) {
+            this.samplePeriod = samplePeriod;
             this.signalPeriod = signalPeriod;
         }
 
@@ -65,7 +67,7 @@ namespace MyCompany.Seeq.Link.Connector {
 
         public IEnumerable<Tag.Value> GetTagValues(string dataId, TimeInstant startTimestamp, TimeInstant endTimestamp,
             int limit) {
-            long samplePeriodInNanos = this.signalPeriod.Ticks * 100;
+            long samplePeriodInNanos = this.samplePeriod.Ticks * 100;
             return EnumerableExtensions.RangeClosed(
                     startTimestamp.Timestamp / samplePeriodInNanos,
                     endTimestamp.Timestamp / samplePeriodInNanos
