@@ -82,11 +82,13 @@ namespace MyCompany.Seeq.Link.Connector {
 
         public IEnumerable<Alarm.Event> GetAlarmEvents(string dataId, TimeInstant startTimestamp, TimeInstant endTimestamp,
             int limit) {
-            DateTime startTime = startTimestamp.ToDateTimeRoundDownTo100ns();
-            long eventPeriodInNanos = (endTimestamp.Timestamp - startTimestamp.Timestamp) / limit;
-            return Enumerable.Range(0, limit)
+            long capsulePeriodInNanos = this.samplePeriod.Ticks * 100;
+            return EnumerableExtensions.RangeClosed(
+                    (long)Math.Floor(startTimestamp.Timestamp / (double)capsulePeriodInNanos),
+                    (long)Math.Ceiling(endTimestamp.Timestamp / (double)capsulePeriodInNanos)
+                )
                 .Select(index => {
-                    DateTime start = startTime + TimeSpan.FromTicks(index * eventPeriodInNanos / 100);
+                    DateTime start = new TimeInstant(index * capsulePeriodInNanos).ToDateTimeRoundDownTo100ns();
                     DateTime end = start + TimeSpan.FromMilliseconds(10);
                     return new Alarm.Event(start, end, Rng.NextDouble());
                 })
