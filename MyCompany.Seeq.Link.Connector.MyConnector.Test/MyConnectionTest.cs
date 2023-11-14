@@ -26,20 +26,20 @@ namespace MyCompany.Seeq.Link.Connector.MyConnector.Test {
             connection.Connect();
 
             Check.That(connection.GetSamples(new GetSamplesParameters("MyDataId1",
-                    new TimeInstant(2 * 1_000_000_000L - 100), new TimeInstant(4 * 1_000_000_000L + 100), 0, 10, null, "")))
+                    new TimeInstant(2 * 1000000000L - 100), new TimeInstant(4 * 1000000000L + 100), 0, 10, null, "")))
                 .ContainsExactly(
-                    new Sample(new TimeInstant(1_000_000_000L), 0.06279051952931337),
-                    new Sample(new TimeInstant(2_000_000_000L), 0.12533323356430426),
-                    new Sample(new TimeInstant(3_000_000_000L), 0.1873813145857246),
-                    new Sample(new TimeInstant(4_000_000_000L), 0.2486898871648548),
-                    new Sample(new TimeInstant(5_000_000_000L), 0.3090169943749474));
+                    new Sample(new TimeInstant(1000000000L), 0.06279051952931337),
+                    new Sample(new TimeInstant(2000000000L), 0.12533323356430426),
+                    new Sample(new TimeInstant(3000000000L), 0.1873813145857246),
+                    new Sample(new TimeInstant(4000000000L), 0.2486898871648548),
+                    new Sample(new TimeInstant(5000000000L), 0.3090169943749474));
 
             // Ensure sampleLimit works
             Check.That(connection.GetSamples(new GetSamplesParameters("MyDataId2",
-                    new TimeInstant(2 * 1_000_000_000L - 100), new TimeInstant(4 * 1_000_000_000L + 100), 0, 2, null, "")))
+                    new TimeInstant(2 * 1000000000L - 100), new TimeInstant(4 * 1000000000L + 100), 0, 2, null, "")))
                 .ContainsExactly(
-                    new Sample(new TimeInstant(1_000_000_000L), 0.06279051952931337),
-                    new Sample(new TimeInstant(2_000_000_000L), 0.12533323356430426));
+                    new Sample(new TimeInstant(1000000000L), 0.06279051952931337),
+                    new Sample(new TimeInstant(2000000000L), 0.12533323356430426));
         }
     }
 }

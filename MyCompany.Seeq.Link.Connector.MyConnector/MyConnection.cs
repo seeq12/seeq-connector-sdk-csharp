@@ -415,10 +415,10 @@ namespace MyCompany.Seeq.Link.Connector {
         }
 
         private String getFormula(Object value) {
-            if (value is string stringValue) {
-                return FormulaHelper.EscapeStringAsFormula(stringValue);
-            } else if (value is DateTime dateTimeValue) {
-                TimeInstant timeInstant = new TimeInstant(dateTimeValue);
+            if (value.GetType() == typeof(string)) {
+                return FormulaHelper.EscapeStringAsFormula((string) value);
+            } else if (value.GetType() == typeof(DateTime)) {
+                TimeInstant timeInstant = new TimeInstant((DateTime) value);
                 return timeInstant.Timestamp + "ns";
             } else {
                 return value.ToString();
