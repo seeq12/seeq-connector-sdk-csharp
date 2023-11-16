@@ -49,7 +49,7 @@ Take the following steps to confirm a properly configured development environmen
 1. Wait for building to finish.
 1. Confirm that no compile errors occurred.
 1. Open the `EntryPoint.cs` file in the `Seeq.Link.SDK.Debugging.Agent` project.
-1. Modify the URL on the line `config.SeeqUrl = new Uri("https://yourserver.seeq.host");` to match your Seeq server
+1. Modify the URL on the line `const string seeqHostUrl = "https://yourserver.seeq.host"` to match your Seeq server
 1. Modify the `agent_api_key` in `Seeq.Link.SDK.Debugging.Agent\data\keys\agent.key` my replacing the `<your_agent_api_key>`
    with the key that is located in the top right of your Seeq Administration page
 1. Set a breakpoint (*Debug* > *Toggle Breakpoint*) on the first line of the `Main()` function.

@@ -19,10 +19,14 @@ namespace Seeq.Link.Debugging.Agent {
             Seeq.Link.Agent.Program.Configuration config =
                     Seeq.Link.Agent.Program.GetDefaultConfiguration();
 
+            const string seeqHostUrl = "https://yourserver.seeq.host";
+            config.SeeqUrl = new Uri(seeqHostUrl);
+            config.SeeqExternalUrl = new Uri(seeqHostUrl);
+            config.SeeqWebSocketUrl = new Uri(seeqHostUrl);
+
+            config.IsRemoteAgent = true;
             // Provide a name for the agent that differentiates it from the "normal" .NET Agent
             config.Name = ".NET Connector SDK Debugging Agent";
-            config.SeeqUrl = new Uri("https://yourserver.seeq.host");
-            config.IsRemoteAgent = true;
             // Set the connectorSearchPaths to only find connectors within the connector-sdk folder
             string executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
             config.DataFolder = Path.Combine(Path.GetDirectoryName(executingAssemblyLocation), "data");
