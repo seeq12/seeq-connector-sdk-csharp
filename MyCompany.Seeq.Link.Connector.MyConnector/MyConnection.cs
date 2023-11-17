@@ -243,8 +243,7 @@ namespace MyCompany.Seeq.Link.Connector {
                 foreach (DatasourceSimulator.Alarm.Event @event in events) {
                     TimeInstant start = new TimeInstant(@event.Start);
                     TimeInstant end = new TimeInstant(@event.End);
-                    List<Capsule.Property> capsuleProperties = new List<Capsule.Property>
-                    {
+                    List<Capsule.Property> capsuleProperties = new List<Capsule.Property> {
                         new Capsule.Property("Intensity", @event.Intensity.ToString(), "rads")
                     };
                     yield return new Capsule(start, end, capsuleProperties);
