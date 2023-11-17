@@ -14,7 +14,7 @@ if not exist "%SEEQ_NUNIT_RUNNER%" .\nuget install NUnit.Console -Version 3.16.3
 
 for /r "%~dp0." %%f in (bin\Debug\*Test.dll bin\Release\*Test.dll) do (
     echo Found test project: %%f
-    "%SEEQ_NUNIT_RUNNER%" %%f --inprocess --noresult
+    "%SEEQ_NUNIT_RUNNER%" %%f --noresult
 )
 
 echo Tests completed.
