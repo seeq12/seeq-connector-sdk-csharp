@@ -9,14 +9,16 @@ namespace MyCompany.Seeq.Link.Connector {
 
         // To be able to yield consistent, reproducible tag values, we need a constant seed. This helps us
         // approximate the behaviour of a real datasource which should be deterministic.
-        private const int RandomnessSeed = 1_000_000;
+        private const int RandomnessSeed = 1000000;
 
         private static readonly Random Rng = new Random(RandomnessSeed);
 
         private bool connected;
+        private TimeSpan samplePeriod;
         private TimeSpan signalPeriod;
 
-        public DatasourceSimulator(TimeSpan signalPeriod) {
+        public DatasourceSimulator(TimeSpan samplePeriod, TimeSpan signalPeriod) {
+            this.samplePeriod = samplePeriod;
             this.signalPeriod = signalPeriod;
         }
 
@@ -65,10 +67,10 @@ namespace MyCompany.Seeq.Link.Connector {
 
         public IEnumerable<Tag.Value> GetTagValues(string dataId, TimeInstant startTimestamp, TimeInstant endTimestamp,
             int limit) {
-            long samplePeriodInNanos = this.signalPeriod.Ticks * 100;
+            long samplePeriodInNanos = this.samplePeriod.Ticks * 100;
             return EnumerableExtensions.RangeClosed(
-                    startTimestamp.Timestamp / samplePeriodInNanos,
-                    endTimestamp.Timestamp / samplePeriodInNanos
+                    (long)Math.Floor(startTimestamp.Timestamp / (double)samplePeriodInNanos),
+                    (long)Math.Ceiling(endTimestamp.Timestamp / (double)samplePeriodInNanos)
                 )
                 .Select(index => {
                     TimeInstant key = new TimeInstant(index * samplePeriodInNanos);
@@ -80,12 +82,14 @@ namespace MyCompany.Seeq.Link.Connector {
 
         public IEnumerable<Alarm.Event> GetAlarmEvents(string dataId, TimeInstant startTimestamp, TimeInstant endTimestamp,
             int limit) {
-            DateTime startTime = startTimestamp.ToDateTimeRoundDownTo100ns();
-            long eventPeriodInNanos = (endTimestamp.Timestamp - startTimestamp.Timestamp) / limit;
-            return Enumerable.Range(0, limit)
+            long capsulePeriodInNanos = this.samplePeriod.Ticks * 100;
+            return EnumerableExtensions.RangeClosed(
+                    (long)Math.Floor(startTimestamp.Timestamp / (double)capsulePeriodInNanos),
+                    (long)Math.Ceiling(endTimestamp.Timestamp / (double)capsulePeriodInNanos)
+                )
                 .Select(index => {
-                    DateTime start = startTime + TimeSpan.FromTicks(index * eventPeriodInNanos / 100);
-                    DateTime end = start + TimeSpan.FromMilliseconds(10);
+                    DateTime start = new TimeInstant(index * capsulePeriodInNanos).ToDateTimeRoundDownTo100ns();
+                    DateTime end = start + TimeSpan.FromTicks(100);
                     return new Alarm.Event(start, end, Rng.NextDouble());
                 })
                 .Take(limit);
@@ -113,13 +117,13 @@ namespace MyCompany.Seeq.Link.Connector {
         /// This class defines an element that can be used for syncing assets
         /// </summary>
         public class Element {
-            public string Id { get; }
+            public string Id { get; set; }
 
-            public string Name { get; }
+            public string Name { get; set; }
 
             public Element(int elementId) {
                 Id = elementId.ToString();
-                Name = $"Simulated Element #{elementId}";
+                Name = string.Format("Simulated Element #{0}", elementId);
             }
         }
 
@@ -127,21 +131,21 @@ namespace MyCompany.Seeq.Link.Connector {
         /// This class defines an alarm that can be used for syncing conditions
         /// </summary>
         public class Alarm {
-            public string Id { get; }
+            public string Id { get; set; }
 
-            public string Name { get; }
+            public string Name { get; set; }
 
             public Alarm(string elementId, int alarmId) {
-                Id = $"Element={elementId};Alarm={alarmId}";
-                Name = $"Simulated Alarm #{alarmId}";
+                Id = string.Format("Element={0};Alarm={1}", elementId, alarmId);
+                Name = string.Format("Simulated Alarm #{0}", alarmId);
             }
 
             public class Event {
-                public DateTime Start { get; }
+                public DateTime Start { get; set; }
 
-                public DateTime End { get; }
+                public DateTime End { get; set; }
 
-                public object Intensity { get; }
+                public object Intensity { get; set; }
 
                 public Event(DateTime start, DateTime end, object intensity) {
                     this.Start = start;
@@ -155,22 +159,22 @@ namespace MyCompany.Seeq.Link.Connector {
         /// This class defines a tag that can be used for syncing signals
         /// </summary>
         public class Tag {
-            public string Id { get; }
+            public string Id { get; set; }
 
-            public string Name { get; }
+            public string Name { get; set; }
 
-            public bool Stepped { get; }
+            public bool Stepped { get; set; }
 
             public Tag(string elementId, int tagId, bool stepped) {
-                Id = $"Element={elementId};Tag={tagId}";
-                this.Name = $"Simulated Tag #{tagId}";
+                Id = string.Format("Element={0};Tag={1}", elementId, tagId);
+                this.Name = string.Format("Simulated Tag #{0}", tagId);
                 this.Stepped = stepped;
             }
 
             public class Value {
-                public TimeInstant Timestamp { get; }
+                public TimeInstant Timestamp { get; set; }
 
-                public object Measure { get; }
+                public object Measure { get; set; }
 
                 public Value(TimeInstant timestamp, object value) {
                     this.Timestamp = timestamp;
@@ -183,17 +187,17 @@ namespace MyCompany.Seeq.Link.Connector {
         /// This class defines a constant that can be used for syncing scalars
         /// </summary>
         public class Constant {
-            public string Id { get; }
+            public string Id { get; set; }
 
-            public string Name { get; }
+            public string Name { get; set; }
 
-            public string UnitOfMeasure { get; }
+            public string UnitOfMeasure { get; set; }
 
-            public object Value { get; }
+            public object Value { get; set; }
 
             public Constant(string elementId, int constantId, string unitOfMeasure, object value) {
-                this.Id = $"Element={elementId};Constant={constantId}";
-                this.Name = $"Simulated Constant #{constantId}";
+                this.Id = string.Format("Element={0};Constant={1}", elementId, constantId);
+                this.Name = string.Format("Simulated Constant #{0}", constantId);
                 this.UnitOfMeasure = unitOfMeasure;
                 this.Value = value;
             }

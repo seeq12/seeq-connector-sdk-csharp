@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seeq.Link.SDK.Debugging.Age
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCompany.Seeq.Link.Connector.MyConnector", "MyCompany.Seeq.Link.Connector.MyConnector\MyCompany.Seeq.Link.Connector.MyConnector.csproj", "{0FE864F9-B234-4BFC-84FD-42631507AD2E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCompany.Seeq.Link.Connector.MyConnector.Test", "MyCompany.Seeq.Link.Connector.MyConnector.Test\MyCompany.Seeq.Link.Connector.MyConnector.Test.csproj", "{5C18649F-025D-4F17-B1BE-69427F6906E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{0FE864F9-B234-4BFC-84FD-42631507AD2E}.Release|x64.Build.0 = Release|Any CPU
 		{0FE864F9-B234-4BFC-84FD-42631507AD2E}.Release|x86.ActiveCfg = Release|Any CPU
 		{0FE864F9-B234-4BFC-84FD-42631507AD2E}.Release|x86.Build.0 = Release|Any CPU
+		{5C18649F-025D-4F17-B1BE-69427F6906E7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5C18649F-025D-4F17-B1BE-69427F6906E7}.Debug|x64.Build.0 = Debug|Any CPU
+		{5C18649F-025D-4F17-B1BE-69427F6906E7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5C18649F-025D-4F17-B1BE-69427F6906E7}.Debug|x86.Build.0 = Debug|Any CPU
+		{5C18649F-025D-4F17-B1BE-69427F6906E7}.Release|x64.ActiveCfg = Release|Any CPU
+		{5C18649F-025D-4F17-B1BE-69427F6906E7}.Release|x64.Build.0 = Release|Any CPU
+		{5C18649F-025D-4F17-B1BE-69427F6906E7}.Release|x86.ActiveCfg = Release|Any CPU
+		{5C18649F-025D-4F17-B1BE-69427F6906E7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

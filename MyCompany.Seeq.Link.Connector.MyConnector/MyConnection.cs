@@ -28,7 +28,6 @@ namespace MyCompany.Seeq.Link.Connector {
         private readonly MyConnectionConfigV1 connectionConfig;
         private IDatasourceConnectionServiceV2 connectionService;
         private DatasourceSimulator datasourceSimulator;
-        private TimeSpan samplePeriod;
 
         public MyConnection(MyConnector connector, MyConnectionConfigV1 connectionConfig) {
             // You will generally want to accept a configuration object from your connector parent. Do not do any I/O in the
@@ -108,20 +107,20 @@ namespace MyCompany.Seeq.Link.Connector {
             this.connectionService.ConnectionState = ConnectionState.CONNECTING;
 
             // These lines are specific to the simulator example.
-            this.samplePeriod = TimeSpan.Parse(this.connectionConfig.SamplePeriod.ToUpper());
-            TimeSpan signalPeriod = new TimeSpan(this.samplePeriod.Ticks * 100);
+            TimeSpan samplePeriod = TimeSpan.Parse(this.connectionConfig.SamplePeriod.ToUpper());
+            TimeSpan signalPeriod = new TimeSpan(samplePeriod.Ticks * 100);
 
             // Use logging statements to show important information in the log files. These logging statements will be
             // output to the console when you're in the IDE and also to
             // "csharp/Seeq.Link.SDK.Debugging.Agent/bin/Debug/log/net-debugging-agent.log" within the Connector SDK.
             // When you have deployed your connector, the log statements
             // will go to the "log/net-link.log" file in the Seeq data folder.
-            this.connectionService.Log.DebugFormat("Sample period parsed as '{0}'", this.samplePeriod);
+            this.connectionService.Log.DebugFormat("Sample period parsed as '{0}'", samplePeriod);
             this.connectionService.Log.DebugFormat("Signal period determined to be '{0}'", signalPeriod);
 
             // Second, perform whatever I/O is necessary to establish a connection to your datasource. For example, you
             // might instantiate an ODBC connection object and connect to a SQL database.
-            this.datasourceSimulator = new DatasourceSimulator(signalPeriod);
+            this.datasourceSimulator = new DatasourceSimulator(samplePeriod, signalPeriod);
 
             if (this.datasourceSimulator.Connect()) {
                 // If the connection is successful, transition to the CONNECTED state. The monitor() function will then
@@ -244,8 +243,7 @@ namespace MyCompany.Seeq.Link.Connector {
                 foreach (DatasourceSimulator.Alarm.Event @event in events) {
                     TimeInstant start = new TimeInstant(@event.Start);
                     TimeInstant end = new TimeInstant(@event.End);
-                    List<Capsule.Property> capsuleProperties = new List<Capsule.Property>
-                    {
+                    List<Capsule.Property> capsuleProperties = new List<Capsule.Property> {
                         new Capsule.Property("Intensity", @event.Intensity.ToString(), "rads")
                     };
                     yield return new Capsule(start, end, capsuleProperties);
@@ -362,7 +360,7 @@ namespace MyCompany.Seeq.Link.Connector {
         }
 
         private void syncCondition(DatasourceSimulator.Alarm alarm) {
-            ConditionInputV1 condition = new ConditionInputV1();
+            ConditionUpdateInputV1 condition = new ConditionUpdateInputV1();
 
             // The Data ID is a string that is unique within the data source, and is used by Seeq when referring
             // to condition data. It is important that the Data ID be consistent across connections which means
@@ -376,6 +374,11 @@ namespace MyCompany.Seeq.Link.Connector {
             // linkages.
             condition.Name = alarm.Name;
 
+            // The Maximum Duration is a time span (made up by a combination of a value and a time unit e.g. 1h,
+            // 2m etc.) that indicates the maximum duration of capsules in this series and is required for stored
+            // conditions like this example.
+            condition.MaximumDuration = "2h";
+
             // PutCondition() queues items up for performance reasons and writes them in batch to the server.
             //
             // If you need the conditions to be written to Seeq Server before any other work continues, you can
@@ -384,20 +387,37 @@ namespace MyCompany.Seeq.Link.Connector {
         }
 
         private void syncScalar(DatasourceSimulator.Constant constant) {
-            ScalarInputV1 scalar = new ScalarInputV1 {
-                DataId = constant.Id,
-                Name = constant.Name,
-                UnitOfMeasure = constant.UnitOfMeasure,
-                Formula = this.getFormula(constant.Value)
-            };
+            ScalarInputV1 scalar = new ScalarInputV1();
+
+            // The Data ID is a string that is unique within the data source, and is used by Seeq when referring
+            // to scalar data. It is important that the Data ID be consistent across connections which means
+            // that transient values like generated GUID/UUIDs or the Datasource name would not be ideal. The
+            // Data ID is a string and does not need to be numeric, even though we are just using a number in
+            // this example.
+            scalar.DataId = constant.Id;
+
+            // The Name is a string that is displayed in the UI. It can change (typically as a result of a
+            // rename operation happening in the source system), but the unique Data ID preserves appropriate
+            // linkages.
+            scalar.Name = constant.Name;
+
+            // The Unit Of Measure is a string that denotes what the unit of measure of the scalar value is.
+            scalar.UnitOfMeasure = constant.UnitOfMeasure;
+
+            scalar.Formula = this.getFormula(constant.Value);
+
+            // PutScalar() queues items up for performance reasons and writes them in batch to the server.
+            //
+            // If you need the scalars to be written to Seeq Server before any other work continues, you can
+            // call FlushScalars() on the connection service.
             this.connectionService.PutScalar(scalar);
         }
 
         private String getFormula(Object value) {
-            if (value is string stringValue) {
-                return FormulaHelper.EscapeStringAsFormula(stringValue);
-            } else if (value is DateTime dateTimeValue) {
-                TimeInstant timeInstant = new TimeInstant(dateTimeValue);
+            if (value.GetType() == typeof(string)) {
+                return FormulaHelper.EscapeStringAsFormula((string) value);
+            } else if (value.GetType() == typeof(DateTime)) {
+                TimeInstant timeInstant = new TimeInstant((DateTime) value);
                 return timeInstant.Timestamp + "ns";
             } else {
                 return value.ToString();

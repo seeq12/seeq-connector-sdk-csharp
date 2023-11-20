@@ -16,13 +16,16 @@ namespace Seeq.Link.Debugging.Agent {
         public static void Main(string[] args) {
             log4net.Config.XmlConfigurator.Configure();
 
-            Seeq.Link.Agent.Program.Configuration config =
-                    Seeq.Link.Agent.Program.GetDefaultConfiguration();
+            Seeq.Link.Agent.Program.Configuration config = Seeq.Link.Agent.Program.GetDefaultConfiguration();
 
+            const string seeqHostUrl = "https://yourserver.seeq.host";
+            config.SeeqUrl = new Uri(seeqHostUrl);
+            config.SeeqExternalUrl = new Uri(seeqHostUrl);
+            config.SeeqWebSocketUrl = new Uri(seeqHostUrl);
+
+            config.IsRemoteAgent = true;
             // Provide a name for the agent that differentiates it from the "normal" .NET Agent
             config.Name = ".NET Connector SDK Debugging Agent";
-            config.SeeqUrl = new Uri("https://yourserver.seeq.host");
-            config.IsRemoteAgent = true;
             // Set the connectorSearchPaths to only find connectors within the connector-sdk folder
             string executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
             config.DataFolder = Path.Combine(Path.GetDirectoryName(executingAssemblyLocation), "data");
@@ -32,10 +35,10 @@ namespace Seeq.Link.Debugging.Agent {
 #if DEBUG
             configuration = "Debug";
 #endif
-            string searchPath = connectorSdkRoot.ToString() + "/*Seeq.Link.Connector*/bin/" + configuration + "/*Seeq.Link.Connector*.dll";
+            string searchPath = connectorSdkRoot + "/*Seeq.Link.Connector*/bin/" + configuration + "/*Seeq.Link.Connector*.dll";
 
             string platform = Environment.Is64BitProcess ? "x64" : "x86";
-            string platformSpecificSearchPath = connectorSdkRoot.ToString() + "/*Seeq.Link.Connector*/bin/" + platform + "/" +
+            string platformSpecificSearchPath = connectorSdkRoot + "/*Seeq.Link.Connector*/bin/" + platform + "/" +
                 configuration + "/*Seeq.Link.Connector*.dll";
 
             config.ConnectorSearchPaths = searchPath + ";" + platformSpecificSearchPath;
