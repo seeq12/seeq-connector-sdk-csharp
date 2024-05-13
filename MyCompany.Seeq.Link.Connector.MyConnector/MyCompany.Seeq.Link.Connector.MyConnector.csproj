@@ -57,11 +57,11 @@
     <Reference Include="RestSharp, Version=106.12.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.106.12.0\lib\net452\RestSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Seeq.Link.SDK, Version=65.0.0-dev.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.Link.SDK.65.0.0-dev\lib\net48\Seeq.Link.SDK.dll</HintPath>
+    <Reference Include="Seeq.Link.SDK, Version=66.0.0-dev.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Seeq.Link.SDK.66.0.0-dev\lib\net48\Seeq.Link.SDK.dll</HintPath>
     </Reference>
-    <Reference Include="Seeq.SDK, Version=65.0.0-dev.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.SDK.65.0.0-dev\lib\net45\Seeq.SDK.dll</HintPath>
+    <Reference Include="Seeq.SDK, Version=66.0.0-dev.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Seeq.SDK.66.0.0-dev\lib\net45\Seeq.SDK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
