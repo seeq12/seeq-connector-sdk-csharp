@@ -60,6 +60,10 @@
     <Reference Include="Google.ProtocolBuffers.Serialization, Version=2.4.1.521, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.ProtocolBuffers.2.4.1.521\lib\net40\Google.ProtocolBuffers.Serialization.dll</HintPath>
     </Reference>
+    <Reference Include="Google.Protobuf">
+      <Private>True</Private>
+      <HintPath>..\packages\Google.Protobuf.3.24.3\lib\net45\Google.Protobuf.dll</HintPath>
+    </Reference>
     <Reference Include="Ionic.Zip, Version=1.9.7.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
       <HintPath>..\packages\DotNetZip.1.9.7\lib\net20\Ionic.Zip.dll</HintPath>
     </Reference>
@@ -90,17 +94,32 @@
     <Reference Include="RestSharp, Version=106.12.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.106.12.0\lib\net452\RestSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Seeq.Link.Agent, Version=64.0.3.0, Culture=neutral, processorArchitecture=Amd64">
-      <HintPath>..\packages\Seeq.Link.Agent.64.0.3\lib\net48\Seeq.Link.Agent.exe</HintPath>
+    <Reference Include="Seeq.Link.Agent, Version=65.0.2.0, Culture=neutral, processorArchitecture=Amd64">
+      <HintPath>..\packages\Seeq.Link.Agent.65.0.2\lib\net48\Seeq.Link.Agent.exe</HintPath>
     </Reference>
-    <Reference Include="Seeq.Link.SDK, Version=64.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.Link.SDK.64.0.3\lib\net48\Seeq.Link.SDK.dll</HintPath>
+    <Reference Include="Seeq.Link.SDK, Version=65.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Seeq.Link.SDK.65.0.2\lib\net48\Seeq.Link.SDK.dll</HintPath>
     </Reference>
-    <Reference Include="Seeq.SDK, Version=64.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.SDK.64.0.3\lib\net45\Seeq.SDK.dll</HintPath>
+    <Reference Include="Seeq.SDK, Version=65.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Seeq.SDK.65.0.2\lib\net45\Seeq.SDK.dll</HintPath>
     </Reference>
-    <Reference Include="Seeq.Utilities, Version=64.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.Utilities.64.0.3\lib\net48\Seeq.Utilities.dll</HintPath>
+    <Reference Include="Seeq.Utilities, Version=65.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Seeq.Utilities.65.0.2\lib\net48\Seeq.Utilities.dll</HintPath>
+    </Reference>
+    <Reference Include="Seeq.Compression, Version=65.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Seeq.Compression.65.0.2\lib\net48\Seeq.Compression.dll</HintPath>
+    </Reference>
+    <Reference Include="Seeq.Serialization, Version=65.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Seeq.Serialization.65.0.2\lib\net48\Seeq.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+        <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="ZstdSharp.Port">
+      <HintPath>..\packages\ZstdSharp.Port.0.7.2\lib\net461\ZstdSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
