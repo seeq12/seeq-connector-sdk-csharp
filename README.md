@@ -57,7 +57,7 @@ Take the following steps to confirm a properly configured development environmen
 1. Modify the URL on the line `const string seeqHostUrl = "https://yourserver.seeq.host"` to match your Seeq server
 1. Retrieve the agent_api_key from your Seeq Server by logging in as a Seeq Administrator and navigating to the API
    Documentation page. Expand the System group and expand GET /system/agentKey. Click Execute
-1. Modify the `agent_api_key` in `resources\data\keys\agent.key` my replacing the `<your_agent_api_key>`
+1. Modify the `agent_api_key` in `resources\data\keys\agent.key` by replacing the `<your_agent_api_key>`
    with the key that is located in the top response from the previous step. Note: it should only include the value. For
    example if the return was `{"agentKey": "superSecret123"}` then the key is `superSecret123`
 1. Set a breakpoint (*Debug* > *Toggle Breakpoint*) on the first line of the `Main()` function.
