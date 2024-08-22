@@ -80,6 +80,9 @@
     <Reference Include="Seeq.Link.SDK, Version=66.0.0-dev.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Seeq.Link.SDK.66.0.0-dev\lib\net48\Seeq.Link.SDK.dll</HintPath>
     </Reference>
+    <Reference Include="Seeq.Link.SDK.TestFramework, Version=66.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Seeq.Link.SDK.TestFramework.66.0.0-dev\lib\net48\Seeq.Link.SDK.TestFramework.dll</HintPath>
+    </Reference>
     <Reference Include="Seeq.SDK, Version=66.0.0-dev.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Seeq.SDK.66.0.0-dev\lib\net45\Seeq.SDK.dll</HintPath>
     </Reference>
@@ -102,12 +105,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MyCompany.Seeq.Link.Connector.MyConnector\MyCompany.Seeq.Link.Connector.MyConnector.csproj">
       <Project>{0fe864f9-b234-4bfc-84fd-42631507ad2e}</Project>
       <Name>MyCompany.Seeq.Link.Connector.MyConnector</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\NUnit.Analyzers.3.5.0\analyzers\dotnet\cs\nunit.analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
