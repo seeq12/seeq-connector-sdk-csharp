@@ -10,7 +10,7 @@
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MyCompany.Seeq.Link.Connector.MyConnector.Test</RootNamespace>
+    <RootNamespace>MyCompany.Seeq.Link.Connector.MyConnectorTest</RootNamespace>
     <AssemblyName>MyCompany.Seeq.Link.Connector.MyConnector.Test</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -101,6 +101,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MyConnectionTest.cs" />
+    <Compile Include="MyConnectorConditionStandardTest.cs" />
+    <Compile Include="MyConnectorSignalStandardTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
