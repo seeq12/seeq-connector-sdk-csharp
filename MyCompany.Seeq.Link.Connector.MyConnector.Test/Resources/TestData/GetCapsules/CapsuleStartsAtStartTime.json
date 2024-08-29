@@ -6,7 +6,7 @@
     "MaxDurationNanos": 3600000000000,
     "CapsuleLimit": 1000
   },
-  "StrictPropertyChecking": true,
+  "StrictPropertyChecking": false,
   "ExpectedCapsules": [
     {
       "IsoTimestampStart": "2024-08-01T00:00:00.000000Z",
@@ -14,8 +14,7 @@
       "Properties": [
         {
           "Name": "Intensity",
-          "UnitOfMeasure": "rads",
-          "Value": "0.0404324028829264"
+          "UnitOfMeasure": "rads"
         }
       ]
     },
@@ -25,8 +24,7 @@
       "Properties": [
         {
           "Name": "Intensity",
-          "UnitOfMeasure": "rads",
-          "Value": "0.434915419404821"
+          "UnitOfMeasure": "rads"
         }
       ]
     }

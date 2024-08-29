@@ -149,7 +149,7 @@ namespace MyCompany.Seeq.Link.Connector {
             this.connectionService.ConnectionState = ConnectionState.DISCONNECTED;
 
             // Do whatever is necessary to clean up your connection and free up allocated resources.
-            this.datasourceSimulator?.Disconnect();
+            this.datasourceSimulator.Disconnect();
         }
 
         public void Index(SyncMode syncMode) {
