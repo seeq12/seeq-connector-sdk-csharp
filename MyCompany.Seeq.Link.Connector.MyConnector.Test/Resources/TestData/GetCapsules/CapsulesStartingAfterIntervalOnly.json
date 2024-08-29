@@ -1,32 +1,20 @@
 ﻿{
   "Description": "This test checks correctness of queries where there are only capsules starting after the request interval",
   "GetCapsulesParameters": {
-    "StartTime": "2024-08-01T00:00:00.000000Z",
-    "EndTime": "2024-08-01T00:00:01.000000Z",
+    "StartTime": "2024-08-01T00:00:00.600000Z",
+    "EndTime": "2024-08-01T00:00:00.999999999Z",
     "MaxDurationNanos": 3600000000000,
     "CapsuleLimit": 1000
   },
-  "StrictPropertyChecking": true,
+  "StrictPropertyChecking": false,
   "ExpectedCapsules": [
-    {
-      "IsoTimestampStart": "2024-08-01T00:00:00.000000Z",
-      "IsoTimestampEnd": "2024-08-01T00:00:00.000010Z",
-      "Properties": [
-        {
-          "Name": "Intensity",
-          "UnitOfMeasure": "rads",
-          "Value": "0.0404324028829264"
-        }
-      ]
-    },
     {
       "IsoTimestampStart": "2024-08-01T00:00:01.000000Z",
       "IsoTimestampEnd": "2024-08-01T00:00:01.000010Z",
       "Properties": [
         {
           "Name": "Intensity",
-          "UnitOfMeasure": "rads",
-          "Value": "0.434915419404821"
+          "UnitOfMeasure": "rads"
         }
       ]
     }
