@@ -14,7 +14,7 @@ namespace MyCompany.Seeq.Link.Connector.MyConnectorTest {
         private MyConnector myConnector;
         private MyConnection myConnection;
 
-        private static Dictionary<StandardTest, string> dataIdsForStandardTests = new Dictionary<StandardTest, string>()
+        private static Dictionary<StandardTest, string> dataIdsForStandardTests = new Dictionary<StandardTest, string>
         {
             { StandardTest.CapsulesStartingAfterIntervalOnly , "condition-data-id-1" },
             { StandardTest.CapsulesStartingBeforeIntervalOnly , "condition-data-id-2" },
@@ -51,8 +51,7 @@ namespace MyCompany.Seeq.Link.Connector.MyConnectorTest {
         public override void ConditionPullConnectionOneTimeSetUp() {
         }
 
-        public override List<ConfigObject> ConnectorConfigVersions() => new List<ConfigObject>
-        {
+        public override List<ConfigObject> ConnectorConfigVersions() => new List<ConfigObject> {
             new MyConnectorConfigV1()
         };
 
