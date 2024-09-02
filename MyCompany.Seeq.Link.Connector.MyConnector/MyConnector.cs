@@ -60,6 +60,23 @@ namespace MyCompany.Seeq.Link.Connector {
                     connectionConfig.Id = Guid.NewGuid().ToString();
                 }
 
+                if (!connectionConfig.Enabled) {
+                    // If the connection is not enabled, then do not add it to the list of connections
+                    continue;
+                }
+
+                // do further validation of the connection configuration to ensure only property configured connections
+                // are processed. In our case, we need a valid Sample Period, another field validate is the TagCount.
+                if (!TimeSpan.TryParse(connectionConfig.SamplePeriod, out _)) {
+                    // provide details of the invalid configuration so it can be addressed
+                    this.connectorService.Log.WarnFormat("Connection '{0}' has an invalid Sample Period. It will be ignored.", connectionConfig.Name);
+
+                    // you can also disable the connection so it is no longer processed until changes are made
+                    connectionConfig.Enabled = false;
+
+                    continue;
+                }
+
                 this.connectorService.AddConnection(new MyConnection(this, connectionConfig));
             }
             // Finally, save the connector configuration in a file for the user to view and modify as needed
