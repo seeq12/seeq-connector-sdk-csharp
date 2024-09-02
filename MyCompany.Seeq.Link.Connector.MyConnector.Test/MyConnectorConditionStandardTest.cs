@@ -28,6 +28,7 @@ namespace MyCompany.Seeq.Link.Connector.MyConnectorTest {
 
         public override MyConnector Connector => myConnector;
 
+        // Use this method to configure the connection that should be used for all standard tests in the suite
         public override void BaseConnectionOneTimeSetUp() {
             var connectionConfig = new MyConnectionConfigV1 {
                 SamplePeriod = "00:00:01",
@@ -55,10 +56,14 @@ namespace MyCompany.Seeq.Link.Connector.MyConnectorTest {
             new MyConnectorConfigV1()
         };
 
+        // Use this method to provide the data ID to be used for each standard test in the suite. You can follow the
+        // style used here or keep the determination logic inline if you'd prefer.
         public override string DataIdForTest(string testName) {
             return dataIdsForStandardTests[(StandardTest)Enum.Parse(typeof(StandardTest), testName)];
         }
 
+        // If for some reason, you need to ignore any standard test in the suite, use this method to specify. An example
+        // can be seen in the <cref name="MyConnectorSignalStandardTest"/> class. 
         public override List<IgnoredTest> IgnoredTests() => new List<IgnoredTest>();
 
         public override void IndexingConnectionOneTimeSetUp() {

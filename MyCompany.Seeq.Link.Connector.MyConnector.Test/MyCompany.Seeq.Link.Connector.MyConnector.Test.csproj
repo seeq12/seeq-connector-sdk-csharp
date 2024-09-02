@@ -119,27 +119,48 @@
     <Analyzer Include="..\packages\NUnit.Analyzers.3.5.0\analyzers\dotnet\cs\nunit.analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\TestData\GetCapsules\CapsulesStartingAfterIntervalOnly.json">
+    <None Include="Resources\TestData\GetCapsules\CapsulesStartingAfterIntervalOnly.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\TestData\GetCapsules\CapsulesStartingBeforeIntervalOnly.json">
+    </None>
+    <None Include="Resources\TestData\GetCapsules\CapsulesStartingBeforeIntervalOnly.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\TestData\GetCapsules\CapsuleStartsAtEndTime.json">
+    </None>
+    <None Include="Resources\TestData\GetCapsules\CapsuleStartsAtEndTime.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\TestData\GetCapsules\CapsuleStartsAtStartTime.json">
+    </None>
+    <None Include="Resources\TestData\GetCapsules\CapsuleStartsAtStartTime.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\TestData\GetCapsules\CapsuleStartsOneNanosecondAfterStart.json">
+    </None>
+    <None Include="Resources\TestData\GetCapsules\CapsuleStartsOneNanosecondAfterStart.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\TestData\GetCapsules\CapsuleStartsOneNanosecondBeforeEnd.json">
+    </None>
+    <None Include="Resources\TestData\GetCapsules\CapsuleStartsOneNanosecondBeforeEnd.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\TestData\GetSamples\NoSamplesOutsideBoundary.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\TestData\GetSamples\SampleOneNanosecondAfterEnd.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\TestData\GetSamples\SampleOneNanosecondAfterStart.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\TestData\GetSamples\SampleOneNanosecondBeforeEnd.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\TestData\GetSamples\SampleOneNanosecondBeforeStart.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\TestData\GetSamples\SampleOnLeftBoundary.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\TestData\GetSamples\SampleOnRightBoundary.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\TestData\GetSamples\SamplesOutsideBoundaryOnly.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\TestData\InitializeConnector\ConnectionWithInvalidSamplePeriod.json">
