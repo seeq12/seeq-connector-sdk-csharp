@@ -48,6 +48,8 @@ namespace MyCompany.Seeq.Link.Connector.MyConnectorTest {
             };
         }
 
+        // Use this method to configure the connector and connection that should be used for all standard tests in
+        // the suite
         public override void BaseConnectionOneTimeSetUp() {
             var connectionConfig = new MyConnectionConfigV1 {
                 SamplePeriod = "00:00:01",
@@ -78,8 +80,13 @@ namespace MyCompany.Seeq.Link.Connector.MyConnectorTest {
         public override void PullConnectionOneTimeSetUp() {
         }
 
+        // Use this method to provide the data ID to be used for each standard test in the suite. You can follow the
+        // style used here or keep the determination logic inline if you'd prefer. Ensure that data IDs are provided for every Standard test not skipped as well as for every Custom test defined.
+        // NOTE: the names for custom tests should match the test data file name exactly to avoid errors.
         public override string DataIdForTest(string testName) {
-            return Enum.TryParse(testName, out StandardTest standardTest) ? dataIdsForStandardTests[standardTest] : dataIdsForCustomTests[testName];
+            return Enum.TryParse(testName, out StandardTest standardTest) 
+                ? dataIdsForStandardTests[standardTest] 
+                : dataIdsForCustomTests[testName];
         }
 
         public override void SignalPullConnectionOneTimeSetUp() {

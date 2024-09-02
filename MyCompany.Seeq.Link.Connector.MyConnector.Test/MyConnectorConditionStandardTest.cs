@@ -28,7 +28,8 @@ namespace MyCompany.Seeq.Link.Connector.MyConnectorTest {
 
         public override MyConnector Connector => myConnector;
 
-        // Use this method to configure the connection that should be used for all standard tests in the suite
+        // Use this method to configure the connector and connection that should be used for all standard tests in
+        // the suite
         public override void BaseConnectionOneTimeSetUp() {
             var connectionConfig = new MyConnectionConfigV1 {
                 SamplePeriod = "00:00:01",
@@ -63,7 +64,7 @@ namespace MyCompany.Seeq.Link.Connector.MyConnectorTest {
         }
 
         // If for some reason, you need to ignore any standard test in the suite, use this method to specify. An example
-        // can be seen in the <cref name="MyConnectorSignalStandardTest"/> class. 
+        // can be seen in the <see cref="MyConnectorSignalStandardTest.IgnoredTests"/> method. 
         public override List<IgnoredTest> IgnoredTests() => new List<IgnoredTest>();
 
         public override void IndexingConnectionOneTimeSetUp() {
