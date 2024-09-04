@@ -44,7 +44,7 @@ namespace MyCompany.Seeq.Link.Connector.MyConnectorTest {
                 new IgnoredTest(StandardTest.EnumerationValuedSamples,sharedIgnoreReason),
                 new IgnoredTest(StandardTest.IntegerValuedSamples, sharedIgnoreReason),
                 new IgnoredTest(StandardTest.StringValuedSamples, sharedIgnoreReason),
-                new IgnoredTest(StandardTest.NoSamplesAtAll, "The simulated datasouce will always return at least one sample"),
+                new IgnoredTest(StandardTest.NoSamplesAtAll, "The simulated datasource will always return at least one sample"),
             };
         }
 

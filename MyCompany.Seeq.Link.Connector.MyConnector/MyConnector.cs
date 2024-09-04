@@ -66,14 +66,21 @@ namespace MyCompany.Seeq.Link.Connector {
                 }
 
                 // do further validation of the connection configuration to ensure only property configured connections
-                // are processed. In our case, we need a valid Sample Period, another field validate is the TagCount.
+                // are processed. In our case, we need a valid SamplePeriod,and if a TagCount is provided, int must be a
+                // positive integer.
                 if (!TimeSpan.TryParse(connectionConfig.SamplePeriod, out _)) {
                     // provide details of the invalid configuration so it can be addressed
-                    this.connectorService.Log.WarnFormat("Connection '{0}' has an invalid Sample Period. It will be ignored.", connectionConfig.Name);
+                    this.connectorService.Log.WarnFormat("Connection '{0}' has an invalid SamplePeriod. It will be ignored.", connectionConfig.Name);
 
                     // you can also disable the connection so it is no longer processed until changes are made
                     connectionConfig.Enabled = false;
 
+                    continue;
+                }
+
+                if (connectionConfig.TagCount.HasValue && connectionConfig.TagCount < 1) {
+                    this.connectorService.Log.WarnFormat("Connection '{0}' has an invalid TagCount. It will be ignored.", connectionConfig.Name);
+                    connectionConfig.Enabled = false;
                     continue;
                 }
 
