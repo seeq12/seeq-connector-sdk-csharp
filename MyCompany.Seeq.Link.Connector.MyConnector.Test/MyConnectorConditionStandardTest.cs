@@ -24,9 +24,13 @@ namespace MyCompany.Seeq.Link.Connector.MyConnectorTest {
             { StandardTest.CapsuleStartsOneNanosecondBeforeEnd , "condition-data-id-6" },
         };
 
-        public override MyConnection Connection => myConnection;
+        public override MyConnection Connection {
+            get { return myConnection; }
+        }
 
-        public override MyConnector Connector => myConnector;
+        public override MyConnector Connector {
+            get { return myConnector; }
+        }
 
         // Use this method to configure the connector and connection that should be used for all standard tests in
         // the suite
@@ -53,9 +57,12 @@ namespace MyCompany.Seeq.Link.Connector.MyConnectorTest {
         public override void ConditionPullConnectionOneTimeSetUp() {
         }
 
-        public override List<ConfigObject> ConnectorConfigVersions() => new List<ConfigObject> {
-            new MyConnectorConfigV1()
-        };
+        public override List<ConfigObject> ConnectorConfigVersions() {
+            return new List<ConfigObject>
+            {
+                new MyConnectorConfigV1()
+            };
+        }
 
         // Use this method to provide the data ID to be used for each standard test in the suite. You can follow the
         // style used here or keep the determination logic inline if you'd prefer.
@@ -64,8 +71,10 @@ namespace MyCompany.Seeq.Link.Connector.MyConnectorTest {
         }
 
         // If for some reason, you need to ignore any standard test in the suite, use this method to specify. An example
-        // can be seen in the <see cref="MyConnectorSignalStandardTest.IgnoredTests"/> method. 
-        public override List<IgnoredTest> IgnoredTests() => new List<IgnoredTest>();
+        // can be seen in the <see cref="MyConnectorSignalStandardTest.IgnoredTests"/> method.
+        public override List<IgnoredTest> IgnoredTests() {
+            return new List<IgnoredTest>();
+        }
 
         public override void IndexingConnectionOneTimeSetUp() {
         }

@@ -30,9 +30,13 @@ namespace MyCompany.Seeq.Link.Connector.MyConnectorTest {
             { "ConnectionWithInvalidSamplePeriod", "signal-data-id-10" }
         };
 
-        public override MyConnection Connection => myConnection;
+        public override MyConnection Connection {
+            get { return myConnection; }
+        }
 
-        public override MyConnector Connector => myConnector;
+        public override MyConnector Connector {
+            get { return myConnector; }
+        }
 
         public override List<IgnoredTest> IgnoredTests() {
             // We are using a shared reason because we are testing a simulated datasource. If you choose to ignore a
@@ -70,9 +74,12 @@ namespace MyCompany.Seeq.Link.Connector.MyConnectorTest {
             myConnection = new MyConnection(myConnector, connectionConfig);
         }
 
-        public override List<ConfigObject> ConnectorConfigVersions() => new List<ConfigObject> {
-            new MyConnectorConfigV1()
-        };
+        public override List<ConfigObject> ConnectorConfigVersions() {
+            return new List<ConfigObject>
+            {
+                new MyConnectorConfigV1()
+            };
+        }
 
         public override void IndexingConnectionOneTimeSetUp() {
         }
@@ -84,8 +91,9 @@ namespace MyCompany.Seeq.Link.Connector.MyConnectorTest {
         // style used here or keep the determination logic inline if you'd prefer. Ensure that data IDs are provided for every Standard test not skipped as well as for every Custom test defined.
         // NOTE: the names for custom tests should match the test data file name exactly to avoid errors.
         public override string DataIdForTest(string testName) {
-            return Enum.TryParse(testName, out StandardTest standardTest) 
-                ? dataIdsForStandardTests[standardTest] 
+            StandardTest standardTest;
+            return Enum.TryParse(testName, out standardTest)
+                ? dataIdsForStandardTests[standardTest]
                 : dataIdsForCustomTests[testName];
         }
 
