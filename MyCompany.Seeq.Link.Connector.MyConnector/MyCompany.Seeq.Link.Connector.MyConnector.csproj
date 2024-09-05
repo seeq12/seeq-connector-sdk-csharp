@@ -30,63 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Google.ProtocolBuffers, Version=2.4.1.521, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.ProtocolBuffers.2.4.1.521\lib\net40\Google.ProtocolBuffers.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Google.ProtocolBuffers.Serialization, Version=2.4.1.521, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.ProtocolBuffers.2.4.1.521\lib\net40\Google.ProtocolBuffers.Serialization.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="JsonSubTypes, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\JsonSubTypes.1.2.0\lib\net47\JsonSubTypes.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Minimatch, Version=1.1.0.0, Culture=neutral, PublicKeyToken=0cadeb0b849c27c0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Minimatch.1.1.0.0\lib\portable-net40+sl50+win+wp80\Minimatch.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NodaTime, Version=2.2.4.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
-      <HintPath>..\packages\NodaTime.2.2.4\lib\net45\NodaTime.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ParallelExtensionsExtras, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MSFT.ParallelExtensionsExtras.1.2.0\lib\ParallelExtensionsExtras.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="RestSharp, Version=106.12.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
-      <HintPath>..\packages\RestSharp.106.12.0\lib\net452\RestSharp.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Seeq.Link.SDK, Version=66.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.Link.SDK.66.0.0\lib\net48\Seeq.Link.SDK.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Seeq.SDK, Version=66.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.SDK.66.0.0\lib\net45\Seeq.SDK.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="DatasourceSimulator.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="MyConnection.cs" />
@@ -96,9 +39,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Seeq.Link.SDK">
-      <Version>66.0.0</Version>
-    </PackageReference>
+    <PackageReference Include="Seeq.Link.SDK" Version="66.0.0" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
