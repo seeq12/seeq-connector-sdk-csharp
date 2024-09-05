@@ -13,11 +13,20 @@ goto :EOF
 
 if not exist ".\nuget.exe" powershell -Command "(new-object System.Net.WebClient).DownloadFile('https://dist.nuget.org/win-x86-commandline/latest/nuget.exe', '.\nuget.exe')"
 
-.\nuget install Seeq.Link.SDK.Debugging.Agent\packages.config -o packages
-.\nuget install MyCompany.Seeq.Link.Connector.MyConnector\packages.config -o packages
-.\nuget install MyCompany.Seeq.Link.Connector.MyConnector.Test\packages.config -o packages
+.\nuget restore Seeq.Connector.SDK.sln
 
-"%WINDIR%\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe" "%~dp0.\Seeq.Connector.SDK.sln" /p:Configuration="Release"
+set "VSWHERE_PATH=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+
+if exist "%VSWHERE_PATH%" (
+    for /f "tokens=*" %%i in ('"%VSWHERE_PATH%" -latest -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe') do (
+        set "MSBUILD_PATH=%%i"
+    )
+) else (
+    set "MSBUILD_PATH=%WINDIR%\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
+)
+
+"%MSBUILD_PATH%" "%~dp0.\Seeq.Connector.SDK.sln" /p:Configuration="Release"
+
 if ERRORLEVEL 1 goto :Error
 
 goto :EOF
