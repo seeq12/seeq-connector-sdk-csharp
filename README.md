@@ -101,7 +101,7 @@ to the console window and to the `csharp/Seeq.Link.SDK.Debugging.Agent/bin/Debug
 ## Deploying your Connector
 
 When you are ready to deploy your connector to a production environment, execute the `package` command. A zip file will
-be created in the `packages` folder.
+be created in the `dist` folder.
 
 1. Shut down the Seeq Remote Agent - execute `seeq stop` in the Seeq CLI`
 1. Copy the generated zip file to the `plugins/connectors` folder within Seeq's `data` folder (The data folder 
