@@ -2,7 +2,19 @@
 
 set SEEQ_CONNECTOR_SDK_HOME=%~dp0.
 
-for /f "tokens=*" %%a IN ('dir /b *Seeq.Link.Connector*') DO set SEEQ_CONNECTOR_NAME=%%a
+for /d %%i in ("%SEEQ_CONNECTOR_SDK_HOME%\*Seeq.Link.Connector*") do (
+    echo %%~nxi | findstr /r /v "Test$" >nul
+    if not errorlevel 1 (
+        set "SEEQ_CONNECTOR_NAME=%%~nxi"
+        goto :found
+    )
+)
+
+:found
+if not defined SEEQ_CONNECTOR_NAME (
+    echo Failed to find your connector name. Exiting...
+    exit 1
+)
 
 title Seeq Connector SDK C# Dev Environment
 
