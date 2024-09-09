@@ -12,7 +12,7 @@ for /d %%i in ("%SEEQ_CONNECTOR_SDK_HOME%\*Seeq.Link.Connector*") do (
 
 :found
 if not defined SEEQ_CONNECTOR_NAME (
-    echo Failed to find your connector name. Exiting...
+    echo Failed to find a connector folder within "%SEEQ_CONNECTOR_SDK_HOME%". Connector should be in a folder whose name is of the form Seeq.Link.Connector.* and does not end in Test
     exit 1
 )
 
