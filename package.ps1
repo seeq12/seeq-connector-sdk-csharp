@@ -1,45 +1,39 @@
-function ZipFiles( [string] $zipfilename, [string] $sourcedir )
-{
-   Add-Type -Assembly System.IO.Compression.FileSystem
-   $compressionLevel = [System.IO.Compression.CompressionLevel]::Optimal
-   [System.IO.Compression.ZipFile]::CreateFromDirectory($sourcedir,
-        $zipfilename, $compressionLevel, $false)
+$DIST_DIR = "dist"
+$DIST_FILE_NAME = "$env:SEEQ_CONNECTOR_NAME.zip"
+$TEMP_CONNECTOR_DLL_DIR = Join-Path $DIST_DIR "$env:SEEQ_CONNECTOR_NAME"
+
+$PROJECT_DIR = "$env:SEEQ_CONNECTOR_SDK_HOME\$env:SEEQ_CONNECTOR_NAME"
+$RELEASE_DIR_ANYCPU = "$PROJECT_DIR\bin\Release"
+$RELEASE_DIR_X86 = "$PROJECT_DIR\bin\x86\Release"
+$RELEASE_DIR_X64 = "$PROJECT_DIR\bin\x64\Release"
+
+Write-Output "Packaging '$env:SEEQ_CONNECTOR_NAME'..."
+
+Write-Output "Cleaning publish directory '$DIST_DIR'..."
+
+if (Test-Path $DIST_DIR) {
+    Remove-Item -Force -Recurse $DIST_DIR
 }
 
-$packagesdir = "$env:SEEQ_CONNECTOR_SDK_HOME\packages"
-$projectfolder = "$env:SEEQ_CONNECTOR_SDK_HOME\$env:SEEQ_CONNECTOR_NAME"
-$releasefolder_anycpu = "$projectfolder\bin\Release"
-$releasefolder_x86 = "$projectfolder\bin\x86\Release"
-$releasefolder_x64 = "$projectfolder\bin\x64\Release"
-$nicenamecontainer = "$projectfolder\pkg"
-$nicenamefolder = "$nicenamecontainer\$env:SEEQ_CONNECTOR_NAME"
-$packagename = "$packagesdir\$env:SEEQ_CONNECTOR_NAME.zip"
+New-Item -ItemType Directory -Path $DIST_DIR | Out-Null
+New-Item -ItemType Directory -Path $TEMP_CONNECTOR_DLL_DIR | Out-Null
 
-$releasefolder = $releasefolder_anycpu
-if (Test-Path $releasefolder_x86) {
-    $releasefolder = $releasefolder_x86
+$RELEASE_DIR = $RELEASE_DIR_ANYCPU
+if (Test-Path $RELEASE_DIR_X86) {
+    $RELEASE_DIR = $RELEASE_DIR_X86
 }
 
-if (Test-Path $releasefolder_x64) {
-    $releasefolder = $releasefolder_x64
+if (Test-Path $RELEASE_DIR_X64) {
+    $RELEASE_DIR = $RELEASE_DIR_X64
 }
 
-if (Test-Path $packagesdir) {
-	Remove-Item -Force -Recurse $packagesdir
-}
+Write-Output "Copying '$RELEASE_DIR' to '$TEMP_CONNECTOR_DLL_DIR'..."
+Copy-Item -Path "$RELEASE_DIR\*" -Destination $TEMP_CONNECTOR_DLL_DIR -Recurse | Out-Null
 
-if (Test-Path $nicenamecontainer) {
-	Remove-Item -Force -Recurse $nicenamecontainer
-}
+Write-Output "Compressing '$env:SEEQ_CONNECTOR_NAME'..."
+Compress-Archive -Path "$TEMP_CONNECTOR_DLL_DIR\*" -DestinationPath "$DIST_DIR\$DIST_FILE_NAME"
 
-New-Item -ItemType Directory -Force -Path $packagesdir | Out-Null
-New-Item -ItemType Directory -Force -Path $nicenamefolder | Out-Null
+Write-Output "Cleaning up temporary files"
+Remove-Item -Force -Recurse $TEMP_CONNECTOR_DLL_DIR
 
-Copy-Item -Path "$releasefolder\*" -Destination $nicenamefolder -Recurse | Out-Null
-
-ZipFiles $packagename $nicenamecontainer
-
-Remove-Item -Force -Recurse $nicenamecontainer
-
-Write-Output ""
-Write-Output "Connector package '$packagename' created."
+Write-Output "Connector package created: $DIST_DIR\$DIST_FILE_NAME"

@@ -1,22 +1,21 @@
-﻿using System;
-using log4net;
+﻿using log4net;
 using Moq;
 using NFluent;
 using NUnit.Framework;
 using Seeq.Link.SDK.Interfaces;
 using Seeq.Link.SDK.Utilities;
 
-namespace MyCompany.Seeq.Link.Connector.MyConnector.Test {
+namespace MyCompany.Seeq.Link.Connector.MyConnectorTest {
 
     [TestFixture]
     public class MyConnectionTest {
 
         [Test]
         public void GetSamples() {
-            MyConnectionConfigV1 config = new MyConnectionConfigV1();
-
-            config.SamplePeriod = "0:00:01";
-            config.TagCount = 100;
+            MyConnectionConfigV1 config = new MyConnectionConfigV1 {
+                SamplePeriod = "0:00:01",
+                TagCount = 100
+            };
 
             Mock<IDatasourceConnectionServiceV2> connectionServiceMock = new Mock<IDatasourceConnectionServiceV2>();
             connectionServiceMock.Setup(x => x.Log).Returns(new Mock<ILog>().Object);

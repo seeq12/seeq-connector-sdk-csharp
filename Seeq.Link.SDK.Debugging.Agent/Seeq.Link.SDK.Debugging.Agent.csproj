@@ -54,76 +54,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Google.ProtocolBuffers, Version=2.4.1.521, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.ProtocolBuffers.2.4.1.521\lib\net40\Google.ProtocolBuffers.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.ProtocolBuffers.Serialization, Version=2.4.1.521, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.ProtocolBuffers.2.4.1.521\lib\net40\Google.ProtocolBuffers.Serialization.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Protobuf">
-      <Private>True</Private>
-      <HintPath>..\packages\Google.Protobuf.3.24.3\lib\net45\Google.Protobuf.dll</HintPath>
-    </Reference>
-    <Reference Include="Ionic.Zip, Version=1.9.7.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
-      <HintPath>..\packages\DotNetZip.1.9.7\lib\net20\Ionic.Zip.dll</HintPath>
-    </Reference>
-    <Reference Include="JsonSubTypes, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\JsonSubTypes.1.2.0\lib\net47\JsonSubTypes.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Minimatch, Version=1.1.0.0, Culture=neutral, PublicKeyToken=0cadeb0b849c27c0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Minimatch.1.1.0.0\lib\portable-net40+sl50+win+wp80\Minimatch.dll</HintPath>
-    </Reference>
-    <Reference Include="NDesk.Options, Version=0.2.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NDesk.Options.0.2.1\lib\NDesk.Options.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="NodaTime, Version=2.2.4.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
-      <HintPath>..\packages\NodaTime.2.2.4\lib\net45\NodaTime.dll</HintPath>
-    </Reference>
-    <Reference Include="OsInfo, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\OsInfo.1.2.0\lib\net35-client\OsInfo.dll</HintPath>
-    </Reference>
-    <Reference Include="ParallelExtensionsExtras, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MSFT.ParallelExtensionsExtras.1.2.0\lib\ParallelExtensionsExtras.dll</HintPath>
-    </Reference>
-    <Reference Include="RestSharp, Version=106.12.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
-      <HintPath>..\packages\RestSharp.106.12.0\lib\net452\RestSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Seeq.Link.Agent, Version=66.0.0-dev.0, Culture=neutral, processorArchitecture=Amd64">
-      <HintPath>..\packages\Seeq.Link.Agent.66.0.0-dev\lib\net48\Seeq.Link.Agent.exe</HintPath>
-    </Reference>
-    <Reference Include="Seeq.Link.SDK, Version=66.0.0-dev.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.Link.SDK.66.0.0-dev\lib\net48\Seeq.Link.SDK.dll</HintPath>
-    </Reference>
-    <Reference Include="Seeq.SDK, Version=66.0.0-dev.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.SDK.66.0.0-dev\lib\net45\Seeq.SDK.dll</HintPath>
-    </Reference>
-    <Reference Include="Seeq.Utilities, Version=66.0.0-dev.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.Utilities.66.0.0-dev\lib\net48\Seeq.Utilities.dll</HintPath>
-    </Reference>
-    <Reference Include="Seeq.Compression, Version=66.0.0-dev.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.Compression.66.0.0-dev\lib\net48\Seeq.Compression.dll</HintPath>
-    </Reference>
-    <Reference Include="Seeq.Message, Version=66.0.0-dev.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.Message.66.0.0-dev\lib\net48\Seeq.Message.dll</HintPath>
-    </Reference>
-    <Reference Include="Seeq.Serialization, Version=66.0.0-dev.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Seeq.Serialization.66.0.0-dev\lib\net48\Seeq.Serialization.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-        <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="ZstdSharp.Port">
-      <HintPath>..\packages\ZstdSharp.Port.0.7.2\lib\net461\ZstdSharp.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -134,9 +64,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebSocket4Net, Version=0.14.1.0, Culture=neutral, PublicKeyToken=eb4e154b696bf72a, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebSocket4Net.0.14.1\lib\net45\WebSocket4Net.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EntryPoint.cs" />
@@ -147,6 +74,9 @@
     <None Include="data\keys\agent.key">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Seeq.Link.Agent" Version="66.0.0" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

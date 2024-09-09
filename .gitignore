@@ -1,6 +1,6 @@
 .idea/
 /packages/
-/.vs/
+.vs/
 /MyCompany.Seeq.Link.Connector.MyConnector/bin/
 /MyCompany.Seeq.Link.Connector.MyConnector/obj/
 /Seeq.Link.SDK.Debugging.Agent/bin/
@@ -9,3 +9,4 @@
 /MyCompany.Seeq.Link.Connector.MyConnector.Test/obj/
 /nuget.exe
 /tools/
+dist/

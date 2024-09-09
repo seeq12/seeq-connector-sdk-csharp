@@ -87,7 +87,6 @@ namespace MyCompany.Seeq.Link.Connector {
         public void Initialize(IDatasourceConnectionServiceV2 connectionService) {
             // You probably won't do much in the initialize() function. But if you have to do some I/O that is separate
             // from the act of connecting, you could do it here.
-
             this.connectionService = connectionService;
 
             // It's your job to inspect your configuration to see if the user has enabled this connection.
@@ -170,7 +169,7 @@ namespace MyCompany.Seeq.Link.Connector {
             // information to determine if anything has changed since the last index operation. The first time it makes
             // this Index() call, the syncMode will be SyncMode.INVENTORY.
 
-            // Loop through all of the tags in our simulated datasource and tell Seeq Server about them
+            // Loop through all tags in our simulated datasource and tell Seeq Server about them
             this.syncAssets(rootAssetId);
         }
 
@@ -201,7 +200,7 @@ namespace MyCompany.Seeq.Link.Connector {
                     yield return new Sample(tagValue.Timestamp, tagValue.Measure);
                 }
 
-                // Warning: Any code you put outside of the main for-loop may not be executed. Use the finally block
+                // Warning: Any code you put outside the main for-loop may not be executed. Use the finally block
                 //          for any cleanup you might have to do.
             } finally {
                 // If you have any cleanup to do, do it in this finally block. This is guaranteed to be called if
@@ -234,17 +233,17 @@ namespace MyCompany.Seeq.Link.Connector {
 
                 // Return an enumeration to iterate through all the capsules in the time range.
                 //
-                // IEnumerable is important to use here to avoid bringing all of the data into memory to satisfy the
+                // IEnumerable is important to use here to avoid bringing all the data into memory to satisfy the
                 // request. The Seeq connector host will automatically "page" the data upload so that we don't hit memory
                 // ceilings on large requests. You can use C#'s "yield return" keyword to easily create lazy enumerations.
                 //
                 // The code within this function is largely specific to the simulator example. But it should give you an idea of
                 // some of the concerns you'll need to attend to.
-                foreach (DatasourceSimulator.Alarm.Event @event in events) {
-                    TimeInstant start = new TimeInstant(@event.Start);
-                    TimeInstant end = new TimeInstant(@event.End);
+                foreach (DatasourceSimulator.Alarm.Event alarmEvent in events) {
+                    TimeInstant start = new TimeInstant(alarmEvent.Start);
+                    TimeInstant end = new TimeInstant(alarmEvent.End);
                     List<Capsule.Property> capsuleProperties = new List<Capsule.Property> {
-                        new Capsule.Property("Intensity", @event.Intensity.ToString(), "rads")
+                        new Capsule.Property("Intensity", alarmEvent.Intensity.ToString(), "rads")
                     };
                     yield return new Capsule(start, end, capsuleProperties);
                 }
