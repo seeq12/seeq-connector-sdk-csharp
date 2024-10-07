@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using log4net.Util;
 using Seeq.Link.SDK;
 using Seeq.Link.SDK.Interfaces;
 using Seeq.Link.SDK.Utilities;
@@ -377,6 +378,26 @@ namespace MyCompany.Seeq.Link.Connector {
             // 2m etc.) that indicates the maximum duration of capsules in this series and is required for stored
             // conditions like this example.
             condition.MaximumDuration = "2h";
+            
+            // In order to ensure that we have the correct metadata for the capsule properties. This is a list of 
+            // all possible properties for each condition.
+            List<CapsulePropertyInputV1> capsuleProperties = new List<CapsulePropertyInputV1>();
+
+            // We define each capsule property with a Name and a Unit of Measure
+            CapsulePropertyInputV1 capsuleProperty = new CapsulePropertyInputV1();
+
+            // The name is what defines the name of the capsule property. It is what is shown as the column header within
+            // the Capsules pane of Workbench.
+            capsuleProperty.Name = "Intensity";
+
+            // The unit of measure is a supported Seeq unit
+            // https://support.seeq.com/kb/latest/cloud/supported-units#SupportedUnits-SupportedPrefixes
+            // If the value is a string, this value should be set to "string"
+            capsuleProperty.UnitOfMeasure = "rads";
+            capsuleProperties.Add(capsuleProperty);
+            
+            // The list of properties are assigned to the condition
+            condition.CapsuleProperties = capsuleProperties;
 
             // PutCondition() queues items up for performance reasons and writes them in batch to the server.
             //
@@ -414,9 +435,9 @@ namespace MyCompany.Seeq.Link.Connector {
 
         private String getFormula(Object value) {
             if (value.GetType() == typeof(string)) {
-                return FormulaHelper.EscapeStringAsFormula((string) value);
+                return FormulaHelper.EscapeStringAsFormula((string)value);
             } else if (value.GetType() == typeof(DateTime)) {
-                TimeInstant timeInstant = new TimeInstant((DateTime) value);
+                TimeInstant timeInstant = new TimeInstant((DateTime)value);
                 return timeInstant.Timestamp + "ns";
             } else {
                 return value.ToString();
