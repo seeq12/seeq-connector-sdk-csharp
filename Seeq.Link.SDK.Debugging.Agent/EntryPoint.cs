@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using log4net.Config;
 using Seeq.Link.Agent;
 using Seeq.Link.SDK.Services;
 using Seeq.Link.SDK.Utilities;
@@ -19,7 +20,7 @@ namespace Seeq.Link.Debugging.Agent {
         private const string AGENT_ONE_TIME_PASSWORD_PLACEHOLDER = "<your_one_time_password>";
 
         public static void Main(string[] args) {
-            log4net.Config.XmlConfigurator.Configure();
+            XmlConfigurator.Configure();
             
             const string agentName = ".NET Connector SDK Debugging Agent";
             var executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
@@ -47,7 +48,7 @@ namespace Seeq.Link.Debugging.Agent {
                 }
             }
             
-            Seeq.Link.Agent.Program.Configuration config = Seeq.Link.Agent.Program.GetDefaultConfiguration();
+            Program.Configuration config = Program.GetDefaultConfiguration();
 
             const string seeqHostUrl = "https://yourserver.seeq.host";
             config.SeeqUrl = new Uri(seeqHostUrl);
@@ -73,7 +74,7 @@ namespace Seeq.Link.Debugging.Agent {
 
             config.ConnectorSearchPaths = searchPath + ";" + platformSpecificSearchPath;
 
-            new Seeq.Link.Agent.Program().Run(new Seeq.Link.Agent.ClassFactory(), new Seeq.Link.SDK.ClassFactory(), config);
+            new Program().Run(new ClassFactory(), new SDK.ClassFactory(), config);
         }
     }
 }
