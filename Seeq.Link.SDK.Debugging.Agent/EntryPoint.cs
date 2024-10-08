@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using Seeq.Link.SDK.Services;
+using Seeq.Link.SDK.Utilities;
 using Seeq.Utilities;
 
 namespace Seeq.Link.Debugging.Agent {
@@ -15,7 +17,21 @@ namespace Seeq.Link.Debugging.Agent {
 
         public static void Main(string[] args) {
             log4net.Config.XmlConfigurator.Configure();
+            
+            const string agentName = ".NET Connector SDK Debugging Agent";
+            var executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
+            var seeqDataFolder = Path.Combine(Path.GetDirectoryName(executingAssemblyLocation), "data");
 
+            var agentHelper = new AgentHelper(agentName);
+            var secretsPath = Path.Combine(seeqDataFolder, SeeqNames.Agents.AgentKeysFolderName, "agent.keys");
+            var secretsManager = new FileBasedSecretsManager(secretsPath);
+            
+            // set the agent's pre-provisioned one-time password
+            const string agentOneTimePassword = "<your_one_time_password>";
+            var preProvisionedOneTimePasswordSecretName =
+                $"{agentHelper.ProvisionedAgentUsername}|PRE_PROVISIONED_ONE_TIME_PASSWORD";
+            secretsManager.PutSecret(preProvisionedOneTimePasswordSecretName, agentOneTimePassword);
+            
             Seeq.Link.Agent.Program.Configuration config = Seeq.Link.Agent.Program.GetDefaultConfiguration();
 
             const string seeqHostUrl = "https://yourserver.seeq.host";
@@ -25,10 +41,9 @@ namespace Seeq.Link.Debugging.Agent {
 
             config.IsRemoteAgent = true;
             // Provide a name for the agent that differentiates it from the "normal" .NET Agent
-            config.Name = ".NET Connector SDK Debugging Agent";
+            config.Name = agentName;
             // Set the connectorSearchPaths to only find connectors within the connector-sdk folder
-            string executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
-            config.DataFolder = Path.Combine(Path.GetDirectoryName(executingAssemblyLocation), "data");
+            config.DataFolder = seeqDataFolder;
 
             string connectorSdkRoot = Path.GetFullPath(Path.Combine(executingAssemblyLocation, "..", "..", "..", "..", ".."));
             string configuration = "Release";
