@@ -21,18 +21,19 @@ namespace Seeq.Link.Debugging.Agent {
 
         public static void Main(string[] args) {
             XmlConfigurator.Configure();
-            
+
             const string agentName = ".NET Connector SDK Debugging Agent";
             var executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
             var seeqDataFolder = Path.Combine(Path.GetDirectoryName(executingAssemblyLocation), "data");
 
             var agentKeyPath = Path.Combine(seeqDataFolder, "keys", "agent.key");
             var agentKeyReader = new AgentKeyReader(agentKeyPath);
+            agentKeyReader.Initialize();
 
             // if this agent has been configured with an agent key, then the agent will handle provisioning and no additional
             // provisioning is required. Otherwise, set the pre-provisioned one-time password and allow the agent finish up
             // provisioning.
-            if (string.IsNullOrWhiteSpace(agentKeyReader.AgentKeyCredential.AgentKeyPassword) 
+            if (string.IsNullOrWhiteSpace(agentKeyReader.AgentKeyCredential?.AgentKeyPassword)
                 || agentKeyReader.AgentKeyCredential.AgentKeyPassword == AGENT_API_KEY_PLACEHOLDER) {
                 const string agentOneTimePassword = AGENT_ONE_TIME_PASSWORD_PLACEHOLDER;
 
@@ -47,7 +48,7 @@ namespace Seeq.Link.Debugging.Agent {
                     secretsManager.PutSecret(preProvisionedOneTimePasswordSecretName, agentOneTimePassword);
                 }
             }
-            
+
             Program.Configuration config = Program.GetDefaultConfiguration();
 
             const string seeqHostUrl = "https://yourserver.seeq.host";

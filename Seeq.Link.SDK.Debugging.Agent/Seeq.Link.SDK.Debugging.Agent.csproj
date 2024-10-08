@@ -73,6 +73,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="OpenTelemetry.Api" Version="1.9.0" />
     <PackageReference Include="Seeq.Link.Agent" Version="66.0.0" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
