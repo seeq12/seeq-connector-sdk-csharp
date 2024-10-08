@@ -15,6 +15,8 @@ namespace Seeq.Link.Debugging.Agent {
     /// to connect to the server and load the connector that is under development.
     /// </summary>
     public class EntryPoint {
+        private const string AGENT_API_KEY_PLACEHOLDER = "<your_agent_api_key>";
+        private const string AGENT_ONE_TIME_PASSWORD_PLACEHOLDER = "<your_one_time_password>";
 
         public static void Main(string[] args) {
             log4net.Config.XmlConfigurator.Configure();
@@ -29,17 +31,20 @@ namespace Seeq.Link.Debugging.Agent {
             // if this agent has been configured with an agent key, then the agent will handle provisioning and no additional
             // provisioning is required. Otherwise, set the pre-provisioned one-time password and allow the agent finish up
             // provisioning.
-            if (string.IsNullOrWhiteSpace(agentKeyReader.AgentKeyCredential.AgentKeyPassword) || agentKeyReader.AgentKeyCredential.AgentKeyPassword == "<your_agent_api_key>")
-            {
-                var agentHelper = new AgentHelper(agentName);
-                var secretsPath = Path.Combine(seeqDataFolder, SeeqNames.Agents.AgentKeysFolderName, "agent.keys");
-                var secretsManager = new FileBasedSecretsManager(secretsPath);
-            
-                // set the agent's pre-provisioned one-time password
-                const string agentOneTimePassword = "<your_one_time_password>";
-                var preProvisionedOneTimePasswordSecretName =
-                    $"{agentHelper.ProvisionedAgentUsername}|PRE_PROVISIONED_ONE_TIME_PASSWORD";
-                secretsManager.PutSecret(preProvisionedOneTimePasswordSecretName, agentOneTimePassword);
+            if (string.IsNullOrWhiteSpace(agentKeyReader.AgentKeyCredential.AgentKeyPassword) 
+                || agentKeyReader.AgentKeyCredential.AgentKeyPassword == AGENT_API_KEY_PLACEHOLDER) {
+                const string agentOneTimePassword = AGENT_ONE_TIME_PASSWORD_PLACEHOLDER;
+
+                if (agentOneTimePassword != AGENT_ONE_TIME_PASSWORD_PLACEHOLDER) {
+                    var agentHelper = new AgentHelper(agentName);
+                    var secretsPath = Path.Combine(seeqDataFolder, SeeqNames.Agents.AgentKeysFolderName, "agent.keys");
+                    var secretsManager = new FileBasedSecretsManager(secretsPath);
+
+                    // set the agent's pre-provisioned one-time password
+                    var preProvisionedOneTimePasswordSecretName =
+                        $"{agentHelper.ProvisionedAgentUsername}|PRE_PROVISIONED_ONE_TIME_PASSWORD";
+                    secretsManager.PutSecret(preProvisionedOneTimePasswordSecretName, agentOneTimePassword);
+                }
             }
             
             Seeq.Link.Agent.Program.Configuration config = Seeq.Link.Agent.Program.GetDefaultConfiguration();
