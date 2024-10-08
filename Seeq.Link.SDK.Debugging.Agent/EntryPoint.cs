@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using Seeq.Link.Agent;
 using Seeq.Link.SDK.Services;
 using Seeq.Link.SDK.Utilities;
 using Seeq.Utilities;
@@ -22,15 +23,24 @@ namespace Seeq.Link.Debugging.Agent {
             var executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
             var seeqDataFolder = Path.Combine(Path.GetDirectoryName(executingAssemblyLocation), "data");
 
-            var agentHelper = new AgentHelper(agentName);
-            var secretsPath = Path.Combine(seeqDataFolder, SeeqNames.Agents.AgentKeysFolderName, "agent.keys");
-            var secretsManager = new FileBasedSecretsManager(secretsPath);
+            var agentKeyPath = Path.Combine(seeqDataFolder, "keys", "agent.key");
+            var agentKeyReader = new AgentKeyReader(agentKeyPath);
+
+            // if this agent has been configured with an agent key, then the agent will handle provisioning and no additional
+            // provisioning is required. Otherwise, set the pre-provisioned one-time password and allow the agent finish up
+            // provisioning.
+            if (string.IsNullOrWhiteSpace(agentKeyReader.AgentKeyCredential.AgentKeyPassword) || agentKeyReader.AgentKeyCredential.AgentKeyPassword == "<your_agent_api_key>")
+            {
+                var agentHelper = new AgentHelper(agentName);
+                var secretsPath = Path.Combine(seeqDataFolder, SeeqNames.Agents.AgentKeysFolderName, "agent.keys");
+                var secretsManager = new FileBasedSecretsManager(secretsPath);
             
-            // set the agent's pre-provisioned one-time password
-            const string agentOneTimePassword = "<your_one_time_password>";
-            var preProvisionedOneTimePasswordSecretName =
-                $"{agentHelper.ProvisionedAgentUsername}|PRE_PROVISIONED_ONE_TIME_PASSWORD";
-            secretsManager.PutSecret(preProvisionedOneTimePasswordSecretName, agentOneTimePassword);
+                // set the agent's pre-provisioned one-time password
+                const string agentOneTimePassword = "<your_one_time_password>";
+                var preProvisionedOneTimePasswordSecretName =
+                    $"{agentHelper.ProvisionedAgentUsername}|PRE_PROVISIONED_ONE_TIME_PASSWORD";
+                secretsManager.PutSecret(preProvisionedOneTimePasswordSecretName, agentOneTimePassword);
+            }
             
             Seeq.Link.Agent.Program.Configuration config = Seeq.Link.Agent.Program.GetDefaultConfiguration();
 
