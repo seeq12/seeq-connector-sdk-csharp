@@ -25,7 +25,8 @@ namespace Seeq.Link.Debugging.Agent {
             var executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
             var seeqDataFolder = Path.Combine(Path.GetDirectoryName(executingAssemblyLocation), "data");
 
-            // change this value to the one-time password generated from the Agents tab of your Seeq server's Administration page
+            // change this value to the one-time password generated from the Agents tab of your Seeq server's Administration
+            // page providing the machine name and your connector's name
             const string agentOneTimePassword = AGENT_ONE_TIME_PASSWORD_PLACEHOLDER;
 
             if (agentOneTimePassword != AGENT_ONE_TIME_PASSWORD_PLACEHOLDER) {
