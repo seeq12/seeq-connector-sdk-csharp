@@ -1,6 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using log4net.Config;
+using Seeq.Link.Agent;
+using Seeq.Link.SDK.Services;
+using Seeq.Link.SDK.Utilities;
 using Seeq.Utilities;
 
 namespace Seeq.Link.Debugging.Agent {
@@ -12,11 +16,31 @@ namespace Seeq.Link.Debugging.Agent {
     /// to connect to the server and load the connector that is under development.
     /// </summary>
     public class EntryPoint {
+        private const string AGENT_ONE_TIME_PASSWORD_PLACEHOLDER = "<your_one_time_password>";
 
         public static void Main(string[] args) {
-            log4net.Config.XmlConfigurator.Configure();
+            XmlConfigurator.Configure();
 
-            Seeq.Link.Agent.Program.Configuration config = Seeq.Link.Agent.Program.GetDefaultConfiguration();
+            const string agentName = ".NET Connector SDK Debugging Agent";
+            var executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
+            var seeqDataFolder = Path.Combine(Path.GetDirectoryName(executingAssemblyLocation), "data");
+
+            // change this value to the one-time password generated from the Agents tab of your Seeq server's Administration
+            // page providing the machine name and your connector's name
+            const string agentOneTimePassword = AGENT_ONE_TIME_PASSWORD_PLACEHOLDER;
+
+            if (agentOneTimePassword != AGENT_ONE_TIME_PASSWORD_PLACEHOLDER) {
+                var agentHelper = new AgentHelper(agentName);
+                var secretsPath = Path.Combine(seeqDataFolder, SeeqNames.Agents.AgentKeysFolderName, "agent.keys");
+                var secretsManager = new FileBasedSecretsManager(secretsPath);
+
+                // set the agent's pre-provisioned one-time password
+                var preProvisionedOneTimePasswordSecretName =
+                    $"{agentHelper.ProvisionedAgentUsername}|PRE_PROVISIONED_ONE_TIME_PASSWORD";
+                secretsManager.PutSecret(preProvisionedOneTimePasswordSecretName, agentOneTimePassword);
+            }
+
+            Program.Configuration config = Program.GetDefaultConfiguration();
 
             const string seeqHostUrl = "https://yourserver.seeq.host";
             config.SeeqUrl = new Uri(seeqHostUrl);
@@ -25,10 +49,9 @@ namespace Seeq.Link.Debugging.Agent {
 
             config.IsRemoteAgent = true;
             // Provide a name for the agent that differentiates it from the "normal" .NET Agent
-            config.Name = ".NET Connector SDK Debugging Agent";
+            config.Name = agentName;
             // Set the connectorSearchPaths to only find connectors within the connector-sdk folder
-            string executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
-            config.DataFolder = Path.Combine(Path.GetDirectoryName(executingAssemblyLocation), "data");
+            config.DataFolder = seeqDataFolder;
 
             string connectorSdkRoot = Path.GetFullPath(Path.Combine(executingAssemblyLocation, "..", "..", "..", "..", ".."));
             string configuration = "Release";
@@ -43,7 +66,7 @@ namespace Seeq.Link.Debugging.Agent {
 
             config.ConnectorSearchPaths = searchPath + ";" + platformSpecificSearchPath;
 
-            new Seeq.Link.Agent.Program().Run(new Seeq.Link.Agent.ClassFactory(), new Seeq.Link.SDK.ClassFactory(), config);
+            new Program().Run(new ClassFactory(), new SDK.ClassFactory(), config);
         }
     }
 }

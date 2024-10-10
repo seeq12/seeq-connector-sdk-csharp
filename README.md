@@ -55,11 +55,12 @@ Take the following steps to confirm a properly configured development environmen
 1. Confirm that no compile errors occurred.
 1. Open the `EntryPoint.cs` file in the `Seeq.Link.SDK.Debugging.Agent` project.
 1. Modify the URL on the line `const string seeqHostUrl = "https://yourserver.seeq.host"` to match your Seeq server
-1. Retrieve the agent_api_key from your Seeq Server by logging in as a Seeq Administrator and navigating to the API
-   Documentation page. Expand the System group and expand GET /system/agentKey. Click Execute
-1. Modify the `agent_api_key` in `resources\data\keys\agent.key` by replacing the `<your_agent_api_key>`
-   with the key that is located in the top response from the previous step. Note: it should only include the value. For
-   example if the return was `{"agentKey": "superSecret123"}` then the key is `superSecret123`
+1. Pre-provision this agent on your Seeq server by logging in as a Seeq Administrator and navigating to the Agents tab 
+   on the Administration page. Click the "Add Agent" button and fill the presented fields. Provide the machine name and 
+   ".NET Connector SDK Debugging Agent" as the agent name. Click "Add Agent". Wait for pre-provisioning to complete.
+   Copy the displayed one-time password.
+1. Modify the `agentOneTimePassword` constant in the `EntryPoint.cs` file by replacing the `AGENT_ONE_TIME_PASSWORD_PLACEHOLDER`
+   with the one-time password obtained from the previous step.
 1. Set a breakpoint (*Debug* > *Toggle Breakpoint*) on the first line of the `Main()` function.
 1. Select *Debug* > *Start Debugging* to launch the debugger.
 1. You should hit the breakpoint you set. **This verifies that VS built your project correctly and can launch it in its
