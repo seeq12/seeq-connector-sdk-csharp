@@ -5,7 +5,7 @@ using Seeq.Utilities;
 
 namespace Seeq.Link.Debugging.Agent {
 
-    internal static class AgentKeyHelper {
+    internal static class AgentOtpHelper {
         private const string AGENT_ONE_TIME_PASSWORD_PLACEHOLDER = "<your_agent_one_time_password>";
         private static string OtpFilePath = Path.Combine("data", "keys", "agent.otp");
 

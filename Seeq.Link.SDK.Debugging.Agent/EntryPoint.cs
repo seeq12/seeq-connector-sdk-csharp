@@ -21,7 +21,7 @@ namespace Seeq.Link.Debugging.Agent {
             var executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
             var seeqDataFolder = Path.Combine(Path.GetDirectoryName(executingAssemblyLocation), "data");
 
-            AgentKeyHelper.SetupAgentOtp(seeqDataFolder, agentName);
+            AgentOtpHelper.SetupAgentOtp(seeqDataFolder, agentName);
 
             Program.Configuration config = Program.GetDefaultConfiguration();
 
