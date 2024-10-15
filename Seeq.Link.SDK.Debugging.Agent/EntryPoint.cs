@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using Seeq.Utilities;
+using log4net.Config;
+using Seeq.Link.Agent;
 
 namespace Seeq.Link.Debugging.Agent {
 
@@ -14,9 +15,15 @@ namespace Seeq.Link.Debugging.Agent {
     public class EntryPoint {
 
         public static void Main(string[] args) {
-            log4net.Config.XmlConfigurator.Configure();
+            XmlConfigurator.Configure();
 
-            Seeq.Link.Agent.Program.Configuration config = Seeq.Link.Agent.Program.GetDefaultConfiguration();
+            const string agentName = ".NET Connector SDK Debugging Agent";
+            var executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
+            var seeqDataFolder = Path.Combine(Path.GetDirectoryName(executingAssemblyLocation), "data");
+
+            AgentOtpHelper.SetupAgentOtp(seeqDataFolder, agentName);
+
+            Program.Configuration config = Program.GetDefaultConfiguration();
 
             const string seeqHostUrl = "https://yourserver.seeq.host";
             config.SeeqUrl = new Uri(seeqHostUrl);
@@ -25,10 +32,9 @@ namespace Seeq.Link.Debugging.Agent {
 
             config.IsRemoteAgent = true;
             // Provide a name for the agent that differentiates it from the "normal" .NET Agent
-            config.Name = ".NET Connector SDK Debugging Agent";
+            config.Name = agentName;
             // Set the connectorSearchPaths to only find connectors within the connector-sdk folder
-            string executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
-            config.DataFolder = Path.Combine(Path.GetDirectoryName(executingAssemblyLocation), "data");
+            config.DataFolder = seeqDataFolder;
 
             string connectorSdkRoot = Path.GetFullPath(Path.Combine(executingAssemblyLocation, "..", "..", "..", "..", ".."));
             string configuration = "Release";
@@ -43,7 +49,7 @@ namespace Seeq.Link.Debugging.Agent {
 
             config.ConnectorSearchPaths = searchPath + ";" + platformSpecificSearchPath;
 
-            new Seeq.Link.Agent.Program().Run(new Seeq.Link.Agent.ClassFactory(), new Seeq.Link.SDK.ClassFactory(), config);
+            new Program().Run(new ClassFactory(), new SDK.ClassFactory(), config);
         }
     }
 }

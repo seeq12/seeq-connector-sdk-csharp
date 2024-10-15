@@ -66,14 +66,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AgentOtpHelper.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="data\keys\agent.key">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="OpenTelemetry.Api">
@@ -89,6 +87,11 @@
     <PackageReference Include="Seeq.Serialization">
       <Version>66.0.0</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="data\keys\agent.otp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
