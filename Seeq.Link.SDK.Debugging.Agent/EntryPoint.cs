@@ -16,7 +16,6 @@ namespace Seeq.Link.Debugging.Agent {
     /// to connect to the server and load the connector that is under development.
     /// </summary>
     public class EntryPoint {
-        private const string AGENT_ONE_TIME_PASSWORD_PLACEHOLDER = "<your_one_time_password>";
 
         public static void Main(string[] args) {
             XmlConfigurator.Configure();
@@ -25,19 +24,19 @@ namespace Seeq.Link.Debugging.Agent {
             var executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
             var seeqDataFolder = Path.Combine(Path.GetDirectoryName(executingAssemblyLocation), "data");
 
-            // change this value to the one-time password generated from the Agents tab of your Seeq server's Administration
-            // page providing the machine name and your connector's name
-            const string agentOneTimePassword = AGENT_ONE_TIME_PASSWORD_PLACEHOLDER;
-
-            if (agentOneTimePassword != AGENT_ONE_TIME_PASSWORD_PLACEHOLDER) {
+            if (AgentKeyHelper.IsAgentOneTimePasswordSet()) {
                 var agentHelper = new AgentHelper(agentName);
                 var secretsPath = Path.Combine(seeqDataFolder, SeeqNames.Agents.AgentKeysFolderName, "agent.keys");
                 var secretsManager = new FileBasedSecretsManager(secretsPath);
 
                 // set the agent's pre-provisioned one-time password
+                var agentOneTimePassword = AgentKeyHelper.ReadAgentOneTimePassword();
                 var preProvisionedOneTimePasswordSecretName =
                     $"{agentHelper.ProvisionedAgentUsername}|PRE_PROVISIONED_ONE_TIME_PASSWORD";
                 secretsManager.PutSecret(preProvisionedOneTimePasswordSecretName, agentOneTimePassword);
+
+                // clear the OTP
+                AgentKeyHelper.ResetAgentOneTimePasswordFile();
             }
 
             Program.Configuration config = Program.GetDefaultConfiguration();
