@@ -3,9 +3,6 @@ using System.IO;
 using System.Reflection;
 using log4net.Config;
 using Seeq.Link.Agent;
-using Seeq.Link.SDK.Services;
-using Seeq.Link.SDK.Utilities;
-using Seeq.Utilities;
 
 namespace Seeq.Link.Debugging.Agent {
 
@@ -24,20 +21,7 @@ namespace Seeq.Link.Debugging.Agent {
             var executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
             var seeqDataFolder = Path.Combine(Path.GetDirectoryName(executingAssemblyLocation), "data");
 
-            if (AgentKeyHelper.IsAgentOneTimePasswordSet()) {
-                var agentHelper = new AgentHelper(agentName);
-                var secretsPath = Path.Combine(seeqDataFolder, SeeqNames.Agents.AgentKeysFolderName, "agent.keys");
-                var secretsManager = new FileBasedSecretsManager(secretsPath);
-
-                // set the agent's pre-provisioned one-time password
-                var agentOneTimePassword = AgentKeyHelper.ReadAgentOneTimePassword();
-                var preProvisionedOneTimePasswordSecretName =
-                    $"{agentHelper.ProvisionedAgentUsername}|PRE_PROVISIONED_ONE_TIME_PASSWORD";
-                secretsManager.PutSecret(preProvisionedOneTimePasswordSecretName, agentOneTimePassword);
-
-                // clear the OTP
-                AgentKeyHelper.ResetAgentOneTimePasswordFile();
-            }
+            AgentKeyHelper.SetupAgentOtp(seeqDataFolder, agentName);
 
             Program.Configuration config = Program.GetDefaultConfiguration();
 
