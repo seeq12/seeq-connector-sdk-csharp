@@ -46,7 +46,7 @@ will use for development and debugging.
 
 Take the following steps to confirm a properly configured development environment:
 
-1. Once VS is finished loading, right click on the `Seeq.Link.SDK.Debugging.Agent` project in *Solution Explorer* and
+1. Once VS is finished loading, right-click on the `Seeq.Link.SDK.Debugging.Agent` project in *Solution Explorer* and
    select *Set as Startup Project*.
 1. In the solution configuration dropdown, select 'Debug'. **This step is required to ensure the necessary files are
    built for debugging.**
@@ -59,7 +59,8 @@ Take the following steps to confirm a properly configured development environmen
    on the Administration page. Click the "Add Agent" button and fill the presented fields. Provide the machine name and 
    ".NET Connector SDK Debugging Agent" as the agent name. Click "Add Agent". Wait for pre-provisioning to complete.
    Copy the displayed one-time password.
-1. Replace `<your_agent_one_time_password>` in the `agent.otp` file in the /data/keys/ directory with the one-time password obtained from the previous step.
+1. Replace `<your_agent_one_time_password>` in the `agent.otp` file in the /data/keys/ directory of the 
+   `Seeq.Link.SDK.Debugging.Agent` project with the one-time password obtained from the previous step.
 1. Set a breakpoint (*Debug* > *Toggle Breakpoint*) on the first line of the `Main()` function.
 1. Select *Debug* > *Start Debugging* to launch the debugger.
 1. You should hit the breakpoint you set. **This verifies that VS built your project correctly and can launch it in its
@@ -85,18 +86,19 @@ possible to debug the connector.
 
 ## Developing your Connector
 
-We recommend that you just modify the template connector directly. This shields you from having to recreate all of the
+We recommend that you just modify the template connector directly. This shields you from having to recreate all the
 configuration that is required to correctly build and debug a new project. Visual Studio has excellent
 renaming/refactoring features that make it easy. For example, you can click on any item in VS's *Solution Explorer*
 and press *F2* to change it to something appropriate for your company and this particular connector.
 
 Once you are ready to start developing, just open the `MyConnector.cs` and `MyConnection.cs` files in VS and start
 reading through the heavily-annotated source code. The template connector uses a small class called
-`DatasourceSimulator`. You'll know you've removed all of the template-specific code when you can delete this file from
+`DatasourceSimulator`. You'll know you've removed all the template-specific code when you can delete this file from
 the project and still build without errors.
 
 Any log messages you create using the `Log` property on `ConnectorServiceV2` and `DatasourceConnectionServiceV2` will go
-to the console window and to the `csharp/Seeq.Link.SDK.Debugging.Agent/bin/Debug/log/net-debugging-agent.log` file.
+to the console window and to the `csharp/Seeq.Link.SDK.Debugging.Agent/bin/x64/Debug/log/net-debugging-agent.log` file 
+(replace `x64` with `x86` if you're on a 32-bit machine).
 
 ## Deploying your Connector
 
