@@ -57,7 +57,7 @@ Take the following steps to confirm a properly configured development environmen
 1. Modify the URL on the line `const string seeqHostUrl = "https://yourserver.seeq.host"` to match your Seeq server
 1. Pre-provision this agent on your Seeq server by logging in as a Seeq Administrator and navigating to the Agents tab 
    on the Administration page. Click the "Add Agent" button and fill the presented fields. Provide the machine name and 
-   ".NET Connector SDK Debugging Agent" as the agent name. Click "Add Agent". Wait for pre-provisioning to complete.
+   "**.NET Connector SDK Debugging Agent**" as the agent name. Click "Add Agent". Wait for pre-provisioning to complete.
    Copy the displayed one-time password.
 1. Replace `<your_agent_one_time_password>` in the `agent.otp` file in the /data/keys/ directory of the 
    `Seeq.Link.SDK.Debugging.Agent` project with the one-time password obtained from the previous step.
