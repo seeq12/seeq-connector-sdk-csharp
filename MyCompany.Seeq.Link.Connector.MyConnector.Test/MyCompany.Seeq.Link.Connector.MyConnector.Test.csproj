@@ -117,8 +117,8 @@
     <PackageReference Include="NFluent">
       <Version>3.0.4</Version>
     </PackageReference>
-    <PackageReference Include="Seeq.Link.SDK" Version="66.0.0" />
-    <PackageReference Include="Seeq.Link.SDK.TestFramework" Version="66.0.0" />
+    <PackageReference Include="Seeq.Link.SDK" Version="100.0.20047.37110" />
+    <PackageReference Include="Seeq.Link.SDK.TestFramework" Version="100.0.20047.37110" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
