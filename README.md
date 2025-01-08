@@ -59,7 +59,9 @@ Take the following steps to confirm a properly configured development environmen
    on the Administration page. Click the "Add Agent" button and fill the presented fields. Provide the machine name and 
    "**.NET Connector SDK Debugging Agent**" as the agent name. Click "Add Agent". Wait for pre-provisioning to complete.
    Copy the displayed one-time password.
-1. Replace `<your_agent_one_time_password>` in the `agent.otp` file located in the `/data/keys/` directory of the `Seeq.Link.SDK.Debugging.Agent` project with the one-time password copied in the previous step. **Note:** The `agent.otp` file will reset after the agent reads the entered value.
+1. Replace `<your_agent_one_time_password>` in the `agent.otp` file located in the `/data/keys/` directory of the 
+   `Seeq.Link.SDK.Debugging.Agent` project with the one-time password copied in the previous step. **Note:** The 
+   `agent.otp` file will reset after the agent reads the entered value.
 1. Set a breakpoint (*Debug* > *Toggle Breakpoint*) on the first line of the `Main()` function.
 1. Select *Debug* > *Start Debugging* to launch the debugger.
 1. You should hit the breakpoint you set. **This verifies that VS built your project correctly and can launch it in its
@@ -96,8 +98,7 @@ reading through the heavily-annotated source code. The template connector uses a
 the project and still build without errors.
 
 Any log messages you create using the `Log` property on `ConnectorServiceV2` and `DatasourceConnectionServiceV2` will go
-to the console window and to the `csharp/Seeq.Link.SDK.Debugging.Agent/bin/x64/Debug/log/net-debugging-agent.log` file 
-(replace `x64` with `x86` if you're on a 32-bit machine).
+to the console window and to the `csharp/Seeq.Link.SDK.Debugging.Agent/bin/x64/Debug/log/net-debugging-agent.log` file.
 
 ## Deploying your Connector
 
