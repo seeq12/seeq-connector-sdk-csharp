@@ -109,6 +109,11 @@ exactly match the version number of the Seeq Link SDK they provide and, by speci
 Link SDK that provides the necessary features for your Connector, they will be able to check that they satisfy the 
 Connector's requirement when loading it.  
 
+To update the version of the Seeq Link SDK that your connector references, the project files for all three projects 
+should be updated in all instances to reference the desired Seeq.Link.SDK, Seeq.Link.SDK.TestFramework and 
+Seeq.Link.Agent packages. The versions of these packages are always kept in sync, and all three should be set to the 
+same value. 
+
 ## Deploying your Connector
 
 When you are ready to deploy your connector to a production environment, execute the `package` command. A zip file will

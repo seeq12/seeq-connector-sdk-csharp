@@ -25,7 +25,7 @@ namespace Seeq.Link.Debugging.Agent {
 
             Program.Configuration config = Program.GetDefaultConfiguration();
 
-            const string seeqHostUrl = "https://yourserver.seeq.host";
+            const string seeqHostUrl = "http://hex-seeq:34216/";
             config.SeeqUrl = new Uri(seeqHostUrl);
             config.SeeqExternalUrl = new Uri(seeqHostUrl);
             config.SeeqWebSocketUrl = new Uri(seeqHostUrl);
