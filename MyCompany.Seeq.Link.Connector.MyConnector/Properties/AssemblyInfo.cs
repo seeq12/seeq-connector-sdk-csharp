@@ -35,4 +35,4 @@ using Seeq.Link.SDK.Interfaces;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: MinimumSeeqLinkSdkVersion("100.0.0.0")]
+[assembly: MinimumSeeqLinkSdkVersion("100.3.1100.0")]
