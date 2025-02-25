@@ -23,16 +23,13 @@ using Seeq.Link.SDK.Interfaces;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("0fe864f9-b234-4bfc-84fd-42631507ad2e")]
 
-// Version information for an assembly consists of the following four values:
+// Version information for an assembly consists of the following three values:
 //
 //      Major Version
 //      Minor Version
 //      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: MinimumSeeqLinkSdkVersion("100.3.1100.0")]
+[assembly: AssemblyVersion("1.0.0")]
+
+// This specifies the minimum version of the Seeq.Link.SDK package required by this
+// Connector.
+[assembly: MinimumSeeqLinkSdkVersion("100.3.1100")]
