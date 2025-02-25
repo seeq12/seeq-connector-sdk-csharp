@@ -100,6 +100,22 @@ the project and still build without errors.
 Any log messages you create using the `Log` property on `ConnectorServiceV2` and `DatasourceConnectionServiceV2` will go
 to the console window and to the `csharp/Seeq.Link.SDK.Debugging.Agent/bin/x64/Debug/log/net-debugging-agent.log` file.
 
+The `AssemblyInfo.cs` file in your Connector's project provides the `AssemblyVersion` variable which can be used to 
+maintain semantic versioning in your Connector. The value specified here will appear in the Administration page of the 
+Seeq Server and can help you determine what version is deployed to each Agent and whether an upgrade of the Connector 
+is necessary. 
+
+The `AssemblyInfo.cs` file also allows you to declare a Minimum Seeq Link SDK Version value `MinimumSeeqLinkSdkVersion`.
+This value will help enforce compatibility between your Connector and any Agent where it is deployed. Agent versions 
+exactly match the version number of the Seeq Link SDK they provide and, by specifying the minimum version of the Seeq 
+Link SDK that provides the necessary features for your Connector, they will be able to check that they satisfy the 
+Connector's requirement when loading it.  
+
+To update the version of the Seeq Link SDK that your connector references, the project files for all three projects 
+should be updated in all instances to reference the desired Seeq.Link.SDK, Seeq.Link.SDK.TestFramework and 
+Seeq.Link.Agent packages. The versions of these packages are always kept in sync, and all three should be set to the 
+same value. 
+
 ## Deploying your Connector
 
 When you are ready to deploy your connector to a production environment, execute the `package` command. A zip file will

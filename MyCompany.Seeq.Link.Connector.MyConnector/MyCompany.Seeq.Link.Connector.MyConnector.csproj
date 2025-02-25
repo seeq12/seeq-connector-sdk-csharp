@@ -39,10 +39,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Seeq.Link.SDK" Version="66.0.0" />
+        <!-- When updating this, be sure to update the MinimumSeeqLinkSdkVersion value specified in 
+            the Connectors AssemblyInfo.cs as well. This allows the Agent hosting the Connector to 
+            validate that it provides the necessary SDK features. -->
+    <PackageReference Include="Seeq.Link.SDK" Version="100.3.1100" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
