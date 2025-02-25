@@ -1,51 +1,51 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-	<PropertyGroup>
-		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-		<ProjectGuid>{0FE864F9-B234-4BFC-84FD-42631507AD2E}</ProjectGuid>
-		<OutputType>Library</OutputType>
-		<AppDesignerFolder>Properties</AppDesignerFolder>
-		<RootNamespace>MyCompany.Seeq.Link.Connector.MyConnector</RootNamespace>
-		<AssemblyName>MyCompany.Seeq.Link.Connector.MyConnector</AssemblyName>
-		<TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-		<FileAlignment>512</FileAlignment>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-		<DebugSymbols>true</DebugSymbols>
-		<DebugType>full</DebugType>
-		<Optimize>false</Optimize>
-		<OutputPath>bin\Debug\</OutputPath>
-		<DefineConstants>DEBUG;TRACE</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-		<DebugType>pdbonly</DebugType>
-		<Optimize>true</Optimize>
-		<OutputPath>bin\Release\</OutputPath>
-		<DefineConstants>TRACE</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-	</PropertyGroup>
-	<ItemGroup>
-		<Compile Include="DatasourceSimulator.cs" />
-		<Compile Include="EnumerableExtensions.cs" />
-		<Compile Include="MyConnection.cs" />
-		<Compile Include="MyConnectionConfigV1.cs" />
-		<Compile Include="MyConnector.cs" />
-		<Compile Include="MyConnectorConfigV1.cs" />
-		<Compile Include="Properties\AssemblyInfo.cs" />
-	</ItemGroup>
-	<ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0FE864F9-B234-4BFC-84FD-42631507AD2E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MyCompany.Seeq.Link.Connector.MyConnector</RootNamespace>
+    <AssemblyName>MyCompany.Seeq.Link.Connector.MyConnector</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="DatasourceSimulator.cs" />
+    <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="MyConnection.cs" />
+    <Compile Include="MyConnectionConfigV1.cs" />
+    <Compile Include="MyConnector.cs" />
+    <Compile Include="MyConnectorConfigV1.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
         <!-- When updating this, be sure to update the MinimumSeeqLinkSdkVersion value specified in 
             the Connectors AssemblyInfo.cs as well. This allows the Agent hosting the Connector to 
             validate that it provides the necessary SDK features. -->
-		<PackageReference Include="Seeq.Link.SDK" Version="100.3.1100" />
-	</ItemGroup>
-	<Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-	<!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+    <PackageReference Include="Seeq.Link.SDK" Version="100.3.1100" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
