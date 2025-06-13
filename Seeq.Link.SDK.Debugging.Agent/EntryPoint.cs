@@ -18,8 +18,7 @@ namespace Seeq.Link.Debugging.Agent {
             XmlConfigurator.Configure();
 
             const string agentName = ".NET Connector SDK Debugging Agent";
-            var executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
-            var seeqDataFolder = Path.Combine(Path.GetDirectoryName(executingAssemblyLocation), "data");
+            var seeqDataFolder = ProjectPathsHelper.GetSeeqDataFolder();
 
             AgentOtpHelper.SetupAgentOtp(seeqDataFolder, agentName);
 
@@ -36,7 +35,7 @@ namespace Seeq.Link.Debugging.Agent {
             // Set the connectorSearchPaths to only find connectors within the connector-sdk folder
             config.DataFolder = seeqDataFolder;
 
-            string connectorSdkRoot = Path.GetFullPath(Path.Combine(executingAssemblyLocation, "..", "..", "..", "..", ".."));
+            string connectorSdkRoot = ProjectPathsHelper.GetConnectorSdkRoot();
             string configuration = "Release";
 #if DEBUG
             configuration = "Debug";
