@@ -43,8 +43,6 @@ namespace MyCompany.Seeq.Link.Connector {
                 connectionConfig.Enabled = true;
 
                 // These configuration variables are specific to the MyConnector example. You'll likely remove them.
-                // We'll specify a large enough tag count that we observe the batching mechanism in action.
-                connectionConfig.TagCount = 5000;
                 connectionConfig.SamplePeriod = "00:15";
 
                 // Add the new connection configuration to its parent connector
@@ -76,12 +74,6 @@ namespace MyCompany.Seeq.Link.Connector {
                     // you can also disable the connection so it is no longer processed until changes are made
                     connectionConfig.Enabled = false;
 
-                    continue;
-                }
-
-                if (connectionConfig.TagCount.HasValue && connectionConfig.TagCount < 1) {
-                    this.connectorService.Log.WarnFormat("Connection '{0}' has an invalid TagCount. It will be ignored.", connectionConfig.Name);
-                    connectionConfig.Enabled = false;
                     continue;
                 }
 

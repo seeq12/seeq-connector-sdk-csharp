@@ -57,7 +57,6 @@ namespace MyCompany.Seeq.Link.Connector.MyConnectorTest {
         public override void BaseConnectionOneTimeSetUp() {
             var connectionConfig = new MyConnectionConfigV1 {
                 SamplePeriod = "00:00:01",
-                TagCount = 5,
                 Enabled = true
             };
             var connectorConfig = new MyConnectorConfigV1 {
