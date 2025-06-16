@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using log4net.Util;
 using Seeq.Link.SDK;
 using Seeq.Link.SDK.Interfaces;
 using Seeq.Link.SDK.Utilities;
@@ -378,8 +377,8 @@ namespace MyCompany.Seeq.Link.Connector {
             // 2m etc.) that indicates the maximum duration of capsules in this series and is required for stored
             // conditions like this example.
             condition.MaximumDuration = "2h";
-            
-            // In order to ensure that we have the correct metadata for the capsule properties. This is a list of 
+
+            // In order to ensure that we have the correct metadata for the capsule properties. This is a list of
             // all possible properties for each condition.
             List<CapsulePropertyInputV1> capsuleProperties = new List<CapsulePropertyInputV1>();
 
@@ -395,7 +394,7 @@ namespace MyCompany.Seeq.Link.Connector {
             // If the value is a string, this value should be set to "string"
             capsuleProperty.UnitOfMeasure = "rads";
             capsuleProperties.Add(capsuleProperty);
-            
+
             // The list of properties are assigned to the condition
             condition.CapsuleProperties = capsuleProperties;
 

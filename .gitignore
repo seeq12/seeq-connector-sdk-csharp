@@ -10,3 +10,6 @@
 /nuget.exe
 /tools/
 dist/
+/data/agent-keys/agent.keys
+/data/configuration/link/.NET Connector SDK Debugging Agent.json
+/data/configuration/link/MyCompany MyConnector.json
