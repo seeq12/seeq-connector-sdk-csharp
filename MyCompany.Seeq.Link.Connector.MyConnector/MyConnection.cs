@@ -242,8 +242,19 @@ namespace MyCompany.Seeq.Link.Connector {
                 foreach (DatasourceSimulator.Alarm.Event alarmEvent in events) {
                     TimeInstant start = new TimeInstant(alarmEvent.Start);
                     TimeInstant end = new TimeInstant(alarmEvent.End);
+
+                    // Usually there is a unique id of the event in your historian.
+                    // In this example, we use the start time of the event as the id.
+                    long uniqueId = start.Timestamp;
+
+                    // Create a list of capsule properties to be displayed in the details pane for capsules in
+                    // Seeq Workbench.
+                    // Note: These properties must also be specified during indexing for the condition;
+                    // otherwise, they will not be available for use in Seeq.
                     List<Capsule.Property> capsuleProperties = new List<Capsule.Property> {
-                        new Capsule.Property("Intensity", alarmEvent.Intensity.ToString(), "rads")
+                        new Capsule.Property("Intensity", alarmEvent.Intensity.ToString(), "rads"),
+                        new Capsule.Property("Alarm ID", uniqueId.ToString(), "string"),
+                        new Capsule.Property("Batch ID", "batch 1", "string"),
                     };
                     yield return new Capsule(start, end, capsuleProperties);
                 }
@@ -395,8 +406,22 @@ namespace MyCompany.Seeq.Link.Connector {
             capsuleProperty.UnitOfMeasure = "rads";
             capsuleProperties.Add(capsuleProperty);
 
+            capsuleProperties.Add(new CapsulePropertyInputV1 { Name = "Batch ID", UnitOfMeasure = "string" });
+            capsuleProperties.Add(new CapsulePropertyInputV1 { Name = "Alarm ID", UnitOfMeasure = "string" });
+
             // The list of properties are assigned to the condition
             condition.CapsuleProperties = capsuleProperties;
+
+            // We always replace Capsule properties to reflect changes in the source system.
+            condition.ReplaceCapsuleProperties = true;
+
+            // CapsuleIdProperty should be set to the name of a capsule property that uniquely identifies each capsule
+            // (e.g., Alarm Id, Batch Id, Unique Id, etc.). If specified, this value must exactly match the name of an
+            // existing capsule property that contains a stable identifier of the capsule. This allows Seeq to recognize
+            // capsules as the same logical event even if their start/end times or other properties change over time.
+            // "start" can also be used as a special value to indicate that the capsule's start time should be used as the
+            // unique identifier of the capsule.
+            condition.CapsuleIdProperty = "Alarm ID";
 
             // PutCondition() queues items up for performance reasons and writes them in batch to the server.
             //
