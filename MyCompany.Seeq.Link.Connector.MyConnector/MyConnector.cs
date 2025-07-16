@@ -21,6 +21,11 @@ namespace MyCompany.Seeq.Link.Connector {
         public void Initialize(IConnectorServiceV2 connectorService) {
             this.connectorService = connectorService;
 
+            // Set your developer name and support URL so that end users can see who to contact with questions. This
+            // will appear in the datasource administration tab.
+            this.connectorService.SetConnectorDeveloperName("My Awesome Company");
+            this.connectorService.SetConnectorDeveloperSupportUrl("https://my-awesome-company.com/support");
+
             // First, load your configuration using the connector service. If the configuration file is not found, the first
             // object in the passed-in array is returned.
             ConfigObject configObj = this.connectorService.LoadConfig(new ConfigObject[] { new MyConnectorConfigV1() });
