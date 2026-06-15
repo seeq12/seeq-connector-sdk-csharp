@@ -1,15 +1,23 @@
+# IDE files
 .idea/
-/packages/
 .vs/
-/MyCompany.Seeq.Link.Connector.MyConnector/bin/
-/MyCompany.Seeq.Link.Connector.MyConnector/obj/
-/Seeq.Link.SDK.Debugging.Agent/bin/
-/Seeq.Link.SDK.Debugging.Agent/obj/
-/MyCompany.Seeq.Link.Connector.MyConnector.Test/bin/
-/MyCompany.Seeq.Link.Connector.MyConnector.Test/obj/
+*.user
+
+# NuGet packages
+packages/
+
+# Package output
+dist/
+
+# Intermediate build output
+bin/
+obj/
+
+# Executables
 /nuget.exe
 /tools/
-dist/
+
+# Debug Agent data
 /data/agent-keys/agent.keys
 /data/configuration/link/.NET Connector SDK Debugging Agent.json
 /data/configuration/link/MyCompany MyConnector.json
