@@ -29,6 +29,6 @@
         <!-- When updating this, be sure to update the MinimumSeeqLinkSdkVersion value specified in 
             the Connectors AssemblyInfo.cs as well. This allows the Agent hosting the Connector to 
             validate that it provides the necessary SDK features. -->
-    <PackageReference Include="Seeq.Link.SDK" Version="100.3.1100" />
+    <PackageReference Include="Seeq.Link.SDK" Version="100.34.9088" />
   </ItemGroup>
 </Project>

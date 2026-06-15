@@ -56,6 +56,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Seeq.Link.Agent" Version="100.3.1100" />
+    <PackageReference Include="Seeq.Link.Agent" Version="100.34.9088" />
   </ItemGroup>
 </Project>

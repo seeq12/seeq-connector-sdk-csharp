@@ -38,11 +38,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.6.0" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="NFluent" Version="2.6.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" />
-    <PackageReference Include="Seeq.Link.SDK" Version="100.3.1100" />
-    <PackageReference Include="Seeq.Link.SDK.TestFramework" Version="100.3.1100" />
+    <PackageReference Include="Seeq.Link.SDK" Version="100.34.9088" />
+    <PackageReference Include="Seeq.Link.SDK.TestFramework" Version="100.34.9088" />
   </ItemGroup>
 </Project>
