@@ -1,4 +1,5 @@
 @echo off
+setlocal
 
 if defined SEEQ_CONNECTOR_SDK_HOME goto :InDevEnvironment
 
@@ -11,4 +12,13 @@ goto :EOF
 
 :InDevEnvironment
 
-Powershell.exe -ExecutionPolicy Bypass -File "%~dp0.\package.ps1"
+dotnet build "%SEEQ_CONNECTOR_SDK_HOME%\%SEEQ_CONNECTOR_NAME%\%SEEQ_CONNECTOR_NAME%.csproj" --configuration Release
+if ERRORLEVEL 1 goto :Error
+
+PowerShell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0package.ps1"
+if ERRORLEVEL 1 goto :Error
+
+goto :EOF
+
+:Error
+exit /b 1

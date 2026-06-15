@@ -1,4 +1,10 @@
-$DIST_DIR = "dist"
+$ErrorActionPreference = "Stop"
+
+if ([string]::IsNullOrWhiteSpace($env:SEEQ_CONNECTOR_SDK_HOME) -or [string]::IsNullOrWhiteSpace($env:SEEQ_CONNECTOR_NAME)) {
+    throw "SEEQ_CONNECTOR_SDK_HOME and SEEQ_CONNECTOR_NAME must be set. Execute 'environment' first."
+}
+
+$DIST_DIR = Join-Path $PSScriptRoot "dist"
 $DIST_FILE_NAME = "$env:SEEQ_CONNECTOR_NAME.zip"
 $TEMP_CONNECTOR_DLL_DIR = Join-Path $DIST_DIR "$env:SEEQ_CONNECTOR_NAME"
 
@@ -25,6 +31,10 @@ if (Test-Path $RELEASE_DIR_X86) {
 
 if (Test-Path $RELEASE_DIR_X64) {
     $RELEASE_DIR = $RELEASE_DIR_X64
+}
+
+if (-not (Test-Path $RELEASE_DIR)) {
+    throw "Release output directory '$RELEASE_DIR' was not found. Execute 'build' or 'package' from the build environment first."
 }
 
 Write-Output "Copying '$RELEASE_DIR' to '$TEMP_CONNECTOR_DLL_DIR'..."
