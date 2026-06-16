@@ -89,7 +89,7 @@ namespace MyCompany.Seeq.Link.Connector {
                 )
                 .Select(index => {
                     var start = new TimeInstant(index * capsulePeriodInNanos).ToDateTimeOffsetRoundDownTo100ns();
-                    var end = start + TimeSpan.FromMilliseconds(10000L);
+                    var end = start + TimeSpan.FromTicks(100L);
                     return new Alarm.Event(start, end, Rng.NextDouble());
                 })
                 .Take(limit);
