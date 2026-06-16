@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using Seeq.Link.SDK.Services;
 using Seeq.Link.SDK.Utilities;
-using Seeq.Utilities;
 
 namespace Seeq.Link.Debugging.Agent {
 
