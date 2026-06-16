@@ -1,14 +1,16 @@
 @echo off
 setlocal
 
-if defined SEEQ_CONNECTOR_SDK_HOME goto :InDevEnvironment
+if not defined SEEQ_CONNECTOR_SDK_HOME goto :NotInDevEnvironment
+if not defined SEEQ_CONNECTOR_NAME goto :NotInDevEnvironment
+goto :InDevEnvironment
 
+:NotInDevEnvironment
 echo.
 echo You're not in the Connector SDK Dev Environment.
 echo Execute 'environment' first.
 echo.
 exit /b 1
-goto :EOF
 
 :InDevEnvironment
 
