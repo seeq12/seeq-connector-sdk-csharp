@@ -10,7 +10,6 @@ $TEMP_CONNECTOR_DLL_DIR = Join-Path $DIST_DIR "$env:SEEQ_CONNECTOR_NAME"
 
 $PROJECT_DIR = "$env:SEEQ_CONNECTOR_SDK_HOME\$env:SEEQ_CONNECTOR_NAME"
 $RELEASE_DIR_ANYCPU = "$PROJECT_DIR\bin\Release"
-$RELEASE_DIR_X86 = "$PROJECT_DIR\bin\x86\Release"
 $RELEASE_DIR_X64 = "$PROJECT_DIR\bin\x64\Release"
 
 Write-Output "Packaging '$env:SEEQ_CONNECTOR_NAME'..."
@@ -25,10 +24,6 @@ New-Item -ItemType Directory -Path $DIST_DIR | Out-Null
 New-Item -ItemType Directory -Path $TEMP_CONNECTOR_DLL_DIR | Out-Null
 
 $RELEASE_DIR = $RELEASE_DIR_ANYCPU
-if (Test-Path $RELEASE_DIR_X86) {
-    $RELEASE_DIR = $RELEASE_DIR_X86
-}
-
 if (Test-Path $RELEASE_DIR_X64) {
     $RELEASE_DIR = $RELEASE_DIR_X64
 }
