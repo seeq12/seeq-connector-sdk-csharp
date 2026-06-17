@@ -88,8 +88,8 @@ namespace MyCompany.Seeq.Link.Connector {
                     (long)Math.Ceiling(endTimestamp.Timestamp / (double)capsulePeriodInNanos)
                 )
                 .Select(index => {
-                    DateTime start = new TimeInstant(index * capsulePeriodInNanos).ToDateTimeRoundDownTo100ns();
-                    DateTime end = start + TimeSpan.FromMilliseconds(10000L);
+                    var start = new TimeInstant(index * capsulePeriodInNanos).ToDateTimeOffsetRoundDownTo100ns();
+                    var end = start + TimeSpan.FromTicks(100L);
                     return new Alarm.Event(start, end, Rng.NextDouble());
                 })
                 .Take(limit);
@@ -141,13 +141,13 @@ namespace MyCompany.Seeq.Link.Connector {
             }
 
             public class Event {
-                public DateTime Start { get; set; }
+                public DateTimeOffset Start { get; set; }
 
-                public DateTime End { get; set; }
+                public DateTimeOffset End { get; set; }
 
                 public object Intensity { get; set; }
 
-                public Event(DateTime start, DateTime end, object intensity) {
+                public Event(DateTimeOffset start, DateTimeOffset end, object intensity) {
                     this.Start = start;
                     this.End = end;
                     this.Intensity = intensity;

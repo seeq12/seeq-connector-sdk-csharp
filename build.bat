@@ -1,31 +1,23 @@
 @echo off
+setlocal
 
-if defined SEEQ_CONNECTOR_SDK_HOME goto :InDevEnvironment
+if not defined SEEQ_CONNECTOR_SDK_HOME goto :NotInDevEnvironment
+if not defined SEEQ_CONNECTOR_NAME goto :NotInDevEnvironment
+goto :InDevEnvironment
 
+:NotInDevEnvironment
 echo.
 echo You're not in the Connector SDK Dev Environment.
 echo Execute 'environment' first.
 echo.
 exit /b 1
-goto :EOF
 
 :InDevEnvironment
 
-if not exist ".\nuget.exe" powershell -Command "(new-object System.Net.WebClient).DownloadFile('https://dist.nuget.org/win-x86-commandline/latest/nuget.exe', '.\nuget.exe')"
+dotnet restore "%~dp0Seeq.Connector.SDK.sln"
+if ERRORLEVEL 1 goto :Error
 
-.\nuget restore Seeq.Connector.SDK.sln
-
-set "VSWHERE_PATH=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
-
-if exist "%VSWHERE_PATH%" (
-    for /f "tokens=*" %%i in ('"%VSWHERE_PATH%" -latest -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe') do (
-        set "MSBUILD_PATH=%%i"
-    )
-) else (
-    set "MSBUILD_PATH=%WINDIR%\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
-)
-
-"%MSBUILD_PATH%" "%~dp0.\Seeq.Connector.SDK.sln" /p:Configuration="Release"
+dotnet build "%~dp0Seeq.Connector.SDK.sln" --configuration Release --no-restore
 
 if ERRORLEVEL 1 goto :Error
 

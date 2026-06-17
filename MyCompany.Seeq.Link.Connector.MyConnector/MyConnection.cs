@@ -457,15 +457,17 @@ namespace MyCompany.Seeq.Link.Connector {
             this.connectionService.PutScalar(scalar);
         }
 
-        private String getFormula(Object value) {
+        private String getFormula(object value) {
             if (value.GetType() == typeof(string)) {
                 return FormulaHelper.EscapeStringAsFormula((string)value);
-            } else if (value.GetType() == typeof(DateTime)) {
-                TimeInstant timeInstant = new TimeInstant((DateTime)value);
+            } 
+
+            if (value.GetType() == typeof(DateTimeOffset)) {
+                TimeInstant timeInstant = new TimeInstant((DateTimeOffset)value);
                 return timeInstant.Timestamp + "ns";
-            } else {
-                return value.ToString();
             }
+
+            return value.ToString();
         }
     }
 }

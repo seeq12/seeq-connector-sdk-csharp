@@ -1,10 +1,15 @@
-$DIST_DIR = "dist"
+$ErrorActionPreference = "Stop"
+
+if ([string]::IsNullOrWhiteSpace($env:SEEQ_CONNECTOR_SDK_HOME) -or [string]::IsNullOrWhiteSpace($env:SEEQ_CONNECTOR_NAME)) {
+    throw "SEEQ_CONNECTOR_SDK_HOME and SEEQ_CONNECTOR_NAME must be set. Execute 'environment' first."
+}
+
+$DIST_DIR = Join-Path $PSScriptRoot "dist"
 $DIST_FILE_NAME = "$env:SEEQ_CONNECTOR_NAME.zip"
 $TEMP_CONNECTOR_DLL_DIR = Join-Path $DIST_DIR "$env:SEEQ_CONNECTOR_NAME"
 
 $PROJECT_DIR = "$env:SEEQ_CONNECTOR_SDK_HOME\$env:SEEQ_CONNECTOR_NAME"
 $RELEASE_DIR_ANYCPU = "$PROJECT_DIR\bin\Release"
-$RELEASE_DIR_X86 = "$PROJECT_DIR\bin\x86\Release"
 $RELEASE_DIR_X64 = "$PROJECT_DIR\bin\x64\Release"
 
 Write-Output "Packaging '$env:SEEQ_CONNECTOR_NAME'..."
@@ -19,12 +24,12 @@ New-Item -ItemType Directory -Path $DIST_DIR | Out-Null
 New-Item -ItemType Directory -Path $TEMP_CONNECTOR_DLL_DIR | Out-Null
 
 $RELEASE_DIR = $RELEASE_DIR_ANYCPU
-if (Test-Path $RELEASE_DIR_X86) {
-    $RELEASE_DIR = $RELEASE_DIR_X86
-}
-
 if (Test-Path $RELEASE_DIR_X64) {
     $RELEASE_DIR = $RELEASE_DIR_X64
+}
+
+if (-not (Test-Path $RELEASE_DIR)) {
+    throw "Release output directory '$RELEASE_DIR' was not found. Execute 'build' or 'package' from the build environment first."
 }
 
 Write-Output "Copying '$RELEASE_DIR' to '$TEMP_CONNECTOR_DLL_DIR'..."

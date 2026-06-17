@@ -17,11 +17,13 @@ your connector.
 
 ## The Build Environment
 
-The C# version of the SDK depends upon Microsoft Visual Studio for building and debugging. This SDK is tested with
-Microsoft Visual Studio 2017 - 2022.
+The C# version of the SDK depends upon Microsoft Visual Studio for debugging. Microsoft Visual Studio 2026 with the
+.NET desktop development workload is recommended.
 
-The C# SDK also depends on .NET version 4.8. When upgrading .NET, you may need to restart your machine for the new
-version to take effect.
+The C# SDK also depends on .NET Framework version 4.8 and a .NET SDK capable of building SDK-style projects. Visual
+Studio 2026 usually installs the .NET SDK as part of the .NET desktop development workload. If it does not, install
+the .NET SDK from [https://dotnet.microsoft.com/en-us/download/dotnet](https://dotnet.microsoft.com/en-us/download/dotnet).
+When upgrading .NET, you may need to restart your machine for the new version to take effect.
 
 To begin using the SDK:
 
@@ -31,6 +33,14 @@ To begin using the SDK:
 
 Throughout this document, we will refer to the *build environment*, which is simply a command prompt or terminal window
 where you've executed the environment script as described.
+
+The build environment provides these helper commands:
+
+1. `build` restores NuGet packages and builds the solution in Release mode.
+1. `clean` removes build, test, packaging, and legacy tool output.
+1. `ide` opens the solution in Visual Studio, preferring Visual Studio 2026 when it is installed.
+1. `package` builds the connector in Release mode and creates a deployable zip file in `dist`.
+1. `test` runs the NUnit test project through `dotnet test`.
 
 ## Verifying your Environment
 
